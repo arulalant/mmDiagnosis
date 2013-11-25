@@ -26,6 +26,7 @@ Note :
 
     In this repository we pushed / published only the limited modules. We didn't release the full 
     fledged features / code in public because still we are in developing more diagnostics. 
+    We are working on this project since December 2010.
     Right now we have local repository which is accessibly inside IIT Delhi only. 
     By the next year end (2014), this project will be developed completely and launched fully in NCMRWF.
     By that time, we will release the full project under this same public repository.
