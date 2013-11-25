@@ -18,7 +18,7 @@ Objective :
 Descriptions :
 =============
         
-    Detailed descriptions available in the wiki page https://github.com/arulalant/mmDiagnosis/wiki
+Detailed descriptions available in the wiki page https://github.com/arulalant/mmDiagnosis/wiki
     
 
 Note :
