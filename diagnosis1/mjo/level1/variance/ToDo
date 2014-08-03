@@ -1,0 +1,4 @@
+Edit the do_variance_plot.py script to handld the models suffixpath kwarg 
+to plot the variance for the model filtered data also.
+Look at the do_obs_lfilter.py function code to do the same. 
+Also have a look at the do_model_lfilter.py.

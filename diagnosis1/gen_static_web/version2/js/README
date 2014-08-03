@@ -1,0 +1,9 @@
+You can use online tool to make minified java script file.
+
+http://compressorrater.thruhere.net/   [YUI Compressor is best one]
+
+http://javascriptcompressor.com/default.aspx
+
+You can use offline tool, C code to do the same.
+
+http://javascript.crockford.com/jsmin.html

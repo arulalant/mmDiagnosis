@@ -1,0 +1,15 @@
+1. variance
+	1.1. make_obs_anomaly.py
+	1.2. do_lfilter.py
+	1.3. do_variance_plot.py (to plot both anomaly variance & filtered anomaly variance)
+
+2. ps 
+    2.1. do_avg.py
+	2.2 plot_ps.py 
+	2.3. calculate_waveno.py
+	2.4. plot_ps_2d.py
+			
+3. eof
+    3.1. regrid_obs_into_5x5_grid.py
+	3.2. eof_diag.py
+	3.3. plot_eof.py

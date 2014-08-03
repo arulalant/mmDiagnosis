@@ -1,0 +1,12 @@
+Format-Specification: http://wiki.debian.org/Proposals/CopyrightFormat
+Upstream-Name: diagnosis
+Upstream-Maintainer: Arulalan.T <arulalant@gmail.com>
+Upstream-Source: UNKNOWN
+
+Files: *
+Copyright: (C) 2012 <Arulalan.T> <arulalant@gmail.com>
+Copyright: (C) 2012 &lt;Arulalan.T&gt; &lt;arulalant@gmail.com&gt;
+Copyright: (C) 2012 &lt;Arulalan.T&gt; &lt;arulalant@gmail.com&gt;</property>
+License: GPL-3
+ The full text of the GPL is distributed in
+ /usr/share/common-licenses/GPL-3 on Debian systems.

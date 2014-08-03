@@ -1,0 +1,9 @@
+For Observed DataSets (Longtime)
+
+1.1. ceof_diag.py 
+1.2. plot_ceof.py
+
+For model projected pcts over observed ceof object (pickle)
+
+2.1. compute_model_projected_pcts.py
+2.2. plot_model_projected_pcts.py

@@ -1,0 +1,29 @@
+# setting iso vars (set the short_vars) to plot isoline, and isofillline plots
+isovars = temperature, hum #, mslp
+
+
+####
+### we can give 'obsname' or 'modelname' or even just 'name'. But it must be unique.
+####
+obsname = AVHRR_NCEP
+short_var = olr,  model_var = p, clim_var = olr, obs_var = olr, long_name = olr
+short_var = u200,  model_var = p, clim_var = u200, obs_var = u200, long_name = u200
+short_var = u850,  model_var = p, clim_var = u850, obs_var = u850, long_name = u850
+
+#CAUTION: If 'anl_hour' arg in any of the variable statement,
+#then instead of 'analysis' modelType, it will take input data from the 'fcst' modelType
+#and its hour will be its corresponding anl_hour. Eg : It will be useful when 'analysis' type
+#'olr' variable is not available, then we can use '00'th fcst hour's olr.
+
+modelname = GFS
+short_var = olr,  model_var = ulwrftoa, clim_var = olr, obs_var = olr, long_name = olr, anl_hour = 01
+short_var = u200,  model_var = ugrdprs, model_level=200, clim_var = u200, obs_var = u200, long_name = u200
+short_var = u850,  model_var = ugrdprs, model_level=850, clim_var = u850, obs_var = u850, long_name = u850
+
+#short_var = uwnd,  model_var = ugrdprs, clim_var = uwnd, long_name = u wind variable m/s
+#short_var = vwnd,  model_var = vgrdprs, clim_var = vwnd, long_name = v wind variable m/s
+#short_var = temperature,  model_var = tmpprs, long_name = temprature
+#short_var = humdity,  model_var = rhprs, long_name = humidity
+#short_var = mslp,  model_var = prmslmsl, long_name = mean sea level pressure
+#short_var = rainfall,  model_var = apcpsfc, obs_var = pobs, long_name = rainfall
+

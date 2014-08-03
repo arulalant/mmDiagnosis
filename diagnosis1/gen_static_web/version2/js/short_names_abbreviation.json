@@ -1,0 +1,23 @@
+{"names": {
+    "BS": "Bias Score",
+    "EDS": "Extreame Dependency Score",
+    "ETS": "Equitable Threat Score",
+    "FAR": "False Alarm Rate",
+    "HR": "Hit Rate",
+    "HSS": "Heidke Skill Score",
+    "KSS": "Kuipers Skill Score",
+    "LODR": "Log Odd Ratio",
+    "ODR": "Odds Ratio",
+    "ORSS": "Odds Ratio Skill Score",
+    "POD": "Probability Of Detection",
+    "POFD": "Probability Of False Detection",
+    "TS": "Threat Score",
+    "AIR": "All India Region (67E - 100E, 7N - 37N)",
+    "CINDIA": "Central India Region (73E - 90E, 22N - 28N)",
+    "PENINDIA": "Peninsular India Region (74E - 85E, 7N - 21N)",
+    "WCSTINDIA": "West Coast India Region (70E - 78E, 10N - 20N)",
+    "JJAS": "June, July, August, September",
+    "MORE": "Click here to view more levels",
+    "LESS": "Click here to hide the more levels"
+    }
+}

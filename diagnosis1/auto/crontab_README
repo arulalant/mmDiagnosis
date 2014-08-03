@@ -1,0 +1,66 @@
+# The display=:0 is very essential to access vcs.init(), xmgrace.init() &
+# other X11 automation script in cronjob/crontab. Otherwise it will fails.
+# DISPLAY=:0 means X11 will be redirected to tty7 gui shell.
+DISPLAY=:0
+30 14 * * * /home/kuldeep/IITD/ncmrwf-replication/auto/auto_run_all.py
+##
+# First line should be DISPLAY=:0, then afterwards put your auto scripts.
+#
+#
+  The above was tested in iitd lab desktop system. it was works fine.
+But it didnt work in ncmrwf centos system.
+
+So I did the following...
+
+https://github.com/thoughtbot/capybara-webkit/issues/279
+
+$ export DISPLAY=:0.0
+$ xhost +local:ubuntu
+
+and got back
+
+xhost: unable to open display ":0.0"
+
+any ideas?
+
+
+I was trying the above one.. But I am also getting the same error...
+
+So I did as follows.
+
+To invoke Xvfb I installed # yum -y install Xvfb  libXfont xorg-x11-server-Xvfb*
+
+Xvfb :1 -screen 0 1024x768x16 -nolisten inet6 & export DISPLAY=localhost:1.0
+
+export DISPLAY='localhost:1.0' & /usr/local/uvcdat/1.3.1/bin/python /home/kuldeep/IITD/ncmrwf-replication/mjo/level2/ceof/plot_model_projected_pcts.py >> /home/kuldeep/IITD/ncmrwf-replication/mjo/level2/ceof/error.txt
+
+
+The above one worked perfectly... But to run it in crontab, it should be in single line.
+
+http://stackoverflow.com/questions/17944234/xlib-extension-randr-missing-on-display-21-trying-to-run-headless-googl
+
+##### one time working #########
+ /usr/bin/Xvfb :1 -screen 0 1024x768x24  -nolisten inet6 -extension RANDR & export DISPLAY='localhost:1.0' & /usr/local/uvcdat/1.3.1/bin/python /home/kuldeep/IITD/ncmrwf-replication/auto/auto_run_all.py >> /home/kuldeep/IITD/ncmrwf-replication/auto/auto_run_all_cron.txt
+
+##############################
+#
+# to run it in crontab, first of we need to run /usr/bin/Xvfb :213 -screen 0 1024x768x24  -nolisten inet6 -extension RANDR & in background forever .. so add this in /etc/rc.local to startup run this command.
+# and in crontab export DISPLAY='localhost:213.0'
+# then 
+30 14 * * * export DISPLAY='localhost:213.0' & /usr/local/uvcdat/1.3.1/bin/python /home/kuldeep/IITD/ncmrwf-replication/auto/auto_run_all.py >> /home/kuldeep/IITD/ncmrwf-replication/auto/auto_run_all_cron.txt
+ 
+
+The above one is final one.... Tested on sateliteserver (192.168.0.190) server in ncmrwf...
+
+#in /etc/profile and local user .bashrc we need to set the follwoing... 
+# redhat part needs for xvfb stuff.
+export LD_LIBRARY_PATH=/usr/local/uvcdat/Qt/4.8.4/lib/:/usr/lib/x86_64-redhat-linux5E/
+
+/usr/bin/xvfb-run export DISPLAY='localhost:213.0' & /usr/local/uvcdat/1.3.1/bin/python /home/kuldeep/IITD/ncmrwf-replication/mjo/level2/phase3d/plot_model_projected_pcts_phase3d.py >> /home/kuldeep/IITD/ncmrwf-replication/auto/auto_run_all_cron.txt
+
+http://serverfault.com/questions/142191/run-gui-application-via-cronjob-in-ubuntu says the xvfb-run should work fine in crontab also. but fails
+
+DAte : 01.06.2014
+Arulalan.T
+
+

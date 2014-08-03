@@ -1,0 +1,19 @@
+For Observation :
+1. make_obs_anomaly.py
+2. do_obs_lfilter.py
+3. do_variance_plot.py (to plot both anomaly variance & filtered anomaly variance)
+   [Rename the abvoe as do_obs_variance_plot.py]
+
+For Model : 
+1. make_model_anomaly.py
+2. do_model_lfitler.py
+3. do_model_variance_plot.py (to plot both anomaly variance & filtered anomaly variance)
+4. do_merge_model_anl_fcst_apply_lfilter.py (....)
+
+
+variance (input=anomaly) for (all, seasons) => variance of anomaly 
+variable_plot 
+lfilter (input=anomaly) => lfiltered anomaly
+do variance (input= lfiltered anomaly) for (all, seasons) => variance of filtered anomaly 
+lfiltered_variance_plot summer = JJAS, winter = DJF for plotting boxes over indian regions
+

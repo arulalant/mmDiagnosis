@@ -1,0 +1,17 @@
+>>> import cdutil
+>>> data = f('air')
+>>> data.shape
+(775, 73, 144)
+>>> cdutil.times.setTimeBoundsMonthly(data)
+# annual climatology. So always result timeAxis has only one length.
+>>> clim = cdutil.YEAR.climatology(data)
+>>> clim.shape
+(1, 73, 144)
+# monthly climatology calculation. timeAxis has 12 month/lenght.
+>>> clim = cdutil.ANNUALCYCLE.climatology(data)
+>>> clim.shape
+(12, 73, 144)
+### anomaly calculation directly by passing original data
+>>> anom = cdutil.ANNUALCYCLE.departures(data)
+>>> anom.shape
+(775, 73, 144)
