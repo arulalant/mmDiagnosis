@@ -1351,12 +1351,18 @@ class TimeUtility():
         return timeAxisWithBounds
     # end of def correctTimeAxis(self, timeAxis):
 
-    def _generateBounds(self, data):
+    def _generateBounds(self, data, samelen=False, cyclic=False):
         """ creating bounds array and return it
         We need to pass the data as list which consists of the bound's weights
         values. Then it should create return bounds as numpy array with
         proper shape.
-
+        
+        samelen : If it is True, then it should return bounds with same length 
+                  of the data. And in the last bound will be repeated if 
+                  cyclic is False, otherwise first value will be kept at the 
+                  last index of the bounds (make it as cyclic bound).
+                  By default both samelen and cyclic are False.
+                    
         example 1:
             >>> boundlist = [0, 1, 2, 3, 4]
             >>> bounds = _generateBounds(boundlist)
@@ -1368,22 +1374,54 @@ class TimeUtility():
 
         example 2:
             >>> boundlist = [0, 30, 58, 89, 119]
-            >>> bounds = t._generateBounds(boundlist)
+            >>> bounds = _generateBounds(boundlist)
             >>> bounds
             array([[   0.,   30.],
                    [  30.,   58.],
                    [  58.,   89.],
                    [  89.,  119.]])
 
+        example 3:
+            >>> boundlist = [0, 30, 58, 89, 119]
+            >>> bounds = _generateBounds(boundlist, samelen=True)
+            >>> bounds
+            array([[   0.,   30.],
+                   [  30.,   58.],
+                   [  58.,   89.],
+                   [  89.,  119.],
+                   [ 119.,  119.]])
+       
+       example 4:
+            >>> boundlist = [0, 30, 58, 89, 119]
+            >>> bounds = _generateBounds(boundlist, samelen=True, cyclic=True)
+            >>> bounds
+            array([[   0.,   30.],
+                   [  30.,   58.],
+                   [  58.,   89.],
+                   [  89.,  119.],
+                   [ 119.,  0.]])
         """
-        data_length = len(data) - 1
+        
+        data_length = len(data)
+        if not samelen:
+            data_length -= 1
+        # end of if not samelen:
         bounds = numpy.zeros((data_length, 2))
         for i in range(data_length):
-            bounds[i][0] = data[i]
-            bounds[i][1] = data[i+ 1]
+            bounds[i][0] = data[i]        
+            if i == data_length-1 and samelen:
+                bounds[i][0] = data[i]
+                if cyclic:                
+                    bounds[i][1] = data[0]
+                else:
+                    bounds[i][1] = data[i]
+                # end of if cyclic:
+            else:
+                bounds[i][1] = data[i+ 1]
+            # end of if i == data_length-1 and samelen:        
         # end of for i in range(data_length):
         return bounds
-    # end of def bounds_generation(self,data):
+    # end of def _generateBounds(self, data):
 
     def getTimeAxisMonths(self, timeAxis, returnType='c', returnHour='y'):
         """
@@ -2668,6 +2706,7 @@ class TimeUtility():
         _cyclic = cyclic
         f = cdms2.open(fpath, 'r')
         timeAxis = f[varName].getTime()
+
         # Todo:
         # need to optimize this component time to avoid extract everytime
         # when the same method will be called for the same varName and
@@ -2676,8 +2715,10 @@ class TimeUtility():
         # Then we can save so many place to avoid repeated statement
         # asComponentTime()...
         timeAxisCompTime = timeAxis.asComponentTime()
+         
         # get the available years of the time axis
-        avlyears = self._getYears(timeAxis)
+        avlyears = self._getYears(timeAxis, deepsearch=True)
+
         if (sday == eday and smon == emon):
             sameDay = True
         else:
