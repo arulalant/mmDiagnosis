@@ -214,11 +214,19 @@ def doClimRegrid_wrt(dType='model'):
                     print "So new access path of original climatology files is", climatologyPath
                     # do daily climatolgy regrid
                     print "Daily regridding takes place"
+                    if climatolgy.name.lower() == 'miso':
+                        cdfile = climatology.dfile
+                        cdfile = cdfile.split('.')
+                        cdfile = '.'.join(cdfile.insert(-1, 'harmonic'))
+                    else:
+                        cdfile = climatology.dfile
+                    # end of if climatolgy.name.lower() == 'miso':
+                    
                     # calling the climatolgy regrid function to do process
                     createRegriddedClimatology(model.name, model.path,
                                            climatologyPath,
                                            climatologyRegridPath,
-                                           climatology.dfile, Type=dtype, hour=hour)
+                                           cdfile, Type=dtype, hour=hour)
             else:
                 pass
                 # climatolgy configuration and model data configuration are not equal in the text file
