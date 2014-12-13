@@ -753,7 +753,7 @@ def lfilter(data, weights, cyclic=True, **kwarg):
         # make memory free
         del preData, nextData, wlenfilter
         if __showStatusBar:
-            preview = statusbar(cday, total=loopCount,
+            preview = statusbar(idx, total=loopCount,
                         title='Filtering', prev=preview)
         # end of if __showStatusBar:
     # end of for idx, cday in enumerate(loopdays):
