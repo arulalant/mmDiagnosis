@@ -22,11 +22,11 @@ __diagnosisDir__ = os.path.dirname(__file__)
 previousDir = os.path.abspath(os.path.join(__diagnosisDir__, '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-# import xml_data_acces.py from previous directory uv_cdat_code.diagnosisutils
-import uv_cdat_code.diagnosisutils.xml_data_access as xml_data_access
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
-import uv_cdat_code.diagnosisutils.plot as plot
-from uv_cdat_code.diagnosisutils.regions import regions
+# import xml_data_acces.py from previous directory diagnosisutils
+import diagnosisutils.xml_data_access as xml_data_access
+from diagnosisutils.timeutils import TimeUtility
+import diagnosisutils.plot as plot
+from diagnosisutils.regions import regions
 from diag_setup.globalconfig import models, seasons, processfilesPath, \
                                 plotsgraphsPath, obsrainfalls
 from diag_setup.varsdict import variables

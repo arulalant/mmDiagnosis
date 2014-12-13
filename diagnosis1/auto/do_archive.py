@@ -14,7 +14,7 @@ __curDir__ = os.path.dirname(__file__)
 previousDir = os.path.abspath(os.path.join(__curDir__, '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.timeutils import TimeUtility
 from diag_setup.globalconfig import plotsgraphsPath, logpath, archivepath
 from diag_setup.xml_status import getModelAnlFirstLastDate
 from diag_setup.logsetup import createLog

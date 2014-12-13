@@ -9,8 +9,8 @@ import numpy
 previousDir = os.path.abspath(os.path.join(os.getcwd(), '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-# importing xml_data_acces.py from previous directory uv_cdat_code.diagnosisutils
-import uv_cdat_code.diagnosisutils.xml_data_access as xml_data_access
+# importing xml_data_acces.py from previous directory diagnosisutils
+import diagnosisutils.xml_data_access as xml_data_access
 import cdutil.region as r
 India = r.domain(longitude = (40, 120, 'cc'), latitude = (-10, 40, 'cc'))
 

@@ -28,9 +28,9 @@ __diagnosisDir__ = os.path.dirname(__file__)
 previousDir = os.path.abspath(os.path.join(__diagnosisDir__, '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-# import timeutils.py from previous directory uv_cdat_code.diagnosisutils
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
-from uv_cdat_code.diagnosisutils.regions import regions
+# import timeutils.py from previous directory diagnosisutils
+from diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.regions import regions
 from diag_setup.varsdict import variables
 from diag_setup.globalconfig import models, seasons, threshold, region, \
                                processfilesPath, obsrainfalls, plotsgraphsPath

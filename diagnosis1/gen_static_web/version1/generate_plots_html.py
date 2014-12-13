@@ -33,7 +33,7 @@ previousDir = os.path.abspath(os.path.join(os.getcwd(), '../..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
 from diag_setup.globalconfig import plotsgraphsPath as filespath, staticWebPath
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.timeutils import TimeUtility
 
 # create time utility object
 timobj = TimeUtility()

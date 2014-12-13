@@ -19,8 +19,8 @@ __curDir__ = os.path.dirname(__file__)
 diagDir = os.path.abspath(os.path.join(__curDir__, '../../..'))
 # adding the previous diagnosisutils path to python path
 sys.path.append(diagDir)
-# import xml_data_acces.py from previous directory uv_cdat_code.diagnosisutils
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
+# import xml_data_acces.py from previous directory diagnosisutils
+from diagnosisutils.timeutils import TimeUtility
 
 
 timobj = TimeUtility()

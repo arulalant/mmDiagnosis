@@ -23,7 +23,7 @@ sys.path.append(previousDir)
 from generate_idx_ctl_files_grib1 import createCtlIdxFilesOf
 from pull_grib_data_from_server import pullDataOf, pullOlrDataOf
 from regrid_model_data_in_server import regridOf, regridOlrOf
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.timeutils import TimeUtility
 from diag_setup.xml_status import getModelVarFirstLastDate, \
                         getModelAnlFirstLastDate, isModelVarsLatestDateSame
 from diag_setup.globalconfig import uvcdat, models, logpath, plotexcludehour

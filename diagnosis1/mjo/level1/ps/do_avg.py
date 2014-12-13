@@ -6,7 +6,7 @@ __curDir__ = os.path.dirname(__file__)
 diagDir = os.path.abspath(os.path.join(__curDir__, '../../..'))
 # adding the previous diagnosisutils path to python path
 sys.path.append(diagDir)
-from uv_cdat_code.diagnosisutils.regions import regions
+from diagnosisutils.regions import regions
 from diag_setup.globalconfig import processfilesPath
 import diag_setup.netcdf_settings
 

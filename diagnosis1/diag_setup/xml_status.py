@@ -4,8 +4,8 @@ import sys
 previousDir = os.path.abspath(os.path.join(os.getcwd(), '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-# import xml_data_acces.py from previous directory uv_cdat_code.diagnosisutils
-from uv_cdat_code.diagnosisutils.xml_data_access import GribXmlAccess
+# import xml_data_acces.py from previous directory diagnosisutils
+from diagnosisutils.xml_data_access import GribXmlAccess
 from globalconfig import models
 from varsdict import variables
 

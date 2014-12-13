@@ -10,8 +10,8 @@ __levelDir__ = os.path.dirname(__file__)
 previousDir = os.path.abspath(os.path.join(__levelDir__, '../../..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
-from uv_cdat_code.diagnosisutils.xml_data_access import GribXmlAccess
+from diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.xml_data_access import GribXmlAccess
 from diag_setup.globalconfig import processfilesPath, plotsgraphsPath, models, \
                         climatologies, logpath, plotceofanlsince, plotexcludehour
 from diag_setup.xml_status import getModelAnlFirstLastDate

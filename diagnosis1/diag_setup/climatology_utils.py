@@ -8,7 +8,7 @@ from genutil import statusbar
 previousDir = os.path.abspath(os.path.join(os.getcwd(), '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.timeutils import TimeUtility
 import netcdf_settings
 cdms2.setAutoBounds('on')
 

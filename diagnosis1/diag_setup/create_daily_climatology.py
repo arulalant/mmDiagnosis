@@ -24,8 +24,8 @@ from globalconfig import models, observations, climatologies
 previousDir = os.path.abspath(os.path.join(os.getcwd(), '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-# import xml_data_acces.py from previous directory uv_cdat_code.diagnosisutils
-import uv_cdat_code.diagnosisutils.xml_data_access as xml_data_access
+# import xml_data_acces.py from previous directory diagnosisutils
+import diagnosisutils.xml_data_access as xml_data_access
 
 
 def doClimatology(modelname, modelPath, climPath,

@@ -13,7 +13,7 @@ from diag_setup.globalconfig import processfilesPath, plotsgraphsPath, models, \
                climatologies, logpath, plotceofanlsince, plotceoftinterval, plotexcludehour
 from diag_setup.logsetup import createLog
 from diag_setup.xml_status import getModelAnlFirstLastDate
-from uv_cdat_code.diagnosisutils.timeutils import TimeUtility
+from diagnosisutils.timeutils import TimeUtility
 
 
 __vcsSlow__ = True
