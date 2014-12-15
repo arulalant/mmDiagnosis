@@ -332,19 +332,19 @@ for line in fileobj.readlines():
         # get the uvcdat installed system path
         uvcdat = line[1]
         if not os.path.exists(uvcdat):
-            raise ValueError('The uvcdat path does not exists' % uvcdat)
+            raise ValueError('The uvcdat path %s does not exists' % uvcdat)
 
     elif var.startswith('logpath'):
         # get the logpath
         logpath = line[1]
         if not os.path.exists(logpath):
-            raise ValueError('The log path does not exists' % logpath)
+            raise ValueError('The log path %s does not exists' % logpath)
 
     elif var.startswith('archivepath'):
         # get the logpath
         archivepath = line[1]
         if not os.path.exists(archivepath):
-            raise ValueError('The archive path does not exists' % archivepath)
+            raise ValueError('The archive path %s does not exists' % archivepath)
     
     elif var.startswith('ftppath'):
         # get the ftppath public path 
