@@ -30,7 +30,7 @@ And once one xml object has initiated then through out that program execute sess
 xml_data_access
 ---------------
 
-.. automodule:: xml_data_access
+.. automodule:: diag_utils.xml_data_access
    :members:
    
 
@@ -46,7 +46,7 @@ Here we used inbuilt methods of cdtime and cdutil module of uv-cdat.
 timeutils
 ---------
 
-.. automodule:: timeutils
+.. automodule:: diag_utils.timeutils
    :members:
    
 
@@ -61,7 +61,7 @@ User can control the reference point, scale of arrow marks of the vector plot.
 plot
 ----
 
-.. automodule:: plot
+.. automodule:: diag_utils.plot
    :members:
 
 
