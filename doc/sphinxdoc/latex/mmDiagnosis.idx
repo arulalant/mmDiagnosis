@@ -1,0 +1,80 @@
+\indexentry{xml\_data\_access (module)|hyperpage}{5}
+\indexentry{xml\_data\_access (module)|hyperpage}{5}
+\indexentry{GribXmlAccess (class in xml\_data\_access)|hyperpage}{5}
+\indexentry{closeXmlObjs() (xml\_data\_access.GribXmlAccess method)|hyperpage}{5}
+\indexentry{findPartners() (xml\_data\_access.GribXmlAccess method)|hyperpage}{5}
+\indexentry{getData() (xml\_data\_access.GribXmlAccess method)|hyperpage}{7}
+\indexentry{getDataPartners() (xml\_data\_access.GribXmlAccess method)|hyperpage}{7}
+\indexentry{getMonthAvgData() (xml\_data\_access.GribXmlAccess method)|hyperpage}{10}
+\indexentry{getRainfallData() (xml\_data\_access.GribXmlAccess method)|hyperpage}{10}
+\indexentry{getRainfallDataPartners() (xml\_data\_access.GribXmlAccess method)|hyperpage}{11}
+\indexentry{getXmlPath() (xml\_data\_access.GribXmlAccess method)|hyperpage}{13}
+\indexentry{listvariable() (xml\_data\_access.GribXmlAccess method)|hyperpage}{13}
+\indexentry{timeutils (module)|hyperpage}{13}
+\indexentry{timeutils (module)|hyperpage}{13}
+\indexentry{plot (module)|hyperpage}{14}
+\indexentry{reference\_std\_dev (class in plot)|hyperpage}{14}
+\indexentry{compute\_RMS\_function() (plot.reference\_std\_dev method)|hyperpage}{14}
+\indexentry{vectorPlot() (in module plot)|hyperpage}{14}
+\indexentry{compute\_month\_mean (module)|hyperpage}{15}
+\indexentry{compute\_month\_mean.py (module)|hyperpage}{15}
+\indexentry{genMonthMeanDirs() (in module compute\_month\_mean)|hyperpage}{15}
+\indexentry{genMonthMeanFiles() (in module compute\_month\_mean)|hyperpage}{16}
+\indexentry{compute\_month\_anomaly (module)|hyperpage}{17}
+\indexentry{compute\_month\_anomaly.py (module)|hyperpage}{17}
+\indexentry{genMonthAnomalyDirs() (in module compute\_month\_anomaly)|hyperpage}{17}
+\indexentry{genMonthAnomalyFiles() (in module compute\_month\_anomaly)|hyperpage}{17}
+\indexentry{compute\_month\_fcst\_sys\_error (module)|hyperpage}{18}
+\indexentry{compute\_month\_fcst\_sys\_error.py (module)|hyperpage}{18}
+\indexentry{genMonthFcstSysErrDirs() (in module compute\_month\_fcst\_sys\_error)|hyperpage}{18}
+\indexentry{genMonthFcstSysErrFiles() (in module compute\_month\_fcst\_sys\_error)|hyperpage}{18}
+\indexentry{compute\_season\_mean (module)|hyperpage}{19}
+\indexentry{compute\_season\_mean.py (module)|hyperpage}{19}
+\indexentry{genMeanAnlFcstErrDirs() (in module compute\_season\_mean)|hyperpage}{19}
+\indexentry{genSeasonMeanFiles() (in module compute\_season\_mean)|hyperpage}{19}
+\indexentry{collect\_season\_fcst\_rainfall (module)|hyperpage}{20}
+\indexentry{collect\_season\_fcst\_rainfall.py (module)|hyperpage}{20}
+\indexentry{createSeaonFcstRainfallData() (in module collect\_season\_fcst\_rainfall)|hyperpage}{20}
+\indexentry{compute\_region\_statistical\_score (module)|hyperpage}{21}
+\indexentry{compute\_region\_statistical\_score.py (module)|hyperpage}{21}
+\indexentry{genStatisticalScore() (in module compute\_region\_statistical\_score)|hyperpage}{21}
+\indexentry{genStatisticalScoreDirs() (in module compute\_region\_statistical\_score)|hyperpage}{21}
+\indexentry{compute\_season\_stati\_score\_spatial\_distribution (module)|hyperpage}{21}
+\indexentry{compute\_season\_stati\_score\_spatial\_distribution.py (module)|hyperpage}{21}
+\indexentry{genStatisticalScorePath() (in module compute\_season\_stati\_score\_spatial\_distribution)|hyperpage}{22}
+\indexentry{genStatisticalScoreSpatialDistribution() (in module compute\_season\_stati\_score\_spatial\_distribution)|hyperpage}{22}
+\indexentry{generate\_winds\_plots (module)|hyperpage}{23}
+\indexentry{editVectorPlot() (in module generate\_winds\_plots)|hyperpage}{23}
+\indexentry{genMonthAnomalyDirs() (in module generate\_winds\_plots)|hyperpage}{23}
+\indexentry{genMonthMeanDirs() (in module generate\_winds\_plots)|hyperpage}{24}
+\indexentry{genSeasonFcstSysErrDirs() (in module generate\_winds\_plots)|hyperpage}{24}
+\indexentry{genSeasonMeanDirs() (in module generate\_winds\_plots)|hyperpage}{24}
+\indexentry{genVectorPlots() (in module generate\_winds\_plots)|hyperpage}{24}
+\indexentry{getProcessPath() (in module generate\_winds\_plots)|hyperpage}{25}
+\indexentry{generate\_iso\_plots (module)|hyperpage}{26}
+\indexentry{genIsoFillLinePlots() (in module generate\_iso\_plots)|hyperpage}{26}
+\indexentry{genIsoLinePlots() (in module generate\_iso\_plots)|hyperpage}{26}
+\indexentry{genSeasonFcstSysErrDirs() (in module generate\_iso\_plots)|hyperpage}{26}
+\indexentry{genSeasonMeanDirs() (in module generate\_iso\_plots)|hyperpage}{27}
+\indexentry{generate\_statistical\_score\_bars (module)|hyperpage}{27}
+\indexentry{generate\_statistical\_score\_bars.py (module)|hyperpage}{27}
+\indexentry{genBarDiagrams() (in module generate\_statistical\_score\_bars)|hyperpage}{27}
+\indexentry{genSeasonStatiScoreDirs() (in module generate\_statistical\_score\_bars)|hyperpage}{28}
+\indexentry{generate\_stati\_score\_spatial\_distribution\_plots (module)|hyperpage}{28}
+\indexentry{genIsoFillPlots() (in module generate\_stati\_score\_spatial\_distribution\_plots)|hyperpage}{28}
+\indexentry{genSeasonStatiScoreDirs() (in module generate\_stati\_score\_spatial\_distribution\_plots)|hyperpage}{29}
+\indexentry{ctgfunction (module)|hyperpage}{29}
+\indexentry{accuracy() (in module ctgfunction)|hyperpage}{29}
+\indexentry{bias\_score() (in module ctgfunction)|hyperpage}{30}
+\indexentry{contingency\_table\_2x2() (in module ctgfunction)|hyperpage}{30}
+\indexentry{eds() (in module ctgfunction)|hyperpage}{31}
+\indexentry{ets() (in module ctgfunction)|hyperpage}{31}
+\indexentry{far() (in module ctgfunction)|hyperpage}{32}
+\indexentry{hss() (in module ctgfunction)|hyperpage}{32}
+\indexentry{kss() (in module ctgfunction)|hyperpage}{33}
+\indexentry{logodr() (in module ctgfunction)|hyperpage}{33}
+\indexentry{odr() (in module ctgfunction)|hyperpage}{34}
+\indexentry{orss() (in module ctgfunction)|hyperpage}{34}
+\indexentry{pod() (in module ctgfunction)|hyperpage}{35}
+\indexentry{pofd() (in module ctgfunction)|hyperpage}{35}
+\indexentry{ts() (in module ctgfunction)|hyperpage}{35}
