@@ -1,0 +1,853 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>generate_iso_plots &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for generate_iso_plots</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="c"># setting the absolute path of the previous directory</span>
+<span class="c"># getting the this py module path by __file__ variable</span>
+<span class="c"># pass that __file__ to the os.path.dirname, returns the path of this module</span>
+<span class="n">__diagnosisDir__</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">previousDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__diagnosisDir__</span><span class="p">,</span> <span class="s">&#39;..&#39;</span><span class="p">))</span>
+<span class="c"># adding the previous path to python path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">previousDir</span><span class="p">)</span>
+<span class="c"># importing plot.py, xml_data_acces.py, TimeUtility from previous directory</span>
+<span class="c"># diagnosisutils</span>
+<span class="kn">import</span> <span class="nn">diagnosisutils.plot</span> <span class="kn">as</span> <span class="nn">plot</span>
+<span class="kn">import</span> <span class="nn">diagnosisutils.xml_data_access</span> <span class="kn">as</span> <span class="nn">xml_data_access</span>
+<span class="kn">from</span> <span class="nn">diagnosisutils.timeutils</span> <span class="kn">import</span> <span class="n">TimeUtility</span>
+<span class="kn">from</span> <span class="nn">diagnosisutils.regions</span> <span class="kn">import</span> <span class="n">India2</span>
+<span class="kn">from</span> <span class="nn">diag_setup.globalconfig</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">processfilesPath</span><span class="p">,</span> <span class="n">plotsgraphsPath</span><span class="p">,</span> \
+                               <span class="n">plotLevel</span><span class="p">,</span> <span class="n">seasons</span>
+<span class="kn">from</span> <span class="nn">diag_setup.varsdict</span> <span class="kn">import</span> <span class="n">variables</span><span class="p">,</span> <span class="n">isovars</span>
+<span class="kn">from</span> <span class="nn">diag_setup.gendir</span> <span class="kn">import</span> <span class="n">createDirsIfNotExists</span>
+
+<span class="c"># create time utility object</span>
+<span class="n">timobj</span> <span class="o">=</span> <span class="n">TimeUtility</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="genSeasonMeanDirs"><a class="viewcode-back" href="../diagnosis.html#generate_iso_plots.genSeasonMeanDirs">[docs]</a><span class="k">def</span> <span class="nf">genSeasonMeanDirs</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="n">availableMonths</span><span class="p">,</span> <span class="n">plotLevel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genSeasonMeanDirs`: It should generate the directory hierarichy</span>
+<span class="sd">        structure of season mean in the plotsgraphspath. And calls the</span>
+<span class="sd">        function genIsoLinePlots to make &#39;isoline&#39; plots and save it inside the</span>
+<span class="sd">        appropirate directory, by reading the xml file of the appropirate</span>
+<span class="sd">        process season mean files path.</span>
+
+<span class="sd">    Inputs : modelName is the one of the directories name.</span>
+<span class="sd">             availableMonths is the dictionary which is generated by fully</span>
+<span class="sd">             available months from the timeAxis.</span>
+
+<span class="sd">    ..note:: It should takes the levels which is set in the global config</span>
+<span class="sd">             file and generate the &#39;isoline&#39; plots to those levels only.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 20.09.2011</span>
+<span class="sd">    Updated: 12.12.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">processMeanPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processfilesPath</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="s">&#39;Mean&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">availableMonths</span><span class="p">:</span>
+        <span class="c"># get the months dictionary</span>
+        <span class="n">monthdic</span> <span class="o">=</span> <span class="n">availableMonths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="c"># sort the months in correct order</span>
+        <span class="n">months</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_sortMonths</span><span class="p">(</span><span class="n">monthdic</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">processMeanSeasonPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processMeanPath</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="s">&#39;Season&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">seasonName</span><span class="p">,</span> <span class="n">season</span> <span class="ow">in</span> <span class="n">seasons</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># find out xml time axis months has the seasonal months or not</span>
+            <span class="n">seasonMonths</span> <span class="o">=</span> <span class="p">[</span><span class="n">month</span> <span class="k">for</span> <span class="n">smonth</span> <span class="ow">in</span> <span class="n">season</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">months</span>
+                            <span class="k">if</span> <span class="n">smonth</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">month</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seasonMonths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">season</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&quot;Got the seasonal months for </span><span class="si">%s</span><span class="s"> season&quot;</span> <span class="o">%</span> <span class="n">seasonName</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Seasonal months are not available for </span><span class="si">%s</span><span class="s"> season&quot;</span> <span class="o">%</span> <span class="n">seasonName</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">seasonName</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="n">seasonName</span> <span class="o">=</span> <span class="n">seasonName</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="c"># get the season startdate to access the data</span>
+            <span class="n">seasonStartDate</span> <span class="o">=</span> <span class="n">monthdic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">months</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">proMeanSeasonChildPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processMeanSeasonPath</span><span class="p">,</span> <span class="n">seasonName</span><span class="p">,</span> <span class="s">&#39;Analysis&#39;</span><span class="p">)</span>
+            <span class="c"># Do process if process mean season name directory is exists</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">proMeanSeasonChildPath</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;The process season mean files directories </span><span class="se">\</span>
+<span class="s">                 doesnot exists in the path </span><span class="si">%s</span><span class="s">. So couldnt plot the winds&quot;</span> <span class="o">%</span> \
+                    <span class="n">proMeanSeasonChildPath</span><span class="p">)</span>
+            <span class="c"># get the available files from this directory</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">proMeanSeasonChildPath</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Processed season mean directory is empty in the path&quot;</span><span class="p">,</span> <span class="n">proMeanSeasonChildPath</span>
+                <span class="k">continue</span>
+            <span class="c"># end of if not files:</span>
+            <span class="n">ncfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">xfile</span> <span class="k">for</span> <span class="n">xfile</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">xfile</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.nc&#39;</span><span class="p">)]</span>
+            <span class="c"># make ncfiles as dictionary with key as var name</span>
+            <span class="n">ncfiledic</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">ncfile</span> <span class="ow">in</span> <span class="n">ncfiles</span><span class="p">:</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ncfiledic</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncfile</span>
+            <span class="c"># make memory free</span>
+            <span class="k">del</span> <span class="n">ncfiles</span>
+            <span class="c"># create modelName, Mean, year, Season, seasonName directories</span>
+            <span class="c"># if it is not exists</span>
+            <span class="n">plotSeasonPath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">plotsgraphsPath</span><span class="p">,</span>
+                                                <span class="p">[</span><span class="n">modelName</span><span class="p">,</span> <span class="s">&#39;Mean&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span>
+                                                   <span class="s">&#39;Season&#39;</span><span class="p">,</span> <span class="n">seasonName</span><span class="p">])</span>
+            <span class="c"># get the variable name from the global &#39;vars.txt&#39;</span>
+            <span class="c"># of isovars</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">isovars</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="c"># skipping empty short_var</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;tmp&#39;</span><span class="p">:</span>
+                    <span class="n">plotName</span> <span class="o">=</span> <span class="s">&#39;TEMPERATURE&#39;</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;hum&#39;</span><span class="p">:</span>
+                    <span class="n">plotName</span> <span class="o">=</span> <span class="s">&#39;HUMIDITY&#39;</span>
+                <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;mslp&#39;</span><span class="p">:</span>
+                    <span class="n">plotName</span> <span class="o">=</span> <span class="s">&#39;MEAN_SEA_LEVEL_PRESSURE&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">plotName</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="c"># create plot name directory if it is not exists</span>
+                <span class="n">plotNamePath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">plotSeasonPath</span><span class="p">,</span>
+                                                           <span class="n">plotName</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">plotNamePath</span><span class="p">):</span>
+                    <span class="c"># directory is empty. So calling below function to</span>
+                    <span class="c"># create all IsoLine plot image files in mean</span>
+                    <span class="c"># directory of plotsgraphspath.</span>
+                    <span class="n">varName</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">modelName</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">model_var</span>
+                    <span class="k">if</span> <span class="n">varName</span><span class="p">:</span>
+                        <span class="n">ncfile</span> <span class="o">=</span> <span class="n">ncfiledic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+                        <span class="k">print</span> <span class="n">varName</span><span class="p">,</span> <span class="n">ncfile</span><span class="p">,</span> <span class="n">ncfiledic</span>
+                        <span class="c"># get the xml file path</span>
+                        <span class="n">ncPath</span> <span class="o">=</span> <span class="n">proMeanSeasonChildPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">ncfile</span>
+                        <span class="n">genIsoLinePlots</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ncPath</span><span class="p">,</span>
+                              <span class="n">outpath</span> <span class="o">=</span> <span class="n">plotNamePath</span><span class="p">,</span> <span class="n">month</span> <span class="o">=</span> <span class="n">seasonName</span><span class="p">,</span>
+                              <span class="n">date</span> <span class="o">=</span> <span class="n">seasonStartDate</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">plotLevel</span><span class="p">,</span>
+                              <span class="n">region</span> <span class="o">=</span> <span class="n">India2</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                    <span class="c"># directory is non empty. Have to check either all</span>
+                    <span class="c"># vars plots image files are exists or not.</span>
+                <span class="c"># end of if not os.listdir(plotNamePath):</span>
+            <span class="c"># end of for key in isovars:</span>
+        <span class="c"># end of for seasonName, season in seasons.iteritems():</span>
+    <span class="c"># end of for year in availableMonths:</span>
+    <span class="k">print</span> <span class="s">&quot;Done! creation of isoLine plots of season mean for model </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">modelName</span>
+<span class="c"># end of def genSeasonMeanDirs(modelName, availableMonths):</span>
+</div>
+<div class="viewcode-block" id="genSeasonFcstSysErrDirs"><a class="viewcode-back" href="../diagnosis.html#generate_iso_plots.genSeasonFcstSysErrDirs">[docs]</a><span class="k">def</span> <span class="nf">genSeasonFcstSysErrDirs</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="n">modelHour</span><span class="p">,</span> <span class="n">availableMonths</span><span class="p">,</span> <span class="n">plotLevel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genSeasonFcstSysErrDirs`: It should generate the directory hierarichy</span>
+<span class="sd">        structure of season fcstsyserr in the plotsgraphspath. And calls the</span>
+<span class="sd">        function genIsoFillLinePlots to make &#39;isofillline&#39; plots and save it</span>
+<span class="sd">        inside the appropirate directory, by reading the xml file of the</span>
+<span class="sd">        appropirate process season fcstsyserr files path.</span>
+
+<span class="sd">        It should plot for all the vars in the &#39;isovars&#39; which has set in the</span>
+<span class="sd">        global &#39;vars.txt&#39; file.</span>
+
+<span class="sd">        To plot isoFillLinePlot, this function should find out the isoLevels</span>
+<span class="sd">        for all the variables of all the levels and all the hours.</span>
+
+<span class="sd">        isoLevels : It is a range of levels which is from the min (of data of</span>
+<span class="sd">            all the hours and levels), to the max (of data of all the hours and</span>
+<span class="sd">            levels) to set the levels in the vcs plot and legend.</span>
+
+<span class="sd">    Inputs : modelName is the one of the directories name.</span>
+<span class="sd">             modelHour is the one of the directories name.</span>
+<span class="sd">             availableMonths is the dictionary which is generated by fully</span>
+<span class="sd">             available months from the timeAxis.</span>
+
+<span class="sd">    ..note:: It should takes the levels which is set in the global config</span>
+<span class="sd">             file, and generate the &#39;IsoFillLine&#39; plots to those levels only.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 20.09.2011</span>
+<span class="sd">    Updated: 12.12.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">processFcstSysErrPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processfilesPath</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="s">&#39;FcstSysErr&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">availableMonths</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="c"># get the months dictionary</span>
+        <span class="n">monthdic</span> <span class="o">=</span> <span class="n">availableMonths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="c"># sort the months in correct order</span>
+        <span class="n">months</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_sortMonths</span><span class="p">(</span><span class="n">monthdic</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">processFcstSeasonPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processFcstSysErrPath</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="s">&#39;Season&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">seasonName</span><span class="p">,</span> <span class="n">season</span> <span class="ow">in</span> <span class="n">seasons</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># find out xml time axis months has the seasonal months or not</span>
+            <span class="n">seasonMonths</span> <span class="o">=</span> <span class="p">[</span><span class="n">month</span> <span class="k">for</span> <span class="n">smonth</span> <span class="ow">in</span> <span class="n">season</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">months</span>
+                            <span class="k">if</span> <span class="n">smonth</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">month</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seasonMonths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">season</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&quot;Got the seasonal months for </span><span class="si">%s</span><span class="s"> season&quot;</span> <span class="o">%</span> <span class="n">seasonName</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Seasonal months are not available for </span><span class="si">%s</span><span class="s"> season&quot;</span> <span class="o">%</span> <span class="n">seasonName</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">seasonName</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="n">seasonName</span> <span class="o">=</span> <span class="n">seasonName</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="c"># get the season startdate to access the data</span>
+            <span class="n">seasonStartDate</span> <span class="o">=</span> <span class="n">monthdic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">months</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">proFcstSeasonChildPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processFcstSeasonPath</span><span class="p">,</span> <span class="n">seasonName</span><span class="p">)</span>
+            <span class="c">##################################################################</span>
+            <span class="c">#### process begins to find out the max &amp; min of all the fcst</span>
+            <span class="c">#### hours data to set the isolevels in the legends of</span>
+            <span class="c">#### isofillline plots</span>
+            <span class="c"># need to find out the max, min of all the hours, all the levels data</span>
+            <span class="n">isovarlevels</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">isovars</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="c"># skipping the empty short_var</span>
+                    <span class="k">continue</span>
+                <span class="c"># get the variable name from the global &#39;vars.txt&#39;</span>
+                <span class="c"># of isovars</span>
+                <span class="n">varName</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">modelName</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">model_var</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">varName</span><span class="p">:</span>
+                    <span class="c"># skipping the empty varName</span>
+                    <span class="k">continue</span>
+                <span class="k">print</span> <span class="s">&quot;Calculating the isoLevels for (</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">varName</span><span class="p">)</span>
+                <span class="c"># find out the max and min of all the hours of variable</span>
+
+                <span class="k">for</span> <span class="n">hr</span> <span class="ow">in</span> <span class="n">modelHour</span><span class="p">:</span>
+                    <span class="c"># get the process fcstsyserr hour path</span>
+                    <span class="n">proFcstHrPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">proFcstSeasonChildPath</span><span class="p">,</span> <span class="n">hr</span><span class="p">)</span>
+                    <span class="c"># Do process if process fcstsyserr hour directory is exists</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">proFcstHrPath</span><span class="p">):</span>
+                        <span class="k">print</span> <span class="s">&quot;the </span><span class="si">%s</span><span class="s"> hour process path doesnot exist in the </span><span class="se">\</span>
+<span class="s">                            path </span><span class="si">%s</span><span class="s">. So skipping find max,min of season &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hr</span><span class="p">,</span> <span class="n">proFcstHrPath</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="c"># get the available files from this directory</span>
+                    <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">proFcstHrPath</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
+                        <span class="c"># skipping the empty dir</span>
+                        <span class="k">continue</span>
+                    <span class="c"># get the nc file name</span>
+                    <span class="n">ncfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">xfile</span> <span class="k">for</span> <span class="n">xfile</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">xfile</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.nc&#39;</span><span class="p">)]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">ncfiles</span><span class="p">:</span>
+                        <span class="c"># skipping the empty ncfiles</span>
+                        <span class="k">continue</span>
+                    <span class="c"># make ncfiles as dictionary with key as var name</span>
+                    <span class="n">ncfiledic</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">for</span> <span class="n">ncfile</span> <span class="ow">in</span> <span class="n">ncfiles</span><span class="p">:</span>
+                        <span class="n">var</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">ncfiledic</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncfile</span>
+                    <span class="c"># make memory free</span>
+                    <span class="k">del</span> <span class="n">ncfiles</span>
+                    <span class="c"># get the nc file path</span>
+                    <span class="n">ncfile</span> <span class="o">=</span> <span class="n">ncfiledic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+                    <span class="n">ncPath</span> <span class="o">=</span> <span class="n">proFcstHrPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">ncfile</span>
+                    <span class="c"># open the ncfile</span>
+                    <span class="n">F</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ncPath</span><span class="p">)</span>
+                    <span class="n">availableLevels</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">varName</span><span class="p">]</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+                    <span class="c"># making None list if availableLevels is none.</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">availableLevels</span><span class="p">:</span>
+                        <span class="n">availableLevels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">plotLevel</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+                        <span class="k">print</span> <span class="s">&quot;plotlevl is &#39;all&#39;. So it takes all the </span><span class="se">\</span>
+<span class="s">                                availableLevels  </span><span class="si">%s</span><span class="s"> to calculate the </span><span class="se">\</span>
+<span class="s">                                isoLevels&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">availableLevels</span><span class="p">)</span>
+                        <span class="n">plotLevel</span> <span class="o">=</span> <span class="n">availableLevels</span>
+                    <span class="c"># end of if plotLevel == &#39;all&#39;:</span>
+
+                    <span class="c"># To find out the max of all the data including timeAxis</span>
+                    <span class="c"># &amp; levelAxis.we can easily do that by MV2_array.max().</span>
+                    <span class="c"># But due to efficiency of RAM memory while retriving</span>
+                    <span class="c"># the whole seasonal data, we are splitting it into</span>
+                    <span class="c"># levels to get the max of that level data. Finally</span>
+                    <span class="c"># find out the max of all the max of all the levels.</span>
+                    <span class="c"># Samething procedure for min also.</span>
+                    <span class="n">maxcollection</span><span class="p">,</span> <span class="n">mincollection</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">plotLevel</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">lev</span><span class="p">:</span>
+                            <span class="n">lev</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">availableLevels</span><span class="p">:</span>
+                                <span class="c"># extract region part alone with particular level</span>
+                                <span class="n">VAR</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">India2</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c"># extract region part alone without level</span>
+                            <span class="n">VAR</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">India2</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="c"># end of if lev:</span>
+                        <span class="n">maxcollection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VAR</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+                        <span class="n">mincollection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">VAR</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+                    <span class="c"># end of for lev in plotLevel:</span>
+                <span class="n">F</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="c"># end of for hr in modelHour:</span>
+                <span class="c"># find out the max, min of the whole data (including all the</span>
+                <span class="c"># hours and levels)</span>
+                <span class="n">isomax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">maxcollection</span><span class="p">)</span>
+                <span class="n">isomin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">mincollection</span><span class="p">)</span>
+                <span class="c"># find out the diff of max &amp; min, and then divide by 10.0 to make</span>
+                <span class="c"># 10 iso levels. So we need to set 10 isocolors.</span>
+                <span class="n">cal</span> <span class="o">=</span> <span class="p">(</span><span class="n">isomax</span> <span class="o">-</span> <span class="n">isomin</span><span class="p">)</span> <span class="o">/</span> <span class="mf">10.0</span>
+                <span class="k">if</span> <span class="n">cal</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">diff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
+
+                    <span class="k">print</span> <span class="s">&#39;diff=&#39;</span><span class="p">,</span> <span class="n">diff</span>
+
+                    <span class="c">#isomax =</span>
+                    <span class="c"># get the isoLevels. This isoLevels are fixed one for the same variable</span>
+                    <span class="c"># data for all the levels.</span>
+                    <span class="c"># generate the iso levels using numpy.arange (for float range)</span>
+<span class="c">#                    isoLevels1 = list(numpyrange(isomin, isomax + diff, diff))</span>
+<span class="c">#                    isoLevels=numpy.round(numpy.array(isoLevels1), 2)</span>
+<span class="c">#                    isoLevels=list(isoLevels)</span>
+                    <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+                    <span class="k">print</span> <span class="n">isoLevels</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">diff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
+<span class="c">#                    isoLevels = range(int(isomin), int(isomax) + diff, diff)</span>
+                    <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+                <span class="c"># end of if cal &lt; 1:</span>
+                <span class="n">isovarlevels</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">isoLevels</span>
+            <span class="c"># end of for key in isovars:</span>
+            <span class="c">#### process ends to find out the max &amp; min of all the fcst</span>
+            <span class="c">#### hours data to set the isolevels in the legends of</span>
+            <span class="c">#### isofillline plots</span>
+            <span class="c">##################################################################</span>
+
+            <span class="c"># plotting isofillline images for all hours</span>
+            <span class="k">for</span> <span class="n">hr</span> <span class="ow">in</span> <span class="n">modelHour</span><span class="p">:</span>
+                <span class="c"># get the process fcstsyserr hour path</span>
+                <span class="n">proFcstHrPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">proFcstSeasonChildPath</span><span class="p">,</span> <span class="n">hr</span><span class="p">)</span>
+                <span class="c"># Do process if process fcstsyserr hour directory is exists</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">proFcstHrPath</span><span class="p">):</span>
+                    <span class="k">print</span> <span class="s">&quot;the </span><span class="si">%s</span><span class="s"> hour process path doesnot exist in the </span><span class="se">\</span>
+<span class="s">                            path </span><span class="si">%s</span><span class="s">. So skipping isofillline plots &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hr</span><span class="p">,</span> <span class="n">proFcstHrPath</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="c"># get the available files from this directory</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">proFcstHrPath</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                    <span class="c"># process empty directory. need to log about this.</span>
+                    <span class="c"># process files cant be empty, very less chance.</span>
+                <span class="c"># end of if not files:</span>
+                <span class="c"># get the nc file name</span>
+                <span class="n">ncfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">xfile</span> <span class="k">for</span> <span class="n">xfile</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">xfile</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.nc&#39;</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ncfiles</span><span class="p">:</span>
+                    <span class="c"># skipping the empty ncfiles</span>
+                    <span class="k">continue</span>
+                <span class="c"># make ncfiles as dictionary with key as var name</span>
+                <span class="n">ncfiledic</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">ncfile</span> <span class="ow">in</span> <span class="n">ncfiles</span><span class="p">:</span>
+                    <span class="n">var</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">ncfiledic</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncfile</span>
+                <span class="c"># make memory free</span>
+                <span class="k">del</span> <span class="n">ncfiles</span>
+                <span class="c"># create modelName directory if it is not exists</span>
+                <span class="n">plotSeasonHrPath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">plotsgraphsPath</span><span class="p">,</span>
+                                         <span class="p">[</span><span class="n">modelName</span><span class="p">,</span> <span class="s">&#39;FcstSysErr&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span>
+                                              <span class="s">&#39;Season&#39;</span><span class="p">,</span> <span class="n">seasonName</span><span class="p">,</span> <span class="n">hr</span><span class="p">])</span>
+                <span class="c"># get the variable name from the global &#39;vars.txt&#39;</span>
+                <span class="c"># of isovars</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">isovars</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">:</span>
+                        <span class="c"># skipping empty short_var</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;tmp&#39;</span><span class="p">:</span>
+                        <span class="n">plotName</span> <span class="o">=</span> <span class="s">&#39;TEMPERATURE&#39;</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;hum&#39;</span><span class="p">:</span>
+                        <span class="n">plotName</span> <span class="o">=</span> <span class="s">&#39;HUMIDITY&#39;</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;mslp&#39;</span><span class="p">:</span>
+                        <span class="n">plotName</span> <span class="o">=</span> <span class="s">&#39;MEAN_SEA_LEVEL_PRESSURE&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">plotName</span> <span class="o">=</span> <span class="n">key</span>
+                    <span class="c"># create plot name directory if it is not exists</span>
+                    <span class="n">plotNamePath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">plotSeasonHrPath</span><span class="p">,</span>
+                                                                 <span class="n">plotName</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">plotNamePath</span><span class="p">):</span>
+                        <span class="c"># directory is empty. So calling below function</span>
+                        <span class="c"># to create all isofillline plot image files</span>
+                        <span class="c"># in fcstsyserr directory of plotsgraphspath.</span>
+                        <span class="n">varName</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">modelName</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">model_var</span>
+                        <span class="n">isolevels</span> <span class="o">=</span> <span class="n">isovarlevels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">varName</span><span class="p">:</span>
+                            <span class="c"># get the nc file path</span>
+                            <span class="n">ncfile</span> <span class="o">=</span> <span class="n">ncfiledic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+                            <span class="n">ncPath</span> <span class="o">=</span> <span class="n">proFcstHrPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">ncfile</span>
+                            <span class="n">genIsoFillLinePlots</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">isolevels</span><span class="p">,</span>
+                                    <span class="n">path</span> <span class="o">=</span> <span class="n">ncPath</span><span class="p">,</span> <span class="n">outpath</span> <span class="o">=</span> <span class="n">plotNamePath</span><span class="p">,</span>
+                                <span class="n">month</span> <span class="o">=</span> <span class="n">seasonName</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">seasonStartDate</span><span class="p">,</span>
+                                <span class="n">level</span> <span class="o">=</span> <span class="n">plotLevel</span><span class="p">,</span> <span class="n">region</span> <span class="o">=</span> <span class="n">India2</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">print</span> <span class="s">&quot;Skipping </span><span class="si">%s</span><span class="s"> isovars, since its </span><span class="se">\</span>
+<span class="s">                                    model_var is empty &quot;</span> <span class="o">%</span> <span class="n">key</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                        <span class="c"># directory is non empty. Have to check either</span>
+                        <span class="c"># all vars plots image files are exists or not</span>
+                    <span class="c"># end of if not os.listdir(plotNamePath):</span>
+                <span class="c"># end of for key in isovars:</span>
+            <span class="c"># end of for hr in modelHour:</span>
+        <span class="c"># end of for seasonName, season in seasons.iteritems():</span>
+    <span class="c"># end of for year in availableMonths:</span>
+    <span class="k">print</span> <span class="s">&quot;Done! creation of isoFillLine plots of season fcstsyserr for model </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">modelName</span>
+<span class="c"># end of def genSeasonFcstSysErrDirs(modelName, modelHour, availableMonths):</span>
+</div>
+<div class="viewcode-block" id="genIsoLinePlots"><a class="viewcode-back" href="../diagnosis.html#generate_iso_plots.genIsoLinePlots">[docs]</a><span class="k">def</span> <span class="nf">genIsoLinePlots</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">xmlpath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">outpath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                                  <span class="n">month</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+                          <span class="n">region</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">svg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genIsoLinePlots`: It should generate the isoLine plots in</span>
+<span class="sd">            vcs background and save it as png(by default) inside the outpath,</span>
+<span class="sd">            with isoLevels (find out by this method) and isoColors (default).</span>
+<span class="sd">    Inputs : var is the variable name.</span>
+<span class="sd">             key to identify, it is which variable to make plot name.</span>
+<span class="sd">             xmlpath is the xml file absolute path.</span>
+<span class="sd">             path is the nc file absolute path.</span>
+<span class="sd">             pass any one (path or xmlpath)</span>
+
+<span class="sd">             outpath is the absolute path, where the generated plots should be</span>
+<span class="sd">             stored. By default, it is None. It means, it should save in the</span>
+<span class="sd">             current working directory itself.</span>
+<span class="sd">             level is either single level, or list of levels or &#39;all&#39;.</span>
+<span class="sd">             &#39;all&#39; means, it takes all the availableLevels from the variables.</span>
+<span class="sd">             level value must be int, float only. Not be string, other than</span>
+<span class="sd">             &#39;all&#39; keyword.</span>
+<span class="sd">             region is the region variable which should cut particular region</span>
+<span class="sd">             shape from the global data. By default it is None, i.e. takes</span>
+<span class="sd">             global data region itself.</span>
+
+<span class="sd">             svg is the flag. If flag is set, then the vector plot should be</span>
+<span class="sd">             saved as svg formate. By default it is 0.</span>
+
+<span class="sd">             png is the flag. If flag is set, then the vector plot should be</span>
+<span class="sd">             saved as png formate. By default it is 1.</span>
+
+<span class="sd">     ..note:: This function should find out the isoLevels to set in the</span>
+<span class="sd">         isoline plot and its legend in vcs. IsoLevels is the range of min and</span>
+<span class="sd">         max of all the levels data min and max.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 21.09.2011</span>
+<span class="sd">    Updated: 12.12.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">no</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+        <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">xmlpath</span><span class="p">)</span>
+        <span class="n">availableLevels</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">xmlpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">filelist</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;analysis&#39;</span><span class="p">:</span>
+            <span class="n">seamon</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">no</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">availableLevels</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+        <span class="n">filelist</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">xmlpath</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span><span class="p">(</span><span class="s">&quot;you must pass either xmlpath or path&quot;</span><span class="p">)</span>
+
+    <span class="c"># making None list if availableLevels is none.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">availableLevels</span><span class="p">:</span>
+        <span class="n">availableLevels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">&#39;analysis&#39;</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+        <span class="n">processname</span> <span class="o">=</span> <span class="s">&#39;MEAN ANALYSIS&#39;</span>
+    <span class="k">elif</span> <span class="s">&#39;fcstsyserr&#39;</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+        <span class="n">processname</span> <span class="o">=</span> <span class="s">&#39;FCST SYS ERR&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">processname</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="n">seamon</span> <span class="o">=</span> <span class="n">month</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="c"># modelname</span>
+    <span class="n">startname</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">no</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">startname</span> <span class="o">=</span> <span class="n">startname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c"># hour</span>
+    <span class="n">hr</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">hr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;hr&#39;</span><span class="p">):</span>
+        <span class="c"># get the forecast hour from the file name</span>
+        <span class="n">hr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">hr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;hr&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">hr</span> <span class="o">/</span> <span class="mf">24.0</span>
+        <span class="c"># keep as float if day is not 24&#39;s multiple</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hr</span> <span class="o">%</span> <span class="mf">24.0</span><span class="p">:</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+        <span class="n">startname</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="s">&#39;D0&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+    <span class="c"># end of if hr.endswith(&#39;hr&#39;):</span>
+    <span class="c"># add key name</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;tmp&#39;</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39;TEMPERATURE&#39;</span>
+    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;hum&#39;</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39;HUMIDITY&#39;</span>
+    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;mslp&#39;</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39;MEAN SEA LEVEL PRESSURE&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="c"># add season/month name, year</span>
+    <span class="n">endname</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">seamon</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">2</span> <span class="o">+</span> <span class="n">no</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">level</span><span class="p">:</span>
+        <span class="c"># if level has passed the over write the global plotLevel</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">plotLevel</span> <span class="o">=</span> <span class="p">[</span><span class="n">level</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="n">plotLevel</span> <span class="o">=</span> <span class="n">level</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plotLevel</span> <span class="o">=</span> <span class="s">&#39;all&#39;</span>
+    <span class="k">if</span> <span class="n">plotLevel</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;plotlevl is &#39;all&#39;. So it takes all the availableLevels </span><span class="si">%s</span><span class="s"> </span><span class="se">\</span>
+<span class="s">                to plot wind vectors&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">availableLevels</span><span class="p">)</span>
+        <span class="n">plotLevel</span> <span class="o">=</span> <span class="n">availableLevels</span>
+        <span class="k">print</span> <span class="n">plotLevel</span>
+
+    <span class="c"># default color list for 11 isoLevels including mid(0) of isoLevels</span>
+    <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">166</span><span class="p">,</span> <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">210</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+    <span class="c">#[22, 247, 244, 243, 240, 253, 245, 248, 242]</span>
+    <span class="c">#</span>
+
+    <span class="c"># defining the local function to avoid the repeat the code</span>
+    <span class="k">def</span> <span class="nf">doIsoLinePlot</span><span class="p">(</span><span class="n">VAR</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span> <span class="n">plotname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">):</span>
+        <span class="c"># plotting the extracted VAR by finding its levels from it.</span>
+        <span class="c"># find out the max, min of the data of this level</span>
+        <span class="n">isomax</span> <span class="o">=</span> <span class="n">VAR</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">isomin</span> <span class="o">=</span> <span class="n">VAR</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="c"># find out the diff of max &amp; min, and then divide by 10.0 to make</span>
+        <span class="c"># 10 iso levels. So we need to set 10 isocolors.</span>
+        <span class="n">cal</span> <span class="o">=</span> <span class="p">(</span><span class="n">isomax</span> <span class="o">-</span> <span class="n">isomin</span><span class="p">)</span> <span class="o">/</span> <span class="mf">10.0</span>
+        <span class="k">if</span> <span class="n">cal</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
+            <span class="n">diff</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="c"># get the isoLevels. This isoLevels are fixed one for the same variable</span>
+            <span class="c"># data for all the levels.</span>
+            <span class="c"># generate the iso levels using numpy.arange (for float range)</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">isomin</span><span class="p">,</span> <span class="n">isomax</span> <span class="o">+</span> <span class="n">diff</span><span class="p">,</span> <span class="n">diff</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cal</span><span class="p">)</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">isomin</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">isomax</span><span class="p">)</span> <span class="o">+</span> <span class="n">diff</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Plotting IsoLine : &quot;</span><span class="p">,</span> <span class="n">plotname</span>
+        <span class="n">plot</span><span class="o">.</span><span class="n">isoLinePlot</span><span class="p">(</span><span class="n">VAR</span><span class="p">,</span> <span class="n">isoLevels</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span> <span class="n">plotname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">)</span>
+        <span class="c"># free memory</span>
+        <span class="k">del</span> <span class="n">VAR</span>
+    <span class="c"># end of def doIsoLinePlot():</span>
+
+    <span class="k">for</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">plotLevel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lev</span><span class="p">:</span>
+            <span class="n">lev</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">availableLevels</span><span class="p">:</span>
+                <span class="n">plotname</span> <span class="o">=</span> <span class="n">startname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">processname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">lev</span><span class="p">))</span>
+                <span class="n">plotname</span> <span class="o">+=</span> <span class="s">&#39;hPa&#39;</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">endname</span>
+                <span class="k">if</span> <span class="n">region</span><span class="p">:</span>
+                    <span class="c"># extract the data w.r.t region, time &amp; level</span>
+                    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># extract the data w.r.t time &amp; level</span>
+                    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c"># calling the local function to plot for all the levels</span>
+                <span class="n">doIsoLinePlot</span><span class="p">(</span><span class="n">VAR</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span> <span class="n">plotname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Skipping IsoLine plot for </span><span class="si">%s</span><span class="s"> level of plotLevel, since </span><span class="se">\</span>
+<span class="s">                       it is not available in the variable&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># level is None. i.e. for some variable doesnot have level axis.</span>
+            <span class="c"># eg. mslp. So here get the data without passing level.</span>
+            <span class="n">plotname</span> <span class="o">=</span> <span class="n">startname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">processname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">endname</span>
+            <span class="k">if</span> <span class="n">region</span><span class="p">:</span>
+                <span class="c"># extract the data w.r.t region, time</span>
+                <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># extract the data w.r.t time</span>
+                <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c"># calling the local function to plot for all the levels</span>
+            <span class="n">doIsoLinePlot</span><span class="p">(</span><span class="n">VAR</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span> <span class="n">plotname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">)</span>
+        <span class="c"># end of if lev:</span>
+    <span class="c"># end of for lev in plotLevel:</span>
+    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+        <span class="n">xmlobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c"># end of def genIsoPlots(...):</span>
+</div>
+<div class="viewcode-block" id="genIsoFillLinePlots"><a class="viewcode-back" href="../diagnosis.html#generate_iso_plots.genIsoFillLinePlots">[docs]</a><span class="k">def</span> <span class="nf">genIsoFillLinePlots</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">isoLevels</span><span class="p">,</span> <span class="n">xmlpath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                        <span class="n">outpath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s">&#39;all&#39;</span><span class="p">,</span>
+                             <span class="n">region</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">svg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genIsoFillLinePlots`: It should generate the isoFillLine plots in</span>
+<span class="sd">            vcs background and save it as png(by default) inside the outpath,</span>
+<span class="sd">            with isoLevels (passed by user) and isoColors (default).</span>
+<span class="sd">    Inputs : var is the variable name.</span>
+<span class="sd">             key to identify, it is which variable to make plot name.</span>
+<span class="sd">             isoLevels is the levels to plot isoFillLine and set the legend</span>
+<span class="sd">             levels in vcs.</span>
+<span class="sd">             xmlpath is the xml file absolute path.</span>
+<span class="sd">             path is the nc file absolute path.</span>
+<span class="sd">             pass any one (path or xmlpath)</span>
+
+<span class="sd">             outpath is the absolute path, where the generated plots should be</span>
+<span class="sd">             stored. By default, it is None. It means, it should save in the</span>
+<span class="sd">             current working directory itself.</span>
+<span class="sd">             level is either single level, or list of levels or &#39;all&#39;.</span>
+<span class="sd">             &#39;all&#39; means, it takes all the availableLevels from the variables.</span>
+<span class="sd">             level value must be int, float only. Not be string, other than</span>
+<span class="sd">             &#39;all&#39; keyword.</span>
+<span class="sd">             region is the region variable which should cut particular region</span>
+<span class="sd">             shape from the global data. By default it is None, i.e. takes</span>
+<span class="sd">             global data region itself.</span>
+
+<span class="sd">             svg is the flag. If flag is set, then the vector plot should be</span>
+<span class="sd">             saved as svg formate. By default it is 0.</span>
+
+<span class="sd">             png is the flag. If flag is set, then the vector plot should be</span>
+<span class="sd">             saved as png formate. By default it is 1.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 21.09.2011</span>
+<span class="sd">    Updated: 12.12.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">no</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+        <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">xmlpath</span><span class="p">)</span>
+        <span class="n">availableLevels</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">xmlpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">filelist</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;analysis&#39;</span><span class="p">:</span>
+            <span class="n">no</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">path</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">availableLevels</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+        <span class="n">filelist</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">xmlpath</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span><span class="p">(</span><span class="s">&quot;you must pass either xmlpath or path&quot;</span><span class="p">)</span>
+    <span class="c"># making None list if availableLevels is none.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">availableLevels</span><span class="p">:</span>
+        <span class="n">availableLevels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s">&#39;analysis&#39;</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+        <span class="n">processname</span> <span class="o">=</span> <span class="s">&#39;MEAN ANALYSIS&#39;</span>
+    <span class="k">elif</span> <span class="s">&#39;fcstsyserr&#39;</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+        <span class="n">processname</span> <span class="o">=</span> <span class="s">&#39;FCST SYS ERR&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">processname</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="n">seamon</span> <span class="o">=</span> <span class="n">month</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="c"># modelname</span>
+    <span class="n">startname</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">1</span> <span class="o">+</span> <span class="n">no</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">startname</span> <span class="o">=</span> <span class="n">startname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c"># hour</span>
+    <span class="n">hr</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">hr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;hr&#39;</span><span class="p">):</span>
+        <span class="c"># get the forecast hour from the file name</span>
+        <span class="n">hr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">hr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;hr&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">hr</span> <span class="o">/</span> <span class="mf">24.0</span>
+        <span class="c"># keep as float if day is not 24&#39;s multiple</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hr</span> <span class="o">%</span> <span class="mf">24.0</span><span class="p">:</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+        <span class="n">startname</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="s">&#39;D0&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+    <span class="c"># end of if hr.endswith(&#39;hr&#39;):</span>
+    <span class="c"># add key name</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;tmp&#39;</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39;TEMPERATURE&#39;</span>
+    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;hum&#39;</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39;HUMIDITY&#39;</span>
+    <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s">&#39;mslp&#39;</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39;MEAN SEA LEVEL PRESSURE&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">endname</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="c"># add season/month name, year</span>
+    <span class="n">endname</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">seamon</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">filelist</span><span class="p">[</span><span class="mi">2</span> <span class="o">+</span> <span class="n">no</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">level</span><span class="p">:</span>
+        <span class="c"># if level has passed the over write the global plotLevel</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">plotLevel</span> <span class="o">=</span> <span class="p">[</span><span class="n">level</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="n">plotLevel</span> <span class="o">=</span> <span class="n">level</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plotLevel</span> <span class="o">=</span> <span class="s">&#39;all&#39;</span>
+    <span class="k">if</span> <span class="n">plotLevel</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;plotlevl is &#39;all&#39;. So it takes all the availableLevels </span><span class="si">%s</span><span class="s"> </span><span class="se">\</span>
+<span class="s">                to plot wind vectors&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">availableLevels</span><span class="p">)</span>
+        <span class="n">plotLevel</span> <span class="o">=</span> <span class="n">availableLevels</span>
+
+    <span class="c"># default color list for 11 isoLevels including mid(0) of isoLevels</span>
+    <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">166</span><span class="p">,</span> <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">210</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+    <span class="c">#[22, 247, 244, 243, 240, 253, 245, 248, 242]</span>
+    
+
+
+    <span class="k">for</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">plotLevel</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lev</span><span class="p">:</span>
+            <span class="n">lev</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">availableLevels</span><span class="p">:</span>
+                <span class="n">plotname</span> <span class="o">=</span> <span class="n">startname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">processname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">lev</span><span class="p">))</span>
+                <span class="n">plotname</span> <span class="o">+=</span> <span class="s">&#39;hPa&#39;</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">endname</span>
+                <span class="k">if</span> <span class="n">region</span><span class="p">:</span>
+                    <span class="c"># extract the data w.r.t region, time &amp; level</span>
+                    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># extract the data w.r.t time &amp; level</span>
+                    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">level</span> <span class="o">=</span> <span class="n">lev</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">print</span> <span class="s">&quot;Plotting IsoFillLine : &quot;</span><span class="p">,</span> <span class="n">plotname</span>
+                <span class="n">plot</span><span class="o">.</span><span class="n">isoFillLinePlot</span><span class="p">(</span><span class="n">VAR</span><span class="p">,</span> <span class="n">isoLevels</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span> <span class="n">plotname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">)</span>
+                <span class="c"># free memory</span>
+                <span class="k">del</span> <span class="n">VAR</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Skipping IsoLine plot for </span><span class="si">%s</span><span class="s"> level of plotLevel, since </span><span class="se">\</span>
+<span class="s">                       it is not available in the variable&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">lev</span><span class="p">)</span>
+            <span class="c"># end of if lev in availableLevels:</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># level is None. i.e. for some variable doesnot have level axis.</span>
+            <span class="c"># eg. mslp. So here get the data without passing level.</span>
+            <span class="n">plotname</span> <span class="o">=</span> <span class="n">startname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">processname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">endname</span>
+            <span class="k">if</span> <span class="n">region</span><span class="p">:</span>
+                <span class="c"># extract the data w.r.t region, time</span>
+                <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">region</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># extract the data w.r.t time</span>
+                <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">VAR</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="n">date</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;Plotting IsoFillLine : &quot;</span><span class="p">,</span> <span class="n">plotname</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">isoFillLinePlot</span><span class="p">(</span><span class="n">VAR</span><span class="p">,</span> <span class="n">isoLevels</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span> <span class="n">plotname</span><span class="p">,</span> <span class="n">outpath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">)</span>
+            <span class="c"># free memory</span>
+            <span class="k">del</span> <span class="n">VAR</span>
+        <span class="c"># end of if lev:</span>
+    <span class="k">if</span> <span class="n">xmlpath</span><span class="p">:</span>
+        <span class="n">xmlobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c"># end of def genIsoFillLinePlots(...):</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">for</span> <span class="n">Model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">xml_data_access</span><span class="o">.</span><span class="n">GribXmlAccess</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="c"># get the model variable name from the global &#39;vars.txt&#39;</span>
+        <span class="n">mvar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model_var</span>
+        <span class="n">modeldataset</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">[</span><span class="n">mvar</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]</span>
+        <span class="c"># get the timeAxis of modeldata set and correct its bounds</span>
+        <span class="n">modeltime</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_correctTimeAxis</span><span class="p">(</span><span class="n">modeldataset</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+        <span class="c"># get the fully available months</span>
+        <span class="n">availableMonths</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">getTimeAxisFullMonths</span><span class="p">(</span><span class="n">modeltime</span><span class="p">)</span>
+        <span class="c"># calling func to geneate season mean directories and its plots</span>
+        <span class="n">genSeasonMeanDirs</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">availableMonths</span><span class="p">,</span> <span class="n">plotLevel</span><span class="p">)</span>
+        <span class="c"># calling func to geneate season fcstsyserr directories and its plots</span>
+        <span class="n">genSeasonFcstSysErrDirs</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Model</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">availableMonths</span><span class="p">,</span> <span class="n">plotLevel</span><span class="p">)</span>
+        <span class="c"># close the xml objects</span>
+        <span class="n">xmlobj</span><span class="o">.</span><span class="n">closeXmlObjs</span><span class="p">()</span>
+    <span class="c"># end of for model in models:</span>
+    <span class="k">print</span> <span class="s">&quot;Done! Creation of all vector plots&quot;</span>
+<span class="c"># end of if __name__ == &#39;__main__&#39;:</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

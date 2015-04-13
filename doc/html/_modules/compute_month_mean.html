@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>compute_month_mean &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for compute_month_mean</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: compute_month_mean.py</span>
+<span class="sd">   :synopsis: This script should calculate the mean analysis and mean fcst</span>
+<span class="sd">              for every month and store it as nc files in the appropriate</span>
+<span class="sd">              directories.</span>
+<span class="sd">.. moduleauthor:: Arulalan.T &lt;arulalant@gmail.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="kn">import</span> <span class="nn">cdutil</span>
+<span class="c"># setting the absolute path of the previous directory</span>
+<span class="c"># getting the this py module path by __file__ variable</span>
+<span class="c"># pass that __file__ to the os.path.dirname, returns the path of this module</span>
+<span class="n">__diagnosisDir__</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">previousDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__diagnosisDir__</span><span class="p">,</span> <span class="s">&#39;..&#39;</span><span class="p">))</span>
+<span class="c"># adding the previous path to python path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">previousDir</span><span class="p">)</span>
+<span class="c"># import xml_data_acces.py from previous directory diagnosisutils</span>
+<span class="kn">import</span> <span class="nn">diagnosisutils.xml_data_access</span> <span class="kn">as</span> <span class="nn">xml_data_access</span>
+<span class="kn">from</span> <span class="nn">diagnosisutils.timeutils</span> <span class="kn">import</span> <span class="n">TimeUtility</span>
+<span class="kn">from</span> <span class="nn">diag_setup.varsdict</span> <span class="kn">import</span> <span class="n">variables</span>
+<span class="kn">from</span> <span class="nn">diag_setup.globalconfig</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">processfilesPath</span>
+<span class="kn">from</span> <span class="nn">diag_setup.gendir</span> <span class="kn">import</span> <span class="n">createDirsIfNotExists</span>
+<span class="kn">import</span> <span class="nn">diag_setup.netcdf_settings</span>
+
+<span class="c"># create time utility object</span>
+<span class="n">timobj</span> <span class="o">=</span> <span class="n">TimeUtility</span><span class="p">()</span>
+
+<span class="c"># timeAxis check value to skip the mean process for the existing month in</span>
+<span class="c"># the mean nc file</span>
+<span class="n">__timeCheck__</span> <span class="o">=</span> <span class="bp">True</span>
+
+
+<div class="viewcode-block" id="genMonthMeanDirs"><a class="viewcode-back" href="../diagnosis.html#compute_month_mean.genMonthMeanDirs">[docs]</a><span class="k">def</span> <span class="nf">genMonthMeanDirs</span><span class="p">(</span><span class="n">modelname</span><span class="p">,</span> <span class="n">modelpath</span><span class="p">,</span> <span class="n">modelhour</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genMonthMeanDirs` : It should generate the directory structure</span>
+<span class="sd">            whenever it needs. It reads the timeAxis information of the</span>
+<span class="sd">            model data xml file(which is updating it by cdscan), and once</span>
+<span class="sd">            the full months is completed, then it should check either that</span>
+<span class="sd">            month directory is empty or not.</span>
+
+<span class="sd">            case 1: If that directory is empty means, it should call the</span>
+<span class="sd">                    function called `genMonthMeanFiles`, to calculate</span>
+<span class="sd">                    the mean analysis and anomaly for that month and should</span>
+<span class="sd">                    store the processed files in side that directory.</span>
+
+<span class="sd">            case 2: If that directory is non empty means,</span>
+<span class="sd">                    ****have to update*****</span>
+
+<span class="sd">    Inputs : modelname is the model data name, which will become part of the</span>
+<span class="sd">             directory structure.</span>
+<span class="sd">             modelpath is the absolute path of data where the model xml files</span>
+<span class="sd">             are located.</span>
+<span class="sd">             climatolgyyear is the year of climatolgy data.</span>
+<span class="sd">             climregridpath is the absolute path of the climatolgy regridded</span>
+<span class="sd">             path w.r.t to this model data resolution (both horizontal and</span>
+<span class="sd">             vertical)</span>
+<span class="sd">             climpfilename is the climatolgy Partial File Name to combine the</span>
+<span class="sd">             this passed name with (at the end) of the climatolgy var name to</span>
+<span class="sd">             open the climatolgy files.</span>
+
+<span class="sd">    Outputs : It should create the directory structure in the processfilesPath</span>
+<span class="sd">              and create the processed nc files.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 01.12.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">xml_data_access</span><span class="o">.</span><span class="n">GribXmlAccess</span><span class="p">(</span><span class="n">modelpath</span><span class="p">)</span>
+    <span class="c"># get one model var name from the global &#39;vars.txt&#39; file</span>
+    <span class="n">mvar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">modelname</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model_var</span>
+    <span class="n">modeldataset</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">[</span><span class="n">mvar</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]</span>
+    <span class="c"># get the timeAxis of modeldata set and correct its bounds</span>
+    <span class="n">modeltime</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_correctTimeAxis</span><span class="p">(</span><span class="n">modeldataset</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+    <span class="c"># get the fully available months</span>
+    <span class="n">availableMonths</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">getTimeAxisFullMonths</span><span class="p">(</span><span class="n">modeltime</span><span class="p">)</span>
+
+    <span class="c"># create modelname, Mean directories if it is not exists</span>
+    <span class="n">childMeanPath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">processfilesPath</span><span class="p">,</span>
+                                         <span class="p">[</span><span class="n">modelname</span><span class="p">,</span> <span class="s">&#39;Mean&#39;</span><span class="p">])</span>
+    <span class="n">listTypeHour</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">hr</span> <span class="ow">in</span> <span class="n">modelhour</span><span class="p">:</span>
+        <span class="n">listTypeHour</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;f&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">availableMonths</span><span class="p">:</span>
+        <span class="c"># get the months dictionary</span>
+        <span class="n">monthdic</span> <span class="o">=</span> <span class="n">availableMonths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="c"># sort the months in correct order</span>
+        <span class="n">months</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_sortMonths</span><span class="p">(</span><span class="n">monthdic</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="c"># create Mean Root Year,Month directories if it is not exists</span>
+        <span class="n">meanMonthPath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">childMeanPath</span><span class="p">,</span>
+                                                  <span class="p">[</span><span class="n">year</span><span class="p">,</span> <span class="s">&#39;Month&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">months</span><span class="p">:</span>
+            <span class="c"># get the start &amp; end date of the month</span>
+            <span class="n">sedate</span> <span class="o">=</span> <span class="n">monthdic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">month</span><span class="p">)</span>
+            <span class="n">month</span> <span class="o">=</span> <span class="n">month</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="c"># combaine month and its startdate &amp; enddate within tuple</span>
+            <span class="n">monthdate</span> <span class="o">=</span> <span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="n">sedate</span><span class="p">)</span>
+            <span class="c"># calling below function to create all nc files in mean analysis</span>
+            <span class="c"># and fcst hours directories</span>
+            <span class="n">genMonthMeanFiles</span><span class="p">(</span><span class="n">meanMonthPath</span><span class="p">,</span> <span class="n">monthdate</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span>
+                              <span class="n">typehour</span> <span class="o">=</span> <span class="n">listTypeHour</span><span class="p">,</span> <span class="n">modelName</span> <span class="o">=</span> <span class="n">modelname</span><span class="p">,</span>
+                              <span class="n">modelXmlObj</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">)</span>
+        <span class="c"># end of for month in months:</span>
+        <span class="c"># close all the opened xml file objects</span>
+        <span class="n">xmlobj</span><span class="o">.</span><span class="n">closeXmlObjs</span><span class="p">()</span>
+    <span class="c"># end of for year in availableMonths.keys():</span>
+<span class="c"># end of def genMonthMeanDirs()</span>
+</div>
+<div class="viewcode-block" id="genMonthMeanFiles"><a class="viewcode-back" href="../diagnosis.html#compute_month_mean.genMonthMeanFiles">[docs]</a><span class="k">def</span> <span class="nf">genMonthMeanFiles</span><span class="p">(</span><span class="n">meanMonthPath</span><span class="p">,</span> <span class="n">monthdate</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">typehour</span><span class="p">,</span> <span class="o">**</span><span class="n">model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genMonthMeanFiles` : It should calculate monthly mean analysis &amp;</span>
+<span class="sd">            monthly mean forecast hours value for the month (of year). Finally</span>
+<span class="sd">            stores it as nc files in corresponding directory path which are</span>
+<span class="sd">            passed in this function args.</span>
+
+<span class="sd">    Inputs : meanMonthPath is the absolute path where the processed month mean</span>
+<span class="sd">             analysis &amp; fcst hour nc files are going to store.</span>
+<span class="sd">             monthdate (which contains monthname, startdate &amp; enddate) and</span>
+<span class="sd">             year are the inputs to extract the monthly data.</span>
+<span class="sd">             typehour is tuple which has the type key character and fcst hour</span>
+<span class="sd">             to create sub directories inside mean directory.</span>
+
+<span class="sd">    KWargs: modelName, modelXmlPath, modelXmlObj</span>
+
+<span class="sd">             modelName is the model data name which will become part of the</span>
+<span class="sd">             process nc files name.</span>
+<span class="sd">             modelPath is the absolute path of data where the model xml files</span>
+<span class="sd">             are located.</span>
+<span class="sd">             modelXmlObj is an instance of the GribXmlAccess class instance.</span>
+<span class="sd">             If we are passing modelXmlObj means, it will be optimized one</span>
+<span class="sd">             when we calls this same function for same model for different</span>
+<span class="sd">             months.</span>
+
+<span class="sd">             We can pass either modelXmlPath or modelXmlObj KWarg is enough.</span>
+
+<span class="sd">    Outputs : It should create monthly mean analysis and monthly mean forecast</span>
+<span class="sd">              hours for all the available variables in the vars.txt file &amp;</span>
+<span class="sd">              store it as nc file formate in the proper directories structure</span>
+<span class="sd">              (modelname, process name, year, month and then</span>
+<span class="sd">              [Analysis or hours] hierarchy).</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 08.09.2011</span>
+<span class="sd">    Updated : 06.12.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">modelXmlObj</span><span class="p">,</span> <span class="n">modelPath</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="s">&#39;modelName&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+        <span class="n">modelName</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;modelName&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;KWarg modelName must be passed&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&#39;modelXmlObj&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+        <span class="n">modelXmlObj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;modelXmlObj&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s">&#39;modelXmlPath&#39;</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+        <span class="n">modelPath</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;modelXmlPath&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;you must pass atleast one KWargs of modelXmlPath </span><span class="se">\</span>
+<span class="s">                            or modelXmlPath &quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">modelXmlObj</span><span class="p">:</span>
+        <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">xml_data_access</span><span class="o">.</span><span class="n">GribXmlAccess</span><span class="p">(</span><span class="n">modelPath</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">modelXmlObj</span><span class="p">,</span> <span class="n">xml_data_access</span><span class="o">.</span><span class="n">GribXmlAccess</span><span class="p">):</span>
+            <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">modelXmlObj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Passed modelXmlObj instance </span><span class="si">%s</span><span class="s"> is not an </span><span class="se">\</span>
+<span class="s">                    instance of GribXmlAccess class &quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">modelXmlObj</span><span class="p">))</span>
+    <span class="c"># end of if not modelXmlObj:</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="n">monthdate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c"># get the startdate, enddate of this month for both model &amp; climatolgy</span>
+    <span class="n">modelDataTimeRange</span> <span class="o">=</span> <span class="n">monthdate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">typ</span><span class="p">,</span> <span class="n">hr</span> <span class="ow">in</span> <span class="n">typehour</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="s">&#39;a&#39;</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Analysis&#39;</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;analysis&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">hr</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;f&#39;</span> <span class="o">+</span> <span class="n">hr</span> <span class="o">+</span> <span class="s">&#39;hr&#39;</span>
+        <span class="c"># create Mean Sub Month directory if it is not exists</span>
+        <span class="n">meanPath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">meanMonthPath</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c"># get the nc files name</span>
+        <span class="n">ncfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">meanPath</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.nc&#39;</span><span class="p">)]</span>
+        <span class="c"># make ncfiles as dictionary with key as var name</span>
+        <span class="n">ncfiledic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">ncfile</span> <span class="ow">in</span> <span class="n">ncfiles</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ncfiledic</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncfile</span>
+        <span class="c"># make memory free</span>
+        <span class="k">del</span> <span class="n">ncfiles</span>
+
+        <span class="n">anlvariables</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="o">.</span><span class="n">listvariable</span><span class="p">(</span><span class="n">Type</span> <span class="o">=</span> <span class="n">typ</span><span class="p">,</span> <span class="n">hour</span> <span class="o">=</span> <span class="n">hr</span><span class="p">)</span>
+
+        <span class="c"># get the namedtuple object from the global &#39;vars.txt&#39; file</span>
+        <span class="n">totalvars</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">modelName</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">globalvar</span> <span class="ow">in</span> <span class="n">totalvars</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="c"># get the model var name</span>
+            <span class="n">mvar</span> <span class="o">=</span> <span class="n">globalvar</span><span class="o">.</span><span class="n">model_var</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mvar</span> <span class="ow">in</span> <span class="n">anlvariables</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;The variable </span><span class="si">%s</span><span class="s"> is not available in the xml anl file object&quot;</span> <span class="o">%</span> <span class="n">mvar</span>
+                <span class="k">print</span> <span class="s">&quot;So skipping the mean analysis processes </span><span class="se">\</span>
+<span class="s">                       for this variable </span><span class="si">%s</span><span class="s"> which is one of the keys of the </span><span class="se">\</span>
+<span class="s">                       variables dictionary&quot;</span> <span class="o">%</span> <span class="n">mvar</span>
+                <span class="k">continue</span>
+            <span class="c"># end of if not mvar in allvariables:</span>
+
+            <span class="k">if</span> <span class="n">mvar</span> <span class="ow">in</span> <span class="n">ncfiledic</span><span class="p">:</span>
+                <span class="n">meanFileName</span> <span class="o">=</span> <span class="n">ncfiledic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mvar</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c"># open nc file in append mode</span>
+                    <span class="n">meanFile</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">meanPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">meanFileName</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+                    <span class="c"># get the ncfile timeAxis</span>
+                    <span class="n">fileTime</span> <span class="o">=</span> <span class="n">meanFile</span><span class="p">[</span><span class="n">mvar</span><span class="p">]</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+                    <span class="c"># Do check either this month timeAxis is already exists in</span>
+                    <span class="c"># the nc file&#39;s timeAxis or not. If exists means skip it.</span>
+                    <span class="k">if</span> <span class="n">__timeCheck__</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">modelDataTimeRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">fileTime</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">():</span>
+                            <span class="k">print</span> <span class="s">&quot;The mean </span><span class="si">%s</span><span class="s"> is already exists in the </span><span class="se">\</span>
+<span class="s">                                   file </span><span class="si">%s</span><span class="s">. So skipping var &#39;</span><span class="si">%s</span><span class="s">&#39; &quot;</span> <span class="o">%</span> \
+                                   <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">meanFileName</span><span class="p">,</span> <span class="n">mvar</span><span class="p">)</span>
+                            <span class="n">meanFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                            <span class="k">continue</span>
+                    <span class="c"># end of if __timeCheck__:</span>
+                <span class="k">except</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">CDMSError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="c"># if it getting this error means, it may not written</span>
+                    <span class="c"># properly. So open nc file in write mode freshly.</span>
+                    <span class="k">print</span> <span class="s">&quot;Got Problem. nc file is correpted at last time. </span><span class="se">\</span>
+<span class="s">                           May be lost the previous months data.</span><span class="se">\</span>
+<span class="s">                           Now creating same nc file &#39;</span><span class="si">%s</span><span class="s">&#39; freshly w.r.t current </span><span class="se">\</span>
+<span class="s">                           month </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">meanFileName</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span>
+                    <span class="n">meanFile</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">meanPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">meanFileName</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># generate the nc filename</span>
+                <span class="n">meanFileName</span> <span class="o">=</span> <span class="n">mvar</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span><span class="o">+</span> <span class="n">modelName</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">year</span>
+                <span class="n">meanFileName</span> <span class="o">+=</span> <span class="s">&#39;_mean_&#39;</span> <span class="o">+</span> <span class="n">fname</span> <span class="o">+</span> <span class="s">&#39;.nc&#39;</span>
+                <span class="c"># open new nc file in write mode</span>
+                <span class="n">meanFile</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">meanPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">meanFileName</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="c"># end of if mvar in ncfiledic:</span>
+
+            <span class="k">print</span> <span class="s">&quot;Collecting modeldata of variable &#39;</span><span class="si">%s</span><span class="s">&#39; for the </span><span class="si">%s</span><span class="s"> month </span><span class="si">%s</span><span class="s"> </span><span class="se">\</span>
+<span class="s">                        year for process &#39;</span><span class="si">%s</span><span class="s">&#39; &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mvar</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c"># get the model data for this month alone</span>
+                <span class="n">modelData</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="n">mvar</span><span class="p">,</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">typ</span><span class="p">,</span> <span class="n">hour</span> <span class="o">=</span> <span class="n">hr</span><span class="p">,</span>
+                                           <span class="n">date</span> <span class="o">=</span> <span class="n">modelDataTimeRange</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Coundn&#39;t get the analysis data of </span><span class="si">%s</span><span class="s"> var </span><span class="si">%s</span><span class="s"> time&quot;</span> \
+                                            <span class="o">%</span> <span class="p">(</span><span class="n">mvar</span><span class="p">,</span> <span class="n">modelDataTimeRange</span><span class="p">)</span>
+                <span class="k">print</span> <span class="s">&quot;So skipping the anomaly and mean analysis processes</span><span class="se">\</span>
+<span class="s">                           for this variable </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">mvar</span>
+                <span class="k">continue</span>
+            <span class="c"># end of try:</span>
+            <span class="c"># extracting units from the title of the data</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">modelData</span><span class="o">.</span><span class="n">title</span>
+            <span class="n">stitle</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;[&#39;</span><span class="p">)</span>
+            <span class="n">etitle</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;]&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stitle</span><span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">etitle</span><span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">varunits</span> <span class="o">=</span> <span class="n">title</span><span class="p">[</span><span class="n">stitle</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span> <span class="n">etitle</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">varunits</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="c"># store mean analysis into proper nc file</span>
+            <span class="n">modelLevel</span> <span class="o">=</span> <span class="n">modelData</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+            <span class="n">modelLatitude</span> <span class="o">=</span> <span class="n">modelData</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+            <span class="n">modelLongitude</span> <span class="o">=</span> <span class="n">modelData</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s"> monthly time axis has created&quot;</span>
+            <span class="n">meanTime</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_generateMonthlyMeanTimeAxis</span><span class="p">(</span><span class="n">modelDataTimeRange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                        <span class="n">modelDataTimeRange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">print</span> <span class="s">&quot;Calculating Mean &quot;</span>
+            <span class="n">meanVar</span> <span class="o">=</span> <span class="n">cdutil</span><span class="o">.</span><span class="n">averager</span><span class="p">(</span><span class="n">modelData</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="s">&#39;equal&#39;</span><span class="p">)</span>
+            <span class="c"># make memory free</span>
+            <span class="k">del</span> <span class="n">modelData</span>
+            <span class="n">meanVar</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">mvar</span>
+            <span class="n">meanVar</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">varunits</span>
+            <span class="n">meanVar</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">title</span>
+            <span class="n">meanVar</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="s">&#39;monthly mean </span><span class="si">%s</span><span class="s"> of </span><span class="si">%s</span><span class="s"> model data of </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+
+            <span class="c"># create first dimension for the time axis.</span>
+            <span class="n">mshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">meanVar</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">mshape</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">newshape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">mshape</span><span class="p">)</span>
+            <span class="c"># setting all the axis dimension to the meanVar variable</span>
+            <span class="n">meanVar</span> <span class="o">=</span> <span class="n">meanVar</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">modelLevel</span><span class="p">:</span>
+                <span class="n">meanVar</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">([</span><span class="n">meanTime</span><span class="p">,</span> <span class="n">modelLevel</span><span class="p">,</span> <span class="n">modelLatitude</span><span class="p">,</span>
+                                                          <span class="n">modelLongitude</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">meanVar</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">([</span><span class="n">meanTime</span><span class="p">,</span> <span class="n">modelLatitude</span><span class="p">,</span> <span class="n">modelLongitude</span><span class="p">])</span>
+
+
+            <span class="k">print</span> <span class="s">&quot;Writing mean </span><span class="si">%s</span><span class="s"> into </span><span class="si">%s</span><span class="s"> file </span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">meanFileName</span><span class="p">)</span>
+            <span class="n">meanFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">meanVar</span><span class="p">)</span>
+            <span class="n">meanFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="c"># make memory free</span>
+            <span class="k">del</span> <span class="n">meanVar</span>
+        <span class="c"># end of for globalvar in totalvars.itervalues():</span>
+<span class="c"># end of def genMonthMeanFiles(...):</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="c"># calling the genMonthMeanDirs function to do process</span>
+        <span class="n">genMonthMeanDirs</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+    <span class="c"># end of for model in models:</span>
+    <span class="k">print</span> <span class="s">&quot;Done! Creation of Monthly Mean Analysis &amp; Mean Fcst Hours netCdf Files&quot;</span>
+<span class="c"># end of if __name__ == &#39;__main__&#39;:</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
