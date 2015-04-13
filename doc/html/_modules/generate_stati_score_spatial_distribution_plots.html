@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>generate_stati_score_spatial_distribution_plots &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for generate_stati_score_spatial_distribution_plots</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="c"># setting the absolute path of the previous directory</span>
+<span class="c"># getting the this py module path by __file__ variable</span>
+<span class="c"># pass that __file__ to the os.path.dirname, returns the path of this module</span>
+<span class="n">__diagnosisDir__</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">previousDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__diagnosisDir__</span><span class="p">,</span> <span class="s">&#39;..&#39;</span><span class="p">))</span>
+<span class="c"># adding the previous path to python path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">previousDir</span><span class="p">)</span>
+<span class="c"># importing plot.py, xml_data_acces.py, TimeUtility from previous directory</span>
+<span class="c"># diagnosisutils</span>
+<span class="kn">import</span> <span class="nn">diagnosisutils.plot</span> <span class="kn">as</span> <span class="nn">plot</span>
+<span class="kn">import</span> <span class="nn">diagnosisutils.xml_data_access</span> <span class="kn">as</span> <span class="nn">xml_data_access</span>
+<span class="kn">from</span> <span class="nn">diagnosisutils.timeutils</span> <span class="kn">import</span> <span class="n">TimeUtility</span>
+<span class="kn">from</span> <span class="nn">diagnosisutils.regions</span> <span class="kn">import</span> <span class="n">India</span>
+<span class="kn">from</span> <span class="nn">diag_setup.globalconfig</span> <span class="kn">import</span> <span class="n">models</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">processfilesPath</span><span class="p">,</span> \
+                               <span class="n">plotsgraphsPath</span><span class="p">,</span> <span class="n">seasons</span>
+<span class="kn">from</span> <span class="nn">diag_setup.varsdict</span> <span class="kn">import</span> <span class="n">variables</span>
+<span class="kn">from</span> <span class="nn">diag_setup.gendir</span> <span class="kn">import</span> <span class="n">createDirsIfNotExists</span>
+
+<span class="c"># create time utility object</span>
+<span class="n">timobj</span> <span class="o">=</span> <span class="n">TimeUtility</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="genSeasonStatiScoreDirs"><a class="viewcode-back" href="../diagnosis.html#generate_stati_score_spatial_distribution_plots.genSeasonStatiScoreDirs">[docs]</a><span class="k">def</span> <span class="nf">genSeasonStatiScoreDirs</span><span class="p">(</span><span class="n">modelName</span><span class="p">,</span> <span class="n">modelHour</span><span class="p">,</span> <span class="n">availableMonths</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genSeasonStatiScoreDirs`: It should generate the directory hierarichy</span>
+<span class="sd">        structure of season statiscore in the plotsgraphspath. And calls the</span>
+<span class="sd">        function genIsoFillPlots to make &#39;isofill&#39; plots and save it</span>
+<span class="sd">        inside the appropirate directory, by reading the nc file of the</span>
+<span class="sd">        appropirate process season hour statiscore files path.</span>
+
+<span class="sd">        It should plot for all the vars of that statiscore spatial distributed</span>
+<span class="sd">        nc files.</span>
+
+<span class="sd">    Inputs : modelName is the one of the directories name.</span>
+<span class="sd">             modelHour is the one of the directories name.</span>
+<span class="sd">             availableMonths is the dictionary which is generated by fully</span>
+<span class="sd">             available months from the timeAxis.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 26.09.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">plotLevel</span>
+    <span class="n">processStatiScorePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processfilesPath</span><span class="p">,</span> <span class="n">modelName</span><span class="p">,</span> <span class="s">&#39;StatiScore&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">availableMonths</span><span class="p">:</span>
+        <span class="c"># get the months dictionary</span>
+        <span class="n">monthdic</span> <span class="o">=</span> <span class="n">availableMonths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="c"># sort the months in correct order</span>
+        <span class="n">months</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_sortMonths</span><span class="p">(</span><span class="n">monthdic</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="n">processStatiSeasonPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processStatiScorePath</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="s">&#39;Season&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">seasonName</span><span class="p">,</span> <span class="n">season</span> <span class="ow">in</span> <span class="n">seasons</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="c"># find out xml time axis months has the seasonal months or not</span>
+            <span class="n">seasonMonths</span> <span class="o">=</span> <span class="p">[</span><span class="n">month</span> <span class="k">for</span> <span class="n">smonth</span> <span class="ow">in</span> <span class="n">season</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">months</span>
+                            <span class="k">if</span> <span class="n">smonth</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">month</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seasonMonths</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">season</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&quot;Got the seasonal months for </span><span class="si">%s</span><span class="s"> season&quot;</span> <span class="o">%</span> <span class="n">seasonName</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Seasonal months are not available for </span><span class="si">%s</span><span class="s"> season&quot;</span> <span class="o">%</span> <span class="n">seasonName</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">seasonName</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
+                <span class="n">seasonName</span> <span class="o">=</span> <span class="n">seasonName</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">proStatiSeasonChildPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">processStatiSeasonPath</span><span class="p">,</span> <span class="n">seasonName</span><span class="p">)</span>
+            <span class="c"># plotting isofill images for all hours</span>
+            <span class="k">for</span> <span class="n">hr</span> <span class="ow">in</span> <span class="n">modelHour</span><span class="p">:</span>
+                <span class="c"># get the process statistical score hour path</span>
+                <span class="n">proStatiHrPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">proStatiSeasonChildPath</span><span class="p">,</span> <span class="n">hr</span><span class="p">)</span>
+                <span class="c"># Do process if process stati score hour directory is exists</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">proStatiHrPath</span><span class="p">):</span>
+                    <span class="k">print</span> <span class="s">&quot;the </span><span class="si">%s</span><span class="s"> hour process path doesnot exist in the </span><span class="se">\</span>
+<span class="s">                            path </span><span class="si">%s</span><span class="s">. So skipping isofill season plots &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hr</span><span class="p">,</span> <span class="n">proStatiHrPath</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="c"># get the available files from this directory</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">proStatiHrPath</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                    <span class="c"># process empty directory. need to log about this.</span>
+                    <span class="c"># process files cant be empty, very less chance.</span>
+                <span class="c"># end of if not files:</span>
+                <span class="c"># get the nc file name</span>
+                <span class="n">ncfile</span> <span class="o">=</span> <span class="p">[</span><span class="n">ncfile</span> <span class="k">for</span> <span class="n">ncfile</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;.nc&#39;</span><span class="p">)</span>\
+                <span class="k">if</span> <span class="n">ncfile</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;stati_spatial_distribution_score&#39;</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ncfile</span><span class="p">:</span>
+                    <span class="c"># ncfile is none</span>
+                    <span class="k">print</span> <span class="s">&quot;The path </span><span class="si">%s</span><span class="s"> doesnt have nc file&quot;</span> <span class="o">%</span> <span class="n">proStatiHrPath</span>
+                    <span class="k">print</span> <span class="s">&quot;here obtained nc file is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">ncfile</span>
+                    <span class="k">continue</span>
+                <span class="c"># get the nc file path</span>
+                <span class="n">ncPath</span> <span class="o">=</span> <span class="n">proStatiHrPath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">ncfile</span>
+
+                <span class="c"># create modelName, StatiScore, year, Season, hour</span>
+                <span class="c"># directories if it is not exists</span>
+                <span class="n">plotSeasonHrPath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">plotsgraphsPath</span><span class="p">,</span>
+                                          <span class="p">[</span><span class="n">modelName</span><span class="p">,</span> <span class="s">&#39;StatiScore&#39;</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span>
+                                               <span class="s">&#39;Season&#39;</span><span class="p">,</span> <span class="n">seasonName</span><span class="p">,</span> <span class="n">hr</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">plotSeasonHrPath</span><span class="p">):</span>
+                    <span class="c"># directory is empty. So calling below function</span>
+                    <span class="c"># to create all isofillline plot image files</span>
+                    <span class="c"># in stati score directory of plotsgraphspath.</span>
+                    <span class="n">genIsoFillPlots</span><span class="p">(</span><span class="n">var</span> <span class="o">=</span> <span class="s">&#39;all&#39;</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">ncPath</span><span class="p">,</span>
+                                    <span class="n">outpath</span> <span class="o">=</span> <span class="n">plotSeasonHrPath</span><span class="p">,</span>
+                                    <span class="n">region</span> <span class="o">=</span> <span class="n">India</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                    <span class="c"># directory is non empty. Have to check either</span>
+                    <span class="c"># all vars plots image files are exists or not</span>
+                <span class="c"># end of if not os.listdir(plotSeasonHrPath):</span>
+            <span class="c"># end of for hr in modelHour:</span>
+        <span class="c"># end of for month in months.keys():</span>
+    <span class="c"># end of for year in availableMonths.keys():</span>
+    <span class="k">print</span> <span class="s">&quot;Done! creation of isoFill plots of season stati score for model </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">modelName</span>
+<span class="c"># end of def genSeasonStatiScoreDirs(modelName, modelHour, availableMonths):</span>
+</div>
+<div class="viewcode-block" id="genIsoFillPlots"><a class="viewcode-back" href="../diagnosis.html#generate_stati_score_spatial_distribution_plots.genIsoFillPlots">[docs]</a><span class="k">def</span> <span class="nf">genIsoFillPlots</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">outpath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">svg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`genIsoFillPlots`: It should generate the directory least hierarichy</span>
+<span class="sd">        structure of season statiscore in the plotsgraphspath,by the plotname.</span>
+
+<span class="sd">        It should plot for all the vars of that statiscore spatial distributed</span>
+<span class="sd">        nc files.</span>
+
+<span class="sd">    Inputs : var is the variable name. If var is &#39;all&#39; means, then it should</span>
+<span class="sd">             plot the isofill for all the available variables in the passed</span>
+<span class="sd">             path nc or xml file.</span>
+
+<span class="sd">             path is an absolute nc or xml file path.</span>
+
+<span class="sd">             outpath is the path to store the images. If it is None means, it</span>
+<span class="sd">             should create the least (plotname)directory in the current</span>
+<span class="sd">             directory path itself and save it.</span>
+
+<span class="sd">             region to extract the region from the var data.</span>
+
+<span class="sd">             if svg is 1, then plot should be saved as svg.</span>
+<span class="sd">             if png is 1, then plot should be saved as png.</span>
+
+<span class="sd">      ..note:: isoLevels and isoColors are set inbuilt (some default) range of</span>
+<span class="sd">            levels and colors with respect to the variable name of statistical</span>
+<span class="sd">            scores.</span>
+
+<span class="sd">    Written By : Dileep Kumar.R, Arulalan.T</span>
+
+<span class="sd">    Date : 26.09.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">allvars</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s">&#39;all&#39;</span><span class="p">:</span>
+        <span class="c"># var is all. So we have to take all the vars from passed ncpath.</span>
+        <span class="n">allvars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">listvariable</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">var</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;bounds&#39;</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">allvars</span> <span class="o">=</span> <span class="n">var</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">allvars</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">outpath</span><span class="p">:</span>
+        <span class="c"># get the current workig directory</span>
+        <span class="n">outpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="n">filelist</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+    <span class="n">seamon</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="c"># modelname</span>
+    <span class="n">startname</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="c"># hour</span>
+    <span class="n">hr</span> <span class="o">=</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">hr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;hr&#39;</span><span class="p">):</span>
+        <span class="n">hr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;hr&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="n">hr</span> <span class="o">/</span> <span class="mf">24.0</span>
+        <span class="c"># keep as float if day is not 24&#39;s multiple</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hr</span> <span class="o">%</span> <span class="mf">24.0</span><span class="p">:</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+        <span class="n">startname</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="s">&#39;D0&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+    <span class="c"># end of if hr.endswith(&#39;hr&#39;):</span>
+    <span class="c"># add season/month name, year</span>
+    <span class="n">endname</span> <span class="o">=</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">seamon</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">filelist</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">varName</span> <span class="ow">in</span> <span class="n">allvars</span><span class="p">:</span>
+        <span class="n">scoreName</span> <span class="o">=</span> <span class="n">varName</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="c"># create plot name directory if it is not exists</span>
+        <span class="n">scoreNamePath</span> <span class="o">=</span> <span class="n">createDirsIfNotExists</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="n">scoreName</span><span class="p">)</span>
+        <span class="c"># setting isoLevels and isoColors w.r.t variable</span>
+
+        <span class="k">if</span> <span class="n">scoreName</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;TS&#39;</span><span class="p">,</span> <span class="s">&#39;POD&#39;</span><span class="p">,</span> <span class="s">&#39;POFD&#39;</span><span class="p">,</span> <span class="s">&#39;HR&#39;</span><span class="p">,</span> <span class="s">&#39;FAR&#39;</span><span class="p">]:</span>
+            <span class="c"># Statistical score lies between [0, 1]</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+            <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">171</span><span class="p">,</span>
+                                                 <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">scoreName</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;BS&#39;</span><span class="p">,</span> <span class="s">&#39;ODR&#39;</span><span class="p">]:</span>
+            <span class="c"># Statistical score lies between [0, infinity]</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+            <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">171</span><span class="p">,</span>
+                                                 <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">scoreName</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;KSS&#39;</span><span class="p">,</span> <span class="s">&#39;ORSS&#39;</span><span class="p">,</span> <span class="s">&#39;EDS&#39;</span><span class="p">]:</span>
+            <span class="c"># Statistical score lies between [-1, 1]</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+            <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">171</span><span class="p">,</span>
+                                                 <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+            <span class="c">#(246, 255, 252, 253, 140, 5, 171, 248, 249,242, 239)</span>
+        <span class="k">elif</span> <span class="n">scoreName</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;ETS&#39;</span><span class="p">]:</span>
+            <span class="c"># Statistical score lies between [-0.3, 1]</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+            <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">171</span><span class="p">,</span>
+                                                 <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">scoreName</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;HSS&#39;</span><span class="p">]:</span>
+            <span class="c"># Statistical score lies between [-infinity, 1]</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+            <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">254</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">171</span><span class="p">,</span>
+                                                 <span class="mi">248</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">242</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">scoreName</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;LODR&#39;</span><span class="p">]:</span>
+            <span class="c"># Statistical score lies between [-infinity, infinity]</span>
+            <span class="n">isoLevels</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span>
+                                                 <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+            <span class="n">isoColors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">244</span><span class="p">,</span> <span class="mi">246</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">140</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>
+                                      <span class="mi">171</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">192</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">210</span><span class="p">,</span> <span class="mi">239</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;variable doesnot match with any one to set the isoLevels </span><span class="se">\</span>
+<span class="s">                    and isoColors. &quot;</span> <span class="o">%</span> <span class="n">varName</span>
+            <span class="k">print</span> <span class="s">&quot;So skipping isoFill plot for this variable&quot;</span>
+            <span class="k">continue</span>
+        <span class="c"># end of if scoreName in [&#39;TS&#39;, &#39;POD&#39;, &#39;POFD&#39;, &#39;HR&#39;, &#39;FAR&#39;]:</span>
+
+        <span class="k">for</span> <span class="n">th</span> <span class="ow">in</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="c"># get the data</span>
+            <span class="n">stati_spatial_score</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">threshold</span> <span class="o">=</span> <span class="n">th</span><span class="p">,</span> <span class="n">squeeze</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="c"># get the long name</span>
+            <span class="n">processname</span> <span class="o">=</span> <span class="n">stati_spatial_score</span><span class="o">.</span><span class="n">long_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">plotname</span> <span class="o">=</span> <span class="n">startname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="n">processname</span> <span class="o">+</span> <span class="s">&#39; &#39;</span>
+            <span class="n">plotname</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">th</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="s">&#39;THRESHOLD&#39;</span> <span class="o">+</span> <span class="n">endname</span>
+            <span class="k">if</span> <span class="n">region</span><span class="p">:</span>
+                <span class="c"># extract region data</span>
+                <span class="n">stati_spatial_score</span> <span class="o">=</span> <span class="n">stati_spatial_score</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;Plotting IsoFill : &quot;</span><span class="p">,</span> <span class="n">plotname</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">isoFillPlot</span><span class="p">(</span><span class="n">stati_spatial_score</span><span class="p">,</span> <span class="n">isoLevels</span><span class="p">,</span> <span class="n">isoColors</span><span class="p">,</span>
+                                            <span class="n">plotname</span><span class="p">,</span> <span class="n">scoreNamePath</span><span class="p">,</span> <span class="n">svg</span><span class="p">,</span> <span class="n">png</span><span class="p">)</span>
+        <span class="c"># end of for th in threshold:</span>
+    <span class="c"># end of for varName in allvars:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c"># end of def genIsoFillPlots(...):</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="k">for</span> <span class="n">Model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+        <span class="n">xmlobj</span> <span class="o">=</span> <span class="n">xml_data_access</span><span class="o">.</span><span class="n">GribXmlAccess</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="c"># get the model variable name from the global &#39;vars.txt&#39;</span>
+        <span class="n">mvar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model_var</span>
+        <span class="n">modeldataset</span> <span class="o">=</span> <span class="n">xmlobj</span><span class="p">[</span><span class="n">mvar</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">]</span>
+        <span class="c"># get the timeAxis of modeldata set and correct its bounds</span>
+        <span class="n">modeltime</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_correctTimeAxis</span><span class="p">(</span><span class="n">modeldataset</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+        <span class="c"># get the fully available months</span>
+        <span class="n">availableMonths</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">getTimeAxisFullMonths</span><span class="p">(</span><span class="n">modeltime</span><span class="p">)</span>
+        <span class="c"># calling func to generate season statiscore directories and its plots</span>
+        <span class="n">genSeasonStatiScoreDirs</span><span class="p">(</span><span class="n">Model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Model</span><span class="o">.</span><span class="n">hour</span><span class="p">,</span> <span class="n">availableMonths</span><span class="p">)</span>
+        <span class="c"># close the xml objects</span>
+        <span class="n">xmlobj</span><span class="o">.</span><span class="n">closeXmlObjs</span><span class="p">()</span>
+    <span class="c"># end of for model in models:</span>
+    <span class="k">print</span> <span class="s">&quot;Done! Creation of all isoFill plots&quot;</span>
+<span class="c"># end of if __name__ == &#39;__main__&#39;:</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

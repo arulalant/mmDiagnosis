@@ -1,0 +1,15 @@
+1. ceof
+    1.1 ceof_diag.py
+    1.2 plot_ceof.py
+
+2. phase3d
+    2.1. amplitude_phase.py
+    2.2. plot_phase3d.py
+    
+3. phase2d
+    3.1. compute_spatial_phases_vars.py
+    3.2. plot_spatial_phase_vars.py
+
+4. wk    
+    4.1. plot_wk_figures.py 
+    

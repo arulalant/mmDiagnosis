@@ -1,0 +1,155 @@
+<registration>
+  <models>
+    <model id="NCMRWF.T254.2a.operational">
+      <institution>NCMRWF</institution>
+      <name>T254</name>
+      <version>2a</version>
+      <experiment>operational</experiment>
+      <description>This is T254 model registration It contains the ensembles too</description>
+      <analysis>
+        <file>/NCMRWF/all_xml/all_anl_ctl.xml</file>
+      </analysis>
+      <forecast>
+        <file hour="24">/NCMRWF/all_xml/all_fcst_24hr_ctl.xml</file>
+        <file hour="48">/NCMRWF/all_xml/all_fcst_48hr_ctl.xml</file>
+        <file hour="72">/NCMRWF/all_xml/all_fcst_72hr_ctl.xml</file>
+        <file hour="96">/NCMRWF/all_xml/all_fcst_96hr_ctl.xml</file>
+        <file hour="120">/NCMRWF/all_xml/all_fcst_120hr_ctl.xml</file>
+      </forecast>
+      <ensemble id="NCMRWF.T254.2a.operational.ensemble.1">
+        <name>ensemble</name>
+        <no>1</no>
+        <description>This is ensemble 1. Containing 7 days forecast files.</description>
+        <forecast>
+          <file hour="24">/NCMRWF/all_xml/all_fcst_24hr_ctl.xml</file>
+          <file hour="48">/NCMRWF/all_xml/all_fcst_48hr_ctl.xml</file>
+          <file hour="72">/NCMRWF/all_xml/all_fcst_72hr_ctl.xml</file>
+          <file hour="96">/NCMRWF/all_xml/all_fcst_96hr_ctl.xml</file>
+          <file hour="120">/NCMRWF/all_xml/all_fcst_120hr_ctl.xml</file>
+          <file hour="144">/NCMRWF/all_xml/all_fcst_144hr_ctl.xml</file>
+          <file hour="168">/NCMRWF/all_xml/all_fcst_168hr_ctl.xml</file>
+        </forecast>
+      </ensemble>
+    </model>
+    <model id="ECMWF.T386.operational">
+      <institution>ECMWF</institution>
+      <name>T386</name>
+      <version />
+      <experiment>operational</experiment>
+      <description>This is T386 model registration It contains the ensembles too</description>
+      <ensemble id="ECMWF.T386.operational.ensemble.1">
+        <name>ensemble</name>
+        <no>1</no>
+        <description>This is ensemble 1. Containing 1 Analysis &amp; 7 days forecast files.</description>
+        <forecast>
+          <file hour="24">/NCMRWF/all_xml/all_fcst_24hr_ctl.xml</file>
+          <file hour="48">/NCMRWF/all_xml/all_fcst_48hr_ctl.xml</file>
+          <file hour="72">/NCMRWF/all_xml/all_fcst_72hr_ctl.xml</file>
+          <file hour="96">/NCMRWF/all_xml/all_fcst_96hr_ctl.xml</file>
+          <file hour="120">/NCMRWF/all_xml/all_fcst_120hr_ctl.xml</file>
+          <file hour="144">/NCMRWF/all_xml/all_fcst_144hr_ctl.xml</file>
+          <file hour="168">/NCMRWF/all_xml/all_fcst_168hr_ctl.xml</file>
+        </forecast>
+        <analysis>
+          <file>/NCMRWF/all_xml/all_anl_ctl.xml</file>
+        </analysis>
+      </ensemble>
+      <ensemble id="ECMWF.T386.operational.ensemble.2">
+        <name>ensemble</name>
+        <no>2</no>
+        <description />
+        <forecast>
+          <file hour="24">/NCMRWF/all_xml/all_fcst_24hr_ctl.xml</file>
+          <file hour="48">/NCMRWF/all_xml/all_fcst_48hr_ctl.xml</file>
+          <file hour="72">/NCMRWF/all_xml/all_fcst_72hr_ctl.xml</file>
+          <file hour="96">/NCMRWF/all_xml/all_fcst_96hr_ctl.xml</file>
+          <file hour="120">/NCMRWF/all_xml/all_fcst_120hr_ctl.xml</file>
+          <file hour="144">/NCMRWF/all_xml/all_fcst_144hr_ctl.xml</file>
+          <file hour="168">/NCMRWF/all_xml/all_fcst_168hr_ctl.xml</file>
+        </forecast>
+        <analysis>
+          <file>/NCMRWF/all_xml/all_anl_ctl.xml</file>
+        </analysis>
+      </ensemble>
+    </model>
+    <model id="ECMWF.T387">
+      <institution>ECMWF</institution>
+      <name>T387</name>
+      <version />
+      <experiment />
+      <description />
+      <ensemble id="ECMWF.T386.operational.ensemble.1">
+        <name>ensemble</name>
+        <no>1</no>
+        <description>This is ensemble 1. Containing 1 Analysis &amp; 7 days forecast files.</description>
+        <forecast>
+          <file hour="24">/NCMRWF/all_xml/all_fcst_24hr_ctl.xml</file>
+          <file hour="48">/NCMRWF/all_xml/all_fcst_48hr_ctl.xml</file>
+          <file hour="72">/NCMRWF/all_xml/all_fcst_72hr_ctl.xml</file>
+          <file hour="96">/NCMRWF/all_xml/all_fcst_96hr_ctl.xml</file>
+          <file hour="120">/NCMRWF/all_xml/all_fcst_120hr_ctl.xml</file>
+          <file hour="144">/NCMRWF/all_xml/all_fcst_144hr_ctl.xml</file>
+          <file hour="168">/NCMRWF/all_xml/all_fcst_168hr_ctl.xml</file>
+        </forecast>
+        <analysis>
+          <file>/NCMRWF/all_xml/all_anl_ctl.xml</file>
+        </analysis>
+      </ensemble>
+      <ensemble id="ECMWF.T386.operational.ensemble.2">
+        <name>ensemble</name>
+        <no>2</no>
+        <description />
+        <forecast>
+          <file hour="24">/NCMRWF/all_xml/all_fcst_24hr_ctl.xml</file>
+          <file hour="48">/NCMRWF/all_xml/all_fcst_48hr_ctl.xml</file>
+          <file hour="72">/NCMRWF/all_xml/all_fcst_72hr_ctl.xml</file>
+          <file hour="96">/NCMRWF/all_xml/all_fcst_96hr_ctl.xml</file>
+          <file hour="120">/NCMRWF/all_xml/all_fcst_120hr_ctl.xml</file>
+          <file hour="144">/NCMRWF/all_xml/all_fcst_144hr_ctl.xml</file>
+          <file hour="168">/NCMRWF/all_xml/all_fcst_168hr_ctl.xml</file>
+        </forecast>
+        <analysis>
+          <file>/NCMRWF/all_xml/all_anl_ctl.xml</file>
+        </analysis>
+      </ensemble>
+    </model>
+  </models>
+  <climatologies>
+    <climatology id="NCMRWF.climatology.1.monthly">
+      <institution>NCMRWF</institution>
+      <name>climatology</name>
+      <version>1</version>
+      <description>This is monthly long term mean climatology</description>
+      <time-resolution>monthly</time-resolution>
+      <file>/NCMRWF/climatology/Levels/all_vars_monthly_ltm.xml</file>
+      <yearInClimatologyFile>1</yearInClimatologyFile>
+    </climatology>
+    <climatology id="NCMRWF.climatology.1.daily">
+      <institution>NCMRWF</institution>
+      <name>climatology</name>
+      <version>1</version>
+      <description>This is daily long term mean climatology</description>
+      <time-resolution>daily</time-resolution>
+      <file>/NCMRWF/climatology/Levels/all_vars_daily_ltm.xml</file>
+      <yearInClimatologyFile>1</yearInClimatologyFile>
+    </climatology>
+  </climatologies>
+  <observations>
+    <observation id="NCMRWF.rainfall.1">
+      <institution>NCMRWF</institution>
+      <name>rainfall</name>
+      <version>1</version>
+      <description>This is rainfall observation over JJAS season of 2010.
+Its only Indian region observation.</description>
+      <file>/NCMRWF/ncmrwf-data-2010/rainfall/uvrainfall.xml</file>
+    </observation>
+    <observation id="NCMRWF.rainfall.1">
+      <institution>NCMRWF</institution>
+      <name>rainfall</name>
+      <version>1</version>
+      <description>This is rainfall observation over JJAS season of 2011.
+Its only Indian region observation.</description>
+      <file>/NCMRWF/ncmrwf_2011/rainfall/rainfall.xml</file>
+    </observation>
+  </observations>
+</registration>

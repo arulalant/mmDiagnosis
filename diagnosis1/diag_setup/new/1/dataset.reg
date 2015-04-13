@@ -1,0 +1,276 @@
+{ "models": [
+    /* All the models registration falls under this list */
+    
+    {"name": "T254",                    /* model name */
+     "institute": "NCMRWF",             /* institute name of the model */
+     "version": "1a",                   /* version no of the model */
+     "uniqueName": "NCMRWF.T254.1a",    /* unique name of this model which is made by all the above three inputs */
+     "ensamblesAvailable": "no",
+     
+     "filePath": "/T254/all_xml",               /* eg: model xml absolute path */   
+     "forecastHours": [24, 48, 72, 96, 120],    /* forecast hours */
+     "forecastDimension": "no",                 /* forecastDimension is either 'yes' or 'no'.
+                                                   If 'no', user need to select all the 
+                                                   forecast hours xml files individually. */
+
+     "analysisAvailable": "yes",                /* get the analysis filename also */
+    
+     "files": {         
+         "analysis": "all_anl_ctl.xml",         /* analysis xml filename */
+         "24": "all_fcst_24hr_ctl.xml",         /* 24 hour forecast xml filename */
+         "48": "all_fcst_48hr_ctl.xml",         /* 48 hour forecast xml filename */
+         "72": "all_fcst_72hr_ctl.xml",         /* 72 hour forecast xml filename */
+         "96": "all_fcst_96hr_ctl.xml",         /* 96 hour forecast xml filename */
+         "120": "all_fcst_120hr_ctl.xml"        /* 120 hour forecast xml filename. 
+                                                    In this model it can accept upto 120hour only,
+                                                    since forecastDimension has limit upto 120 */
+        }                
+    },
+    
+    {"name": "T254",                    /* model name */
+     "institute": "NCMRWF",             /* institute name of the model */
+     "version": "2a",                   /* version no of the model */
+     "uniqueName": "NCMRWF.T254.2a",    /* unique name of this model which is made by all the above three inputs */
+                 
+     "ensamblesAvailable": "yes",       /* get the ensambles forecasts */ 
+     "ensamblesCount": 3,     
+     
+     "analysisAvailable": "yes",        /* get the analysis filename also */
+     "filePath": "/T254/all_xml",       /* eg: model xml absolute path */
+     "files": {         
+         "analysis": "all_anl_ctl.xml", /* analysis xml filename */
+        },
+     
+     "ensamble1":{
+            "name": "Ensamble 1",
+            "filePath": "/T254/all_xml/ensamble1",     /* model ensamble1 xml absolute path */     
+            "forecastHours": [24, 48, 72, 96, 120],    /* forecast hours */
+            "forecastDimension": "no",                 /* forecastDimension is either 'yes' or 'no'.
+                                                            If 'no', user need to select all the 
+                                                            forecast hours xml files individually. */
+                                                            
+             "files": {                 
+                 "24": "all_fcst_24hr_ctl.xml",        /* 24 hour forecast xml filename */
+                 "48": "all_fcst_48hr_ctl.xml",        /* 48 hour forecast xml filename */
+                 "72": "all_fcst_72hr_ctl.xml",        /* 72 hour forecast xml filename */
+                 "96": "all_fcst_96hr_ctl.xml",        /* 96 hour forecast xml filename */
+                 "120": "all_fcst_120hr_ctl.xml"       /* 120 hour forecast xml filename. 
+                                                          In this model it can accept upto 120hour only,
+                                                          since forecastDimension has limit upto 120 */
+                }
+            },
+            
+    "ensamble2":{
+            "name": "Ensamble 2",
+            "filePath": "/T254/all_xml/ensamble2",     /* model ensamble1 xml absolute path */     
+            "forecastHours": [24, 48, 72, 96, 120, 144, 168],    /* forecast hours */
+            "forecastDimension": "no",                 /* forecastDimension is either 'yes' or 'no'.
+                                                            If 'no', user need to select all the 
+                                                            forecast hours xml files individually. */
+                                                            
+             "files": {                 
+                 "24": "all_fcst_24hr_ctl.xml",        /* 24 hour forecast xml filename */
+                 "48": "all_fcst_48hr_ctl.xml",        /* 48 hour forecast xml filename */
+                 "72": "all_fcst_72hr_ctl.xml",        /* 72 hour forecast xml filename */
+                 "96": "all_fcst_96hr_ctl.xml",        /* 96 hour forecast xml filename */
+                 "120": "all_fcst_120hr_ctl.xml"       /* 120 hour forecast xml filename.*/ 
+                 "144": "all_fcst_144hr_ctl.xml"       /* 120 hour forecast xml filename.*/
+                 "168": "all_fcst_168hr_ctl.xml"       /* 120 hour forecast xml filename. 
+                                                          In this model it can accept upto 168hour only,
+                                                          since forecastDimension has limit upto 168 */
+                }
+            },
+            
+     "ensamble3":{
+            "name": "Ensamble 3",
+            "filePath": "/T254/all_xml/ensamble3",     /* model ensamble1 xml absolute path */     
+            "forecastHours": [24, 48, 72, 96, 120],    /* forecast hours */
+            "forecastDimension": "yes",                /* forecastDimension is either 'yes' or 'no'.
+                                                            If 'no', user need to select all the 
+                                                            forecast hours xml files individually. */
+            "analysisIncluded": "no",                  /* analysis is not included in this forecastDimension xml file */ 
+                                                            
+             "files": {                 
+                 "forecastDimensionFile": "all_anl_ctl.xml", /* This xml contains only 'forecast hours' data. 
+                                                                So no need to assign forecast hours xmlFiles individually. */
+                }
+            },
+    
+                            
+    },
+     
+     
+     
+    {"name": "CMA",
+     "institute": "China",             
+     "version": "",                   
+     "uniqueName": "China.CMA",    /* unique name of this model which is made by all the above three inputs */
+     "ensamblesAvailable": "no",
+     
+     "filePath": "/CMA/all_xml",
+     "forecastHours": [24, 48, 72, 96, 120, 144, 168], /* In this model, it has upto 168 hours */
+     "forecastDimension": "no",
+     
+     "analysisAvailable": "no", /* Here analysis is no. So no need to get the file name for that */
+     
+     "files": {         
+         "24": "all_fcst_24hr_ctl.xml",
+         "48": "all_fcst_48hr_ctl.xml",
+         "72": "all_fcst_72hr_ctl.xml",
+         "96": "all_fcst_96hr_ctl.xml", 
+         "120": "all_fcst_120hr_ctl.xml",
+         "144": "all_fcst_144hr_ctl.xml", 
+         "168": "all_fcst_168hr_ctl.xml" /* Here it accepts upto 168 hours forecast xml filename. */
+        }                
+     }, 
+      
+     {"name": "ECMWF",
+      "institute": "ECMWF",             
+      "version": "11",                   
+      "uniqueName": "ECMWF.ECMWF.11",    /* unique name of this model which is made by all the above three inputs */
+      "ensamblesAvailable": "no",
+      
+      "filePath": "/ECMWF/all_xml",      
+      "forecastHours": [24, 48, 72, 96, 120],
+      "forecastDimension": "yes", /* Here the forecastDimension given as 'yes'. So it can accept only one xml filename */
+      "analysisIncluded": "yes", /* Here the analysisIncluded given as 'yes'.
+                                     So both forecast and analysis has merged together while cdscan */
+      
+      "files": {
+          "forecastDimensionFile": "all_anl_ctl.xml", /* This xml contains both 'analysis' and 'forecast hours' data. 
+                                             So no need to assign forecast hours xmlFiles individually. */
+         }                
+     },   
+     
+     {"name": "NCEP",
+      "institute": "NCEP",             
+      "version": "1b",                   
+      "uniqueName": "NCEP.NCEP.1b",    /* unique name of this model which is made by all the above three inputs */
+      "ensamblesAvailable": "no",
+      
+      "filePath": "/NCEP/all_xml",      
+      "forecastHours": [24, 48, 72, 96, 120],
+      "forecastDimension": "yes", /* Here the forecastDimension given as 'yes'. So it can accept only one xml filename */
+      "analysisIncluded": "no", /* Here the analysisIncluded given as 'no'. */
+      "analysisAvailable": "yes",   /* Get the analysis filename */
+      
+      "files": {
+          "analysis": "all_anl_ctl.xml",
+          "forecastDimensionFile": "all_anl_ctl.xml", /* This xml contains only 'forecast hours' data. 
+                                             So no need to assign forecast hours xmlFiles individually. */
+         }                
+     },     
+     
+    ], /* models list ends here */ 
+
+"observations": [
+    /* All the observations registration falls under this list */
+
+    {"name": "NCMRWF",
+     "institute": "IMD",
+     "uniqueName": "IMD.NCMRWF",     
+     "filePath": "/NCMRWF/rainfall",  /* absolute path */
+     "files": {
+            "fileName": "rainfall_obs_2010.xml"  /* It should accept only one filename */
+            }
+    },  
+    
+    {"name": "CMA",
+     "institute": "China",
+     "uniqueName": "China.CMA",     
+     "filePath": "/CMA/rainfall",
+     "files": {
+             "fileName": "rainfall_obs_2010.xml"
+             }
+    }
+    
+    ] /* observations list ends here */
+    
+"modelClimatologies": [
+    {"name": "NCEP",
+     "institute": "NCEP",
+     "version": "",
+     "uniqueName": "NCEP.NCEP",
+     
+     "isPeriodSpecificFiles": "no",
+     "isVariableSpecificFiles": "yes",
+     "variables": ["eastward_wind", "northward_wind"],
+     
+     "filePath": "/NCMRWF/climatology/Levels",
+     "yearInClimatologyFile": 1,
+          
+     "files":{
+         "eastward_wind":  "uwnd.day.ltm.nc",
+         "northward_wind": "vwnd.day.ltm.nc"
+         }
+    },
+
+    {"name": "CMA",
+     "institute": "China",
+     "version": "",
+     "uniqueName": "China.CMA",
+     
+     "isPeriodSpecificFiles": "yes",
+     "period": ["day", "month"],
+     
+     "day": {
+         "filePath": "/CMA/climatology/Levels",
+         "yearInClimatologyFile": 1,
+         "isVariableSpecificFiles": "yes",
+         "variables": ["eastward_wind", "northward_wind"],          
+             
+         "files": {
+             "eastward_wind":  "uwnd.day.ltm.nc",
+             "northward_wind": "vwnd.day.ltm.nc"
+             }
+      },
+      
+      "month": {
+         "filePath": "/CMA/climatology/Levels",
+         "yearInClimatologyFile": 1,
+         "isVariableSpecificFiles": "yes",
+         "variables": ["eastward_wind", "northward_wind"],
+         
+         "files": {
+               "eastward_wind":  "uwnd.mon.ltm.nc",
+               "northward_wind": "vwnd.mon.ltm.nc"
+               },
+        }
+    }
+
+    {"name": "ECMWF",
+     "institute": "ECMWF",
+     "version": "",
+     "uniqueName": "ECMWF.ECMWF",
+     
+     "isPeriodSpecificFiles": "no",
+     "isVariableSpecificFiles": "no",
+     
+     "filePath": "/ECMWF/climatology/Levels",
+     "yearInClimatologyFile": 1,    
+     "files": {
+            "fileName": "climatologyFile.xml"
+            }
+    },
+    
+    {"name": "CMC",
+     "institute": "Canada",
+     "version": "",
+     "uniqueName": "Canada.CMC",
+     
+     "isPeriodSpecificFiles": "yes",
+     "period": ["day"],
+     
+     "day": {
+         "filePath": "/CMC/climatology/Levels",
+         "yearInClimatologyFile": 1,
+         "isVariableSpecificFiles": "no",
+         "files": {
+                "fileName": "climatologyFile.xml"
+                }
+         }  
+    },
+
+  ]
+   
+}        

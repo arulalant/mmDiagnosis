@@ -1,0 +1,52 @@
+uvcdat = /home/dileep/UV-CDAT_Versions/uv1_2/install/bin//python
+#uvcdat = /usr/local/uvcdat/1.2.0/bin//python
+logpath = /media/dileep/Beta/work/Log_Files/Latest
+archivepath =/media/dileep/Beta/work/Archives/Latest
+ftppath = ftp://ftp.ncmrwf.gov.in/pub/outgoing/Kuldeep/
+
+modelname1 = GFS
+# model available hours
+modelhour1 =  24, 48, 72, 96, 120, 144, 168
+# actual data path
+modeldatapath1 = /media/dileep/Beta/GFS/1p0/*
+# model data file extension
+modelfileext1 = ctl #nc
+# xml path (cdscaned xml will be stored here)
+modelxmlpath1 = /media/dileep/Beta/GFS/all_xml
+
+
+climatologyname1 = MJO
+climatologyyear1 = 4 # year 4 for the daily climatolgy
+# In this 'climatologypath1 path will be created two sub directories
+# called 'Daily' & 'Monthly' while creating climatolgies files
+climatologypath1 = /media/dileep/Beta/work/climatology
+climpartialdayfile1 = .mjo.daily.climatology.1979-2005.nc
+climpartialmonfile1 = None
+
+processfiles = /media/dileep/Beta/work/Process_Files
+plotsgraphs = /media/dileep/Beta/work/Plot_Files/MJO
+
+# yyyymmdd
+plotCeofAnlSince = 20130501
+# x axis time/date interval. Takes integer only.
+plotceoftinterval = 10
+
+
+# levels should be plotted
+plotlevel = all #850, 700, 500, 200
+
+# Monsoon Season Months
+season_jjas = june, july, august, september
+
+# Observed path
+obsname1 = AVHRR_NCEP
+obsxml1 = /home/dileep/Arulalan/work/data/all_xml/
+# obs year is must. if not required also, pl just fill wth empty ''.
+obsyear1 = 1979_2005
+
+
+# Regions
+
+
+# html path for generate static web html page
+

@@ -1,0 +1,14 @@
+Generate Lanczos filter coefficients w.r.t MISO 
+
+1.0 gen_lfilter_coeff.py 
+
+Apply Filter over models and obs
+
+2.1 do_obs_lfilter.py 
+2.2 do_model_lfilter.py 
+
+Plot for multiple year pcts 
+3.0 plot_multi_years_pcts_vs_unfilt_vs_filt.py
+
+Plot for single year 
+4.0 plot_pcts_vs_unfilt_vs_filt.py 

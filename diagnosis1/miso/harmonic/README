@@ -1,0 +1,16 @@
+Do harmonic climatolgy
+
+1.1 cal_harmonic_climatology.py 
+
+
+Do anomaly using harmonic climatolgy
+
+2.1 make_obs_anomaly.py 
+2.2 make_model_anomaly.py 
+
+
+Do extract JJAS anomaly 
+
+3.1 extract_JJAS_obs_anomaly.py
+3.2 extract_JJAS_model_anomaly.py 
+

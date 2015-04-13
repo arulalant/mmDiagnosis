@@ -1,0 +1,9 @@
+{ "global": {
+    "htmlPath": "/var/www/diagnosis",
+    "region": ["CIndia", "PenIndia", "WcstIndia", "AIR"],
+    "basePath" : "/NCMRWF"
+    "processRelativePath": "Process_Files",
+    "plotsRelativePath": "Plots_Graphs",
+    "cfName_vs_Models_XmlPath": "/NCMRWF/cfNameVsModels.xml",
+    "seasonly": ["JJAS"],
+}

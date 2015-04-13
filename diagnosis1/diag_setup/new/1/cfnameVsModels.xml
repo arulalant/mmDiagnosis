@@ -1,0 +1,101 @@
+<standard_name_table xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cf-standard-name-table-1.1.xsd">
+<version_number>18</version_number>
+<last_modified>2011-07-22T10:58:54Z</last_modified>
+
+<institution>Program for Climate Model Diagnosis and Intercomparison</institution>
+<contact>webmaster@pcmdi.llnl.gov</contact>
+
+<models>
+    <model>
+        <name>T254</name>
+        <description> This is T254 model </description>
+    </model>
+    <model>
+        <name>ECMWF</name>
+        <description> This is ECMWF model </description>
+    </model>
+    <model>
+        <name>CMS</name>
+        <description> This is CMS model </description>
+    </model>
+     <model>
+        <name>T386</name>
+        <description> This is T386 model </description>
+    </model>
+</models>
+
+<observations>
+    <observation>
+        <name>NCMRWF</name>
+        <description> This is NCMRWF, India observation </description>
+    </observation>
+</observations>
+
+<entry id="eastward_wind">
+    <canonical_units>m s-1</canonical_units>
+    <grib>33 E131</grib>
+    <amip>ua</amip>
+    <description>"Eastward" indicates a vector component which is positive when directed eastward (negative westward). Wind is defined as a two-dimensional (horizontal) air velocity vector, with no vertical component. (Vertical motion in the atmosphere has the standard name upward_air_velocity.)</description>
+    <models>
+        <model id="T254">
+            <variable>ugrdprs</variable> 
+        </model>
+        <model id="ECMWF">
+            <variable>uwind</variable> 
+        </model>
+        <model id="CMA">
+            <variable>uwnd</variable> 
+        </model>
+        <model id="T386">
+            <variable>ugrdprs</variable> 
+        </model>        
+    </models>    
+</entry>
+
+<entry id="northward_wind">
+    <canonical_units>m s-1</canonical_units>
+    <grib>34 E132</grib>
+    <amip>va</amip>
+    <description>"Northward" indicates a vector component which is positive when directed northward (negative southward). Wind is defined as a two-dimensional (horizontal) air velocity vector, with no vertical component. (Vertical motion in the atmosphere has the standard name upward_air_velocity.)</description>
+    <models>
+        <model id="T254">
+            <variable>vgrdprs</variable> 
+        </model>
+        <model id="ECMWF">
+            <variable>vwind</variable> 
+        </model>
+        <model id="CMA">
+            <variable>vwnd</variable> 
+        </model>
+        <model id="T386">
+            <variable>vgrdprs</variable> 
+        </model>        
+    </models>
+</entry>
+
+<entry id="precipitation_flux">
+    <canonical_units>kg m-2 s-1</canonical_units>
+    <grib>59</grib>
+    <amip>pr</amip>
+    <description>In accordance with common usage in geophysical disciplines, "flux" implies per unit area, called "flux density" in physics.</description>
+    <models>
+        <model id="T254">
+            <variable>apcpsfc</variable> 
+        </model>
+        <model id="ECMWF">
+            <variable>rain</variable> 
+        </model>
+        <model id="CMA">
+            <variable>rainfall</variable> 
+        </model>
+        <model id="T386">
+            <variable>apcpsfc</variable> 
+        </model>        
+    </models>
+    <observations>
+        <observation id="NCMRWF">
+            <variable>pobs</variable>
+        </observation>
+    </observations>    
+</entry>
+</standard_name_table>

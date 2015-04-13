@@ -1,0 +1,17 @@
+do anomaly
+
+
+areaAvg over regions (input=anomaly)
+
+powerSpectrum line plot_ps for all the regions
+
+meridionally average (input=anomaly)
+meridionally average (input=raw)
+
+waveNumber ; isofill (non continent) plot_ps2 for both meridionally averaged of anomaly & raw data 
+
+
+1. do_avg.py
+2. plot_ps.py 
+3. calculate_waveno.py
+4. plot_ps_2d.py

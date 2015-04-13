@@ -1,0 +1,65 @@
+uvcdat = /usr/local/uvcdat/1.3.1/bin/python
+logpath = /data/kuldeep/IITD_Work/Log_Files/Latest
+archivepath =/data/kuldeep/IITD_Work/Archives/Latest
+ftppath = 192.168.1.102 #ftp://ftp.ncmrwf.gov.in/pub/outgoing/Kuldeep/
+
+modelname1 = GFS
+# model available hours
+modelhour1 =  01, 24, 48, 72, 96, 120, 144, 168
+# actual data path
+modeldatapath1 = /data/kuldeep/Model_Data/GFS/1p0/*
+# model data file extension
+modelfileext1 = ctl #nc
+# xml path (cdscaned xml will be stored here)
+modelxmlpath1 = /data/kuldeep/Model_Data/GFS/all_xml
+
+
+climatologyname1 = MJO
+climatologyyear1 = 4 # year 4 for the daily climatolgy
+# In this 'climatologypath1 path will be created two sub directories
+# called 'Daily' & 'Monthly' while creating climatolgies files
+climatologypath1 = /data/kuldeep/IITD_Work/climatology
+climpartialdayfile1 = .mjo.daily.climatology.1979-2005.nc
+climpartialmonfile1 = None
+
+climatologyname2 = MISO
+climatologyyear2 = 1 # year 4 for the daily climatolgy
+# In this 'climatologypath1 path will be created two sub directories
+# called 'Daily' & 'Monthly' while creating climatolgies files
+climatologypath2 = /data/kuldeep/IITD_Work/climatology
+climpartialdayfile2 = .miso.gpcp.daily.climatology.1997-2008.nc
+climpartialmonfile2 = None
+
+processfiles = /data/kuldeep/IITD_Work/Process_Files
+plotsgraphs = /data/kuldeep/IITD_Work/Plot_Files/MJO
+
+# yyyymmdd
+plotCeofAnlSince = 20140501
+# x axis time/date interval. Takes integer only.
+plotceoftinterval = 10
+# while plotting ceof, the below hours will be neglected
+plotexcludehour = 01
+
+# levels should be plotted
+plotlevel = all #850, 700, 500, 200
+
+# Monsoon Season Months
+season_jjas = june, july, august, september
+
+# Observed path
+obsname1 = AVHRR_NCEP
+obsxml1 = /data/kuldeep/IITD_Work/obs_data/all_xml 
+# obs year is must. if not required also, pl just fill wth empty ''.
+obsyear1 = 1979_2005
+
+# Observed path
+obsname2 = GPCP
+obsxml2 = /data/kuldeep/IITD_Work/obs_data/?????
+# obs year is must. if not required also, pl just fill wth empty ''.
+obsyear2 = 1997_2008
+
+# Regions
+
+
+# html path for generate static web html page
+

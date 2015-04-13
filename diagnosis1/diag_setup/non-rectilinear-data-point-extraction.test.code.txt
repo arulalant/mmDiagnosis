@@ -1,0 +1,392 @@
+>>> f = cdms2.open('tos_Omon_MPI-ESM-LR_historical_r1i1p1_185001-200512.nc')
+>>> x = f('tos', time=slice(1))
+>>> x.info()
+*** Description of Slab tos ***
+id: tos
+shape: (1, 220, 256)
+filename: 
+missing_value: 1e+20
+comments: 
+grid_name: grid_1
+grid_type: CurvilinearGrid
+time_statistic: 
+long_name: Sea Surface Temperature
+units: K
+comment: "this may differ from ""surface temperature"" in regions of sea ice."
+_FillValue: [  1.00000002e+20]
+tileIndex: None
+associated_files: baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_ocean_fx_MPI-ESM-LR_historical_r0i0p0.nc areacello: areacello_fx_MPI-ESM-LR_historical_r0i0p0.nc
+coordinates: lat lon
+standard_name: sea_surface_temperature
+cell_methods: time: mean
+cell_measures: area: areacello
+Grid has Python id 0x96bbe0c.
+** Dimension 1 **
+   id: time
+   Designated a time axis.
+   units:  days since 1850-1-1 00:00:00
+   Length: 1
+   First:  15.5
+   Last:   15.5
+   Other axis attributes:
+      long_name: time
+      standard_name: time
+      calendar: proleptic_gregorian
+      axis: T
+   Python id:  0x96b3e4c
+** Dimension 2 **
+   id: j
+   units:  1
+   Length: 220
+   First:  1
+   Last:   220
+   Other axis attributes:
+      long_name: cell index along second dimension
+   Python id:  0x96b3d8c
+** Dimension 3 **
+   id: i
+   units:  1
+   Length: 256
+   First:  1
+   Last:   256
+   Other axis attributes:
+      long_name: cell index along first dimension
+   Python id:  0x96b3dac
+*** End of description for tos ***
+>>> x.getLatitude()
+lat
+masked_array(data =
+ [[ 76.35549927  76.29812622  76.23743439 ...,  76.40948486  76.35549927
+   76.29812622]
+ [ 76.46096039  76.40167236  76.33901978 ...,  76.51672363  76.46096039
+   76.40167236]
+ [ 76.56884766  76.50757599  76.44281006 ...,  76.62645721  76.56884766
+   76.50757599]
+ ..., 
+ [-76.83729553 -76.98274231 -77.12919617 ..., -76.69287109 -76.83729553
+  -76.98274231]
+ [-77.12039948 -77.26531219 -77.41123199 ..., -76.97653198 -77.12039948
+  -77.26531219]
+ [-77.39488983 -77.53923035 -77.68463135 ..., -77.25165558 -77.39488983
+  -77.53923035]],
+             mask =
+ False,
+       fill_value = 1e+20)
+
+
+>>> lat = x.getLatitude()
+>>> lat[0]
+lat
+masked_array(data = [ 76.35549927  76.29812622  76.23743439  76.17345428  76.10630798
+  76.03609467  75.96289825  75.88684845  75.80792999  75.72631836
+  75.6421051   75.55537415  75.46624756  75.37480927  75.28113556
+  75.18537903  75.08757782  74.98788452  74.88635254  74.78318024
+  74.6783371   74.57199097  74.46422577  74.35517883  74.24488068
+  74.13348389  74.02099609  73.9076004   73.79334259  73.67832184
+  73.56266022  73.44637299  73.32957458  73.21238708  73.09487152
+  72.97705841  72.85906982  72.74100494  72.6228714   72.50481415
+  72.38686371  72.26912689  72.15161133  72.03442383  71.91764069
+  71.8013382   71.68553925  71.57032776  71.45572662  71.34185028
+  71.22874451  71.11638641  71.00497437  70.8944397   70.78488922
+  70.67636108  70.56889343  70.46255493  70.3573761   70.25343323
+  70.15071869  70.04928589  69.94921875  69.85054016  69.75325775
+  69.65746307  69.56313324  69.47035217  69.37913513  69.28953552
+  69.20152283  69.11521149  69.03058624  68.94768524  68.86656189
+  68.7871933   68.70965576  68.63392639  68.56006622  68.48814392
+  68.41808319  68.34996796  68.28379822  68.21960449  68.15743256
+  68.09725189  68.03913116  67.98301697  67.92903137  67.87708282
+  67.82723999  67.77953339  67.73394012  67.69049835  67.64920807
+  67.61010742  67.57315063  67.53839111  67.50585175  67.47547913
+  67.44734192  67.4214325   67.39775848  67.376297    67.35709381
+  67.34013367  67.32540894  67.31295776  67.30274963  67.29480743
+  67.28913879  67.2857132   67.28455353  67.2856369   67.28900146
+  67.2946167   67.30249786  67.31262207  67.32501221  67.33959961
+  67.35647583  67.3755722   67.39691162  67.4204483   67.44620514
+  67.4741745   67.50434113  67.53668213  67.57120514  67.60787964
+  67.64673615  67.68772888  67.73085785  67.7760849   67.82344055
+  67.8728714   67.92438507  67.97796631  68.03353882  68.09117126
+  68.15080261  68.21244049  68.27602386  68.34155273  68.40899658
+  68.47832489  68.54956818  68.62263489  68.69760895  68.77429199
+  68.85280609  68.93307495  69.01503754  69.09875488  69.18405914
+  69.27106476  69.35965729  69.4498291   69.54153442  69.63474274
+  69.72942352  69.82553864  69.92307281  70.02194214  70.12218475
+  70.22364044  70.32639313  70.43029022  70.53536987  70.64156342
+  70.74882507  70.85707855  70.96635437  71.07648468  71.18750763
+  71.29938507  71.41201019  71.5253067   71.63930511  71.7538681
+  71.86896515  71.98458099  72.10055542  72.21694183  72.33357239
+  72.45045471  72.56746674  72.68457794  72.80169678  72.91872406
+  73.03566742  73.15240479  73.26881409  73.38489532  73.50054169
+  73.61569214  73.73019409  73.84401703  73.95703125  74.06920624
+  74.18042755  74.29060364  74.39963531  74.50739288  74.61386871
+  74.71899414  74.8225174   74.92442322  75.0246582   75.12309265
+  75.21965027  75.31412506  75.40647888  75.49663544  75.5845871
+  75.66999817  75.75299072  75.83335876  75.91104126  75.98590851
+  76.05793762  76.12689972  76.19286346  76.25566101  76.31520844
+  76.37137604  76.42424774  76.47357941  76.51940155  76.56159973
+  76.60012817  76.6348877   76.66589355  76.69304657  76.71631622
+  76.73567963  76.75113678  76.7625351   76.77005005  76.77351379
+  76.77296448  76.76844025  76.75989532  76.7473526   76.73084259
+  76.71043396  76.68603516  76.65781403  76.6257019   76.58981323
+  76.55020142  76.50689697  76.45996857  76.40948486  76.35549927
+  76.29812622],
+             mask = False,
+       fill_value = 1e+20)
+
+
+>>> len(lat[0])
+256
+>>> len(lat)
+220
+>>> lon = x.getLongitude()
+>>> len(lon[0])
+256
+>>> len(lon)
+220
+>>> f.listvariables()
+['time_bnds', 'tos', 'lon', 'lat_vertices', 'lat', 'lon_vertices']
+>>> lat_vert = f('lat_vertices')
+>>> lat_vert[0]
+lat_vertices
+masked_array(data =
+ [[ 76.33065033  76.4358139   76.37921906  76.27591705]
+ [ 76.27591705  76.37921906  76.31921387  76.21773529]
+ [ 76.21773529  76.31921387  76.25583649  76.15638733]
+ ..., 
+ [ 76.38204956  76.48892212  76.4358139   76.33065033]
+ [ 76.33065033  76.4358139   76.37921906  76.27591705]
+ [ 76.27591705  76.37921906  76.31921387  76.21773529]],
+             mask =
+ False,
+       fill_value = 1e+20)
+
+
+>>> lat_vert[0].shape
+(256, 4)
+>>> lat_vert.shape
+(220, 256, 4)
+>>> lat[0].shape
+(256,)
+>>> lat_vert[0].shape
+(256, 4)
+>>> lat_vert[0][0]
+lat_vertices
+masked_array(data = [ 76.33065033  76.4358139   76.37921906  76.27591705],
+             mask = False,
+       fill_value = 1e+20)
+
+
+>>> lat[0][0]
+variable_41
+masked_array(data = 76.3554992676,
+             mask = False,
+       fill_value = 1e+20)
+
+
+>>> lon[0][0]
+variable_50
+masked_array(data = 312.745300293,
+             mask = False,
+       fill_value = 1e+20)
+
+
+>>> lon_vert = f('lon_vertices')
+>>> lon[0][0]
+variable_60
+masked_array(data = 312.745300293,
+             mask = False,
+       fill_value = 1e+20)
+
+
+>>> lon_vert[0][0]
+lon_vertices
+masked_array(data = [ 313.08163452  312.85375977  312.40228271  312.64361572],
+             mask = False,
+       fill_value = 1e+20)
+
+
+>>> x[0][0]
+tos
+masked_array(data = [-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+ -- -- -- -- -- --],
+             mask = [ True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True  True  True  True  True  True  True  True  True
+  True  True  True  True],
+       fill_value = 1e+20)
+
+
+>>> x.shape
+(1, 220, 256)
+>>> x[0][0].shape
+(256,)
+>>> x[0][0][0].shape
+()
+>>> x[0][0][0]
+masked_array(data = --,
+             mask = True,
+       fill_value = 1e+20)
+
+>>> x[0][0][60]
+masked_array(data = --,
+             mask = True,
+       fill_value = 1e+20)
+
+>>> x[0][86][60]
+masked_array(data = --,
+             mask = True,
+       fill_value = 1e+20)
+
+>>> x
+tos
+masked_array(data =
+ [[[-- -- -- ..., -- -- --]
+  [-- -- -- ..., -- -- --]
+  [-- -- -- ..., -- -- --]
+  ..., 
+  [-- -- -- ..., -- -- --]
+  [-- -- -- ..., -- -- --]
+  [-- -- -- ..., -- -- --]]],
+             mask =
+ [[[ True  True  True ...,  True  True  True]
+  [ True  True  True ...,  True  True  True]
+  [ True  True  True ...,  True  True  True]
+  ..., 
+  [ True  True  True ...,  True  True  True]
+  [ True  True  True ...,  True  True  True]
+  [ True  True  True ...,  True  True  True]]],
+       fill_value = 1e+20)
+
+
+>>> import vcs
+>>> v = vcs.init()
+>>> v.plot(x)
+(220, 256, 4)
+<vcs.displayplot.Dp object at 0x9bd0464>
+>>> x[0][110][180]
+masked_array(data = --,
+             mask = True,
+       fill_value = 1e+20)
+
+>>> x[0][180][110]
+275.6932373046875
+>>> x[0][180][110].getLatitude()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'float' object has no attribute 'getLatitude'
+>>> x[0][180][110].__class__
+<type 'float'>
+>>> 
+rajeev@rajeev-desktop:~/work/data/cmip5/MPI-ESM-LR/historical/tos/r1i1p1$ cd
+rajeev@rajeev-desktop:~$ alias uvcdat
+alias uvcdat='/home/rajeev/uvcdat/install/bin/python'
+rajeev@rajeev-desktop:~$ cd /home/rajeev/uvcdat/install/lib/python2.7/site-packages/cdms2
+rajeev@rajeev-desktop:~/uvcdat/install/lib/python2.7/site-packages/cdms2$ gedit gsRegrid.py
+rajeev@rajeev-desktop:~/uvcdat/install/lib/python2.7/site-packages/cdms2$ 
+
+
+apply this logic
+
+l = 0 lat 
+cond = (lat_vert[...,...,0] > l and lat_vert[...,...,1] < l and lat_vert[...,...,2] > l and lat_vert[...,...,3] > l)
+r = MV2.masked_array(lat_vert, cond)
+np.argsor or argmin(r, where having the values True) # get the index
+
+
+
+
+do the same stuff for lon 
+
+so ultimately we may found the j and i... by get the indexes of the lat_vert and lon_vert of masked true value.
+
+>>> m = MV2.masked_array((lat_vert[...,...,0] > l))
+>>> m.shape
+(300, 360)
+>>> lat_vert.shape
+(300, 360, 4)
+
+
+
+
+>>> x1 = MV2.masked_array(lat_v[...,...,0]>l)
+>>> x1.shape
+(300, 360)
+
+>>> x2 = MV2.masked_array(lat_v[...,...,1] <l)
+>>> x3 = MV2.masked_array(lat_v[...,...,2] > l)
+>>> x4 = MV2.masked_array(lat_v[...,...,3] >l)
+>>> l
+0
+>>> x4.shape
+(300, 360)
+>>> xf = x1 + x2 + x3 + x4   (try xf = x1 * x2 * x3 * x4)
+>>> xf.shape
+(300, 360)
+
+>>> ll = np.ma.masked_array(lll).reshape((360,4))
+>>> ll.shape
+(360, 4)
+>>> d = np.ma.empty((300,360,4))
+>>> for i in range(300):
+... 	ll = [xf[i]] * 4
+... 	ll = np.ma.masked_array(ll).reshape((360,4))
+... 	d[i] = ll
+... 
+>>> d.shape
+(300, 360, 4)
+>>> dummy = d
+>>> dummy.shape
+(300, 360, 4)
+>>> new_lat_v = MV2.masked_array(lat_v, mask=dummy)
+>>> new_lat_v.shape
+(300, 360, 4)
+>>> r = np.argwhere(new_lat_v)
+>>> r
+array([], shape=(0, 3), dtype=int64)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

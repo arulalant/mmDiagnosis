@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<setup>
+  <cdat>
+    <path/>
+  </cdat>
+  <institutions>
+    <institution>
+       
+    </institution>
+    <institution>
+      NCMRWF
+    </institution>
+    <institution>
+      CMA
+    </institution>
+    <institution>
+      CMC
+    </institution>
+  </institutions>
+  <climatology>
+    <time-resolution>
+      <time>
+         
+      </time>
+      <time>
+        daily
+      </time>
+      <time>
+        monthly
+      </time>
+    </time-resolution>
+  </climatology>
+</setup>

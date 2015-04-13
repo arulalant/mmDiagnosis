@@ -1,0 +1,25 @@
+MISO Steps
+==========
+
+1) normal climatology from 1997 to 2008
+
+harmonic :
+    2) get sum of mean and first 3 harmonic over above climatology
+    3) do anomaly using step2 harmonic climatology
+    4) extract only JJAS for all years from anomaly
+
+eeof :
+    5) Apply EEOFs with lag 15 over step4 JJAS anomaly 
+    6) Extract first 2 EEOFs and PCTS and store it
+    7) Plot EEOFs 
+
+filter :
+    8) Apply Lanczos Filter with MISO standard    
+    9) Plot PCTS Vs Unfiltered Vs Filtered
+    
+ph3d :
+    
+    10) calculate Normalized PCTS 
+    11) compute amplitudes and phases
+    12) Plot PCTS phase 3d 
+

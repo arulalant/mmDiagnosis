@@ -1,0 +1,183 @@
+/*
+.. module:: diagnosis.css
+   :synopsis: This script will be imported in the 'index.html' for the
+              purpose of usability events like show, hide and to make that
+              html as stylish manner.
+
+              we used showCls and hideCls to user's view purpose.
+
+Version : 0.1a
+
+Written by: Arulalan.T
+
+Date: 16.11.2011
+Updated : 20.11.2011
+*/
+
+.hideCls { display:none; }
+
+.showCls { display:block; }
+
+.headingCls{  text-align:center; }
+
+a:link {text-decoration:none;}    /* unvisited link , to remove underline */
+a:visited {text-decoration:none;} /* visited link */
+a:hover {text-decoration:underline;}   /* mouse over link */
+a:active {text-decoration:underline;}  /* selected link */
+
+/* To set background image */
+body
+{
+    background-image:url('gradient-blue.png');
+    background-repeat:repeat-x;
+}
+
+#docdivid{
+position:absolute;
+top:20px;
+right:20px;
+}
+.tableCls
+{
+margin-top:50px;
+margin-bottom:100px;
+margin-right:50px;
+margin-left:12px;
+}
+
+table
+{
+border-collapse:collapse;
+}
+table, td, th
+{
+border:1px solid #669900;
+}
+thead
+{
+background-color:#669900;
+color:white;
+height:40px;
+}
+
+/* Space in b/w the text and the table border of td elements */
+td
+{
+padding:10px;
+text-align:center;
+font-size:14px;
+}
+
+.rowCls{
+font-weight:normal;
+text-decoration:none;
+font-size:14px;
+width: 65px;
+padding-top:20px;
+padding-bottom:0px;
+}
+
+.rowspanCls{
+width: 200px;
+}
+
+.levelCls{
+width: 65px;
+}
+
+.moreCls{
+padding-top:10px;
+padding-bottom:0px;
+padding-right:5px;
+padding-left:5px;
+border:none;
+
+text-align:center;
+font-size:14px;
+vertical-align:text-bottom;
+font-weight:bold;
+color:red;
+}
+
+
+
+.oddCls{
+background-color:#F0F8FF;
+}
+
+.evenCls{
+background-color:#E6E6FA;
+}
+
+
+/* Change the table row background color while mouse over */
+.linkCls:hover{ background-color:#FFFF4D;}
+
+.headTHCls,.cellCls{
+width: 50px;
+}
+/* Setting position alignments for the below class and id elements */
+#preview{
+position:fixed;
+top:100px;
+right:180px;
+}
+
+#loading{
+position:absolute;
+top:10px;
+left:50%;
+color:red;
+text-decoration:blink;
+}
+
+.previewCls{
+text-align:center;
+}
+
+#txtdiv{
+position:absolute;
+top:145px;
+left:70px;
+}
+
+#modelSpan{
+position:absolute;
+top:160px;
+left:250px;
+}
+
+
+.modelCls{
+position:absolute;
+top:200px;
+left:58px;
+}
+
+.leftTag{margin-left:12px;}
+
+.Pprocess{margin-top:6px;}
+
+.Pyear, .Ptime, .Phrreg{margin-top:20px;}
+
+
+
+.selectCls{
+margin-left:200px;
+}
+
+
+.tableCls{
+position:relative;
+}
+.tableSecondary{
+float:left;
+
+}
+
+.tableTr{
+clear:both;
+position:relative;
+}
+
+

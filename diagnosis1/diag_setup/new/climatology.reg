@@ -1,0 +1,17 @@
+{ "modelClimatologiesDataSet": [
+    {"name": "NCEP",
+     "path": "/NCMRWF/climatology/Levels",
+     "yearInClimatologyFile": 1,
+     "dayPartialFileName": ".day.ltm.nc",
+     "monPartialFileName": ".mon.ltm.nc"
+    },
+
+    {"name": "ECMWF",
+     "path": "/ECMWF/climatology/Levels",
+     "yearInClimatologyFile": 1,
+     "dayPartialFileName": ".day.ltm.nc",
+     "monPartialFileName": ".mon.ltm.nc"
+    },
+
+  ]
+}

@@ -1,0 +1,10 @@
+{ "modelReferenceDataSet": [
+    {"name": "T254",
+     "catogory": "model.reg"
+     },
+
+    {"name": "NCMRWF",
+     "catogory": "observation.reg"
+     }
+  ]
+}

@@ -1,0 +1,427 @@
+"""
+.. module:: compute_daly_anomaly.py
+   :synopsis: This script should calculate the anomaly for every day and
+              store it as nc files in the appropriate directories.
+.. moduleauthor:: Arulalan.T <arulalant@gmail.com>
+
+"""
+
+import os
+import sys
+import cdms2
+import cdtime
+from regrid2 import Regridder
+# setting the absolute path of the previous directory
+# getting the this py module path by __file__ variable
+# pass that __file__ to the os.path.dirname, returns the path of this module
+__diagnosisDir__ = os.path.dirname(__file__)
+previousDir = os.path.abspath(os.path.join(__diagnosisDir__, '..'))
+# adding the previous path to python path
+sys.path.append(previousDir)
+# import xml_data_acces.py from previous directory diagnosisutils
+import diagnosisutils.xml_data_access as xml_data_access
+from diagnosisutils.timeutils import TimeUtility
+from setup.varsdict import variables
+from setup.globalconfig import models, climatologies, processfilesPath
+from setup.gendir import createDirsIfNotExists
+import setup.netcdf_settings
+
+# create time utility object
+timobj = TimeUtility()
+
+# timeAxis check value to skip the anomaly process for the existing month in
+# the mean nc file
+__timeCheck__ = True
+
+
+def convertTimeIntegratedToNormal(data, hour):
+    # Time integrated data unit Wsm^-2. Converted to Wm^2.
+    return data / (float(hour) * 60 * 60)
+# end of def convertTimeIntegratedToNormal(data, hour, sign=1):
+
+
+def genDailyAnomalyDirs(modelname, modelpath, modelhour, climregridpath,
+                                   climpfilename, climatologyyear, **kwarg):
+    """
+    :func:`genDailyAnomalyDirs` : It should generate the directory structure
+            whenever it needs. It reads the timeAxis information of the
+            model data xml file(which is updating it by cdscan). It can
+            calculate daily anomaly for model analysis and its forecast hours.
+            It should become daily progress.
+
+    Inputs : modelname is the model data name, which will become part of the
+             directory structure.
+             modelpath is the absolute path of data where the model xml files
+             are located.
+             modelhour is the forecast hours to do anomaly.
+             climregridpath is the absolute path of the climatolgy regridded
+             path w.r.t to this model data resolution (both horizontal and
+             vertical)
+             climpfilename is the climatolgy Partial File Name to combine the
+             this passed name with (at the end) of the climatolgy var name to
+             open the climatolgy files.
+             climatolgyyear is the year of climatolgy data.
+
+    Outputs : It should create the directory structure in the processfilesPath
+              and create the processed nc files.
+
+    Written By : Arulalan.T
+
+    Date : 30.12.2011
+
+    """
+
+    xmlobj = xml_data_access.GribXmlAccess(modelpath)
+    # get one model var name from the global 'vars.txt' file
+    mvar = variables.get(modelname).values()[0].model_var
+    modeldataset = xmlobj[mvar, 'a']
+    # no need to do _correctTimeAxis now. Lets remove it later
+    # get the timeAxis of modeldata set and correct its bounds
+    modeltime = timobj._correctTimeAxis(modeldataset.getTime())
+
+    # create modelname, Anomaly directories if it is not exists
+    childMeanPath = createDirsIfNotExists(processfilesPath,
+                                         [modelname, 'Anomaly'])
+
+    latestday = modeltime.asComponentTime()[-1]
+    # get the year
+    year = str(latestday.year)
+    # create Mean Root Year,Month directories if it is not exists
+    meanAnomalyPath = createDirsIfNotExists(childMeanPath,
+                                              [year, 'Daily'])
+
+    # calling below fn to create daily anomaly for model analysis
+    dailyAnlAnomalyPath = createDirsIfNotExists(meanAnomalyPath, 'Analysis')
+    Type = 'a'
+    genDailyAnomalyFiles(dailyAnlAnomalyPath, Type, None, year,
+                         climregridpath, climpfilename, climatologyyear,
+                          modelName=modelname, modelXmlObj=xmlobj)
+
+    # calling below fn to create daily anomaly for model fcst hours
+    for hr in modelhour:
+        Type = 'f'
+        dailyFHrAnomalyPath = createDirsIfNotExists(meanAnomalyPath, hr)
+        genDailyAnomalyFiles(dailyFHrAnomalyPath, Type, hr, year,
+                        climregridpath, climpfilename, climatologyyear,
+                        modelName=modelname, modelXmlObj=xmlobj, **kwarg)
+    # close all the opened xml file objects
+    xmlobj.closeXmlObjs()
+    # end of for year in availableMonths.keys():
+# end of def genDailyAnomalyDirs()
+
+
+def genDailyAnomalyFiles(dailyAnomalyPath, modelType, modelHour, year,
+                climRegridPath, climPFileName, climatologyYear, **kwarg):
+    """
+    :func:`genDailyAnomalyFiles` : It should calculate daily anomaly
+            from the daily analysis and daily climatolgy for the current day.
+            i.e. daily model analysis - daily climatolgy
+            Finally stores it as nc files in corresponding directory path
+            which are passed in this function args.
+
+            Do the same procedure for the model forecast hours anomaly.
+            i.e. daily model forecast - daily climatolgy
+
+    Inputs : dailyAnomalyPath is the absolute path where the processed mean
+             anomaly nc files are going to store.
+             modelType is either 'a' for 'analysis' or 'f' for 'forecast'.
+             modelHour is the forecast hour.
+             climRegridPath is the absolute path #[where the regridded monthly
+             mean climatologies (w.r.t the model vertical resolution) optional]#
+             nc files were already stored.
+             climPFileName is the partial nc filename of the climatolgy.
+             climatologyYear is the year of the climatolgy to access it.
+
+    KWargs: modelName, modelXmlPath, modelXmlObj, cregrid, dregrid,
+
+        modelName - is the model data name which will become part of the
+                    process nc files name.
+        modelPath - is the absolute path of data where the model xml files
+                    are located.
+        modelXmlObj - is an instance of the GribXmlAccess class instance.
+             If we are passing modelXmlObj means, it will be optimized one
+             when we calls this same function for same model for different
+             months.
+             We can pass either modelXmlPath or modelXmlObj KWarg is enough.
+
+        convertTI2N - It takes either True or False. If it is True, then the
+            model data will be converted from Time Integrated to Normal form.
+            i.e. Units will be converted from Wsm^-2 to Wm^2.
+
+        sign - change sign of the model data (will be used in convertTI2N fn)
+
+        When modeldata and climatology shapes are mis-match, then
+        cregrid : if True, then climatology data will be regridded w.r.t
+                  model/obs/data and then anomaly will be calculated.
+
+        dregrid : if True, then model/obs/data will be regridded w.r.t
+                 climatology data and then anomaly will be calculated.
+
+        ..note:: We can not enable both cregrid and dregrid at the same time.
+
+    Outputs : It should create daily anomaly for the particular variables which
+              are all set the clim_var option in the vars.txt file. Finally
+              store it as nc file formate in the proper directories structure
+              (modelname, 'Anomaly', year, daily and then 'analysis' or
+              fcst hours hierarchy).
+
+    Written By : Arulalan.T
+
+    Date : 30.12.2011
+    Updated Date : 02.07.2013
+
+    """
+
+    modelXmlObj, modelPath = None, None
+    if 'modelName' in kwarg:
+        modelName = kwarg.get('modelName')
+    else:
+        raise RuntimeError("KWarg modelName must be passed")
+
+    if 'modelXmlObj' in kwarg:
+        modelXmlObj = kwarg.get('modelXmlObj')
+    elif 'modelXmlPath' in kwarg:
+        modelPath = kwarg.get('modelXmlPath')
+    else:
+        raise RuntimeError("you must pass atleast one KWargs of modelXmlPath \
+                            or modelXmlPath ")
+
+    if not modelXmlObj:
+        xmlobj = xml_data_access.GribXmlAccess(modelPath)
+    else:
+        if isinstance(modelXmlObj, xml_data_access.GribXmlAccess):
+            xmlobj = modelXmlObj
+        else:
+            raise ValueError("Passed modelXmlObj instance %s is not an \
+                    instance of GribXmlAccess class " % type(modelXmlObj))
+
+    cregrid = kwarg.get('cregrid', False)
+    dregrid = kwarg.get('dregrid', False)
+    convertTI2N = kwarg.get('convertTI2N', False)
+    sign = kwarg.get('sign', 1)
+
+    # get the nc files name of mean anomaly
+    ncfiles = [f for f in os.listdir(dailyAnomalyPath) if f.endswith('.nc')]
+    # make ncfiles as dictionary with key as var name
+    ncfiledic = {}
+    for ncfile in ncfiles:
+        var = ncfile.split('_')[0]
+        ncfiledic[var] = ncfile
+    # make memory free
+    del ncfiles
+
+    modelvariables = xmlobj.listvariable(Type=modelType, hour=modelHour)
+
+    # get the namedtuple object from the global 'vars.txt' file
+    totalvars = variables.get(modelName)
+    for globalvar in totalvars.itervalues():
+        # get the model var name
+        mvar = globalvar.model_var
+        # get the climatolgy var name
+        cvar = globalvar.clim_var
+
+        if not cvar:
+            print "Climatology var name is empty string. So skipping anomaly \
+                process for %s model var name " % mvar
+            continue
+        # end of if not cvar:
+
+        if not mvar in modelvariables:
+            print "The variable %s is not available in the xml anl file object" % mvar
+            print "So skipping the anomaly and mean analysis processes \
+                   for this variable %s which is one of the keys of the \
+                   variables dictionary" % mvar
+            continue
+        # end of if not mvar in allvariables:
+
+        # partial nc file name
+        pFileName = mvar + '_' + modelName + '_' + year + '_daily_'
+        if modelType in ['a', 'anl']:
+            pFileName += 'anl'
+        elif modelType in ['f', 'fcst']:
+            pFileName += 'f' + modelHour + 'hr'
+
+        anomalyLatestDate = None
+        # store anomaly into proper nc file
+        if mvar in ncfiledic:
+            anomalyFileName = ncfiledic.get(mvar)
+            anomalyFilePath = dailyAnomalyPath + '/' + anomalyFileName
+            anomalyLatestDate = None
+            try:
+                # open nc file in append mode
+                anomalyFile = cdms2.open(anomalyFilePath, 'a')
+                # get the ncfile timeAxis
+                fileTime = anomalyFile[mvar].getTime()
+                anomalyLatestDate = xmlobj[mvar, 'a'].getTime().asComponentTime()[-1]
+                # Do check either this month timeAxis is already exists in
+                # the nc file's timeAxis or not. If exists means skip it.
+                if __timeCheck__:
+                    if anomalyLatestDate in fileTime.asComponentTime():
+                        print "The daily anomaly is already exists in the \
+                               file %s. So skipping var '%s' " % \
+                                        (anomalyFileName, mvar)
+                        anomalyFile.close()
+                        continue
+                # end of if __timeCheck__:
+            except (AttributeError, cdms2.error.CDMSError):
+                # if it getting this error means, it may not written
+                # properly. So open nc file in write mode freshly.
+                print "Got Problem. nc file is correpted at last time. \
+                       May be lost the previous days data.\
+                       Now creating same nc file '%s' freshly & fully " \
+                       % (anomalyFileName)
+                anomalyFile = cdms2.open(anomalyFilePath, 'w')
+        else:
+            # generate the nc filename
+            anomalyFileName = pFileName + '_anomaly.nc'
+            anomalyFilePath = dailyAnomalyPath + '/' + anomalyFileName
+            # open new nc file in write mode
+            anomalyFile = cdms2.open(anomalyFilePath, 'w')
+        # end of if mvar in ncfiledic:
+
+        # generate the climatology file name
+        climatologyFile = cvar + climPFileName
+        cfile = cdms2.open(climRegridPath + '/' + climatologyFile, 'r')
+
+        # get the model data
+        modelObj = xmlobj[mvar, modelType, modelHour]
+        modelTime = modelObj.getTime().asComponentTime()
+
+        levAxis = modelObj.getLevel()
+        latAxis = modelObj.getLatitude()
+        lonAxis = modelObj.getLongitude()
+
+        regridfunc = None
+
+        if anomalyLatestDate:
+            nextIndex = modelTime.index(anomalyLatestDate) + 1
+            modelTime = modelTime[nextIndex:]
+        print "Writing daily anomaly into %s file \n" % (anomalyFileName)
+        for mdate in modelTime:
+            try:
+                # get the model data for this day alone
+                modelData = xmlobj.getData(mvar, Type=modelType,
+                                           hour=modelHour, date=mdate)
+            except:
+                print "Coundn't get the analysis data of %s var %s time" \
+                                                         % (mvar, mdate)
+                print "So skipping the anomaly for the '%s' variable" % mvar
+                continue
+            # end of try:
+
+            climDataTime = cdtime.comptime(climatologyYear, mdate.month, mdate.day)
+
+            try:
+                # get the climatolgy data for this month alone
+                climatologyData = cfile(cvar, time=climDataTime)
+            except:
+                print "Coundn't get the climatolgy data for the variable %s and \
+                       time %s " % (cvar, climDataTime)
+                print "So skipping anomaly for the variable %s" % mvar
+                continue
+            # end of try:
+            print "Calculating Daily Anomaly on ", mdate
+
+            if convertTI2N:
+                # Time integrated data unit Wsm^-2. Converted to Wm^2.
+                modelData = convertTimeIntegratedToNormal(modelData, modelHour)
+            # end of if convertTI2N:
+            if sign == -1:
+                # Changing Sign and making OLR data Positive
+                modelData = modelData * (-1)
+            # end of if sign == -1:
+
+            # anomaly
+            if modelData.shape == climatologyData.shape:
+                # calculate anomaly
+                anomaly = modelData - climatologyData
+            else:
+                clim_grid = climatologyData.getGrid()
+                data_grid = modelData.getGrid()
+                if cregrid and not dregrid:
+                    # Regridding the climatology data
+                    # Creating the horizontal lat,lon regrid
+                    # Here 'clim_grid' is the source and 'data_grid' is the target
+                    if not regridfunc:
+                        regridfunc = Regridder(clim_grid, data_grid)
+                    # end of if not regridfunc:
+                    climatologyData = regridfunc(climatologyData)
+                elif dregrid and not cregrid:
+                    # Regridding the model/obs data
+                    # Creating the horizontal lat,lon regrid
+                    # Here 'data_grid' is the source and 'clim_grid' is the target
+                    if not regridfunc:
+                        regridfunc = Regridder(data_grid, clim_grid)
+                        # update the regridded data axis
+                        latAxis = climatologyData.getLatitude()
+                        lonAxis = climatologyData.getLongitude()
+                        levAxis = climatologyData.getLevel()
+                    # end of if not regridfunc:
+                    modelData = regridfunc(modelData)
+                elif dregrid and cregrid:
+                    raise ValueError("Can not do both 'cregrid' and 'dregrid'. \
+                                         Make one option as False.")
+                elif not dregrid and not cregrid:
+                    print "model data shape ", modelData.shape
+                    print "climatology data shape ", climatologyData.shape
+                    raise ValueError("model data and climatology data shapes are mis-match.")
+                # end of if cregrid and not dregrid:
+                # calculate anomaly for regridded data sets.
+                anomaly = modelData - climatologyData
+            # end of if data.shape == climatology.shape:
+            # make free memory
+            del modelData, climatologyData
+
+            mstart = timobj._getDayCountOfYear(mdate)
+            startDayOfYear = '%s-1-1' % str(mdate.year)
+            dailyAnomalyTime = timobj._generateTimeAxis([mstart], startDayOfYear)
+            # setting model time axis to the anomaly
+            # get the needed axis list
+            axislist = [axis for axis in (dailyAnomalyTime, levAxis, latAxis, lonAxis) if axis]
+            # set the axis information to the anomaly
+            anomaly.setAxisList(axislist)
+            anomaly.id = mvar
+            #anomaly.comments = 'monthly mean anomaly of %s model data of %s' % (modelName, year)
+            anomalyFile.write(anomaly)
+            # make memory free
+            del anomaly
+        # end of for mdate in modelTime:
+        anomalyFile.close()
+    # end of for globalvar in totalvars.itervalues():
+# end of def genDailyAnomalyFiles(...):
+
+if __name__ == '__main__':
+
+    if len(models) == len(climatologies) == 1:
+        print "Obtained one model and one climatolgy"
+    elif len(models) == len(climatologies):
+        print "Obtained %d models and climatologies" % len(models)
+    else:
+        print "Obtained %d models and %d climatologies" % (len(models),
+                                                        len(climatologies))
+    for model in models:
+        for climatolgy in climatologies:
+            if model.count == climatolgy.count:
+                # generate the climatolgy regrid path which has already
+                # created
+                climatologyRegridPath = os.path.join(processfilesPath,
+                    model.name, 'Regrid', 'Climatology', climatolgy.name)
+                if climatolgy.dfile:
+                    # calling the genDailyAnomalyDirs function to do process
+                    genDailyAnomalyDirs(model.name, model.path, model.hour,
+                                    climatologyRegridPath, climatolgy.dfile,
+                                    climatolgy.year)
+                else:
+                    print "In configure.txt climpartialdayfile not mentioned. \
+                           So can not compute daily anomaly."
+            else:
+                pass
+                # climatolgy configuration and model data configuration are
+                # not equal in the text file handle this case, in diff manner.
+                # The same loop should works.
+                # But need to check all the cases.
+    # end of for model in models:
+    print "Done! Creation of Daily Anomaly netCdf Files"
+# end of if __name__ == '__main__':
+
+

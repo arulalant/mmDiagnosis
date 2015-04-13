@@ -1,0 +1,10 @@
+-2. watch or cron job to run this ---> auto_run_all.py
+loop begin
+-1.regrid_model_data_in_server.py
+0.pull_grib_data_from_server.py 
+1.generate_idx_ctl_files_grib1.py
+2.do_cdscan.py
+3.mjo_model_run.py
+4.do_archive.py
+5.copy_archive2public_ftp.py
+loop end

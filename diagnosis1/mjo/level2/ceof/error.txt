@@ -1,0 +1,40 @@
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+It will try to plot projected pcts only to the current year 2014.            If you need to loop through all the available years in the            models anomaly path means, insert your code here.
+Default 'Template' now set to P_ceof00.
+Default 'Template' now set to P_ceof10.
+Omitted directory 'Merged' without doing plotting pcts
+Going to plot text and all
+Let me save the plot
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+Collecting xml files path
+
+It will try to plot projected pcts only to the current year 2014.            If you need to loop through all the available years in the            models anomaly path means, insert your code here.
+Default 'Template' now set to P_ceof00.
+Default 'Template' now set to P_ceof10.
+Omitted directory 'Merged' without doing plotting pcts
+Going to plot text and all
+Let me save the plot

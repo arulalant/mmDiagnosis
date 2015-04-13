@@ -1,0 +1,38 @@
+\BOOKMARK [0][-]{chapter.1}{Getting started}{}% 1
+\BOOKMARK [1][-]{section.1.1}{UV-CDAT Installation Guide}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Download UV-CDAT Binary}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Installation on Linux \(Pre-Built Binary\)}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.4}{Installation on Linux \(Build From Source\)}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.5}{Installation on Ubuntu}{chapter.1}% 6
+\BOOKMARK [1][-]{section.1.6}{UV-CDAT Documentation}{chapter.1}% 7
+\BOOKMARK [1][-]{section.1.7}{Support}{chapter.1}% 8
+\BOOKMARK [1][-]{section.1.8}{Gallery}{chapter.1}% 9
+\BOOKMARK [1][-]{section.1.9}{License}{chapter.1}% 10
+\BOOKMARK [0][-]{chapter.2}{Installation and Setup of mmDiagnosis Framework}{}% 11
+\BOOKMARK [1][-]{section.2.1}{Source Code}{chapter.2}% 12
+\BOOKMARK [1][-]{section.2.2}{Installing the mmDiagnosis}{chapter.2}% 13
+\BOOKMARK [1][-]{section.2.3}{Setup and Configuration}{chapter.2}% 14
+\BOOKMARK [1][-]{section.2.4}{License}{chapter.2}% 15
+\BOOKMARK [0][-]{chapter.3}{Documentation of diagnosisutils source code}{}% 16
+\BOOKMARK [1][-]{section.3.1}{Data Access Utils}{chapter.3}% 17
+\BOOKMARK [1][-]{section.3.2}{Time Axis Utils}{chapter.3}% 18
+\BOOKMARK [1][-]{section.3.3}{Plot Utils}{chapter.3}% 19
+\BOOKMARK [1][-]{section.3.4}{More}{chapter.3}% 20
+\BOOKMARK [0][-]{chapter.4}{Documentation of diagnosis source code}{}% 21
+\BOOKMARK [1][-]{section.4.1}{Monthly Progress}{chapter.4}% 22
+\BOOKMARK [1][-]{section.4.2}{Seasonly Progress}{chapter.4}% 23
+\BOOKMARK [1][-]{section.4.3}{Diagnosis Plots}{chapter.4}% 24
+\BOOKMARK [1][-]{section.4.4}{Statistical Scores}{chapter.4}% 25
+\BOOKMARK [1][-]{section.4.5}{More}{chapter.4}% 26
+\BOOKMARK [0][-]{chapter.5}{Documentation of MJO source code}{}% 27
+\BOOKMARK [1][-]{section.5.1}{MJO-LEVEL1 Diagnosis Utils}{chapter.5}% 28
+\BOOKMARK [1][-]{section.5.2}{MJO-LEVEL2 Diagnosis Utils}{chapter.5}% 29
+\BOOKMARK [0][-]{chapter.6}{Documentation of MISO source code}{}% 30
+\BOOKMARK [1][-]{section.6.1}{MISO Diagnosis Utils}{chapter.6}% 31
+\BOOKMARK [0][-]{chapter.7}{Documentation of Other Utils source code}{}% 32
+\BOOKMARK [1][-]{section.7.1}{binary2ascii convertor}{chapter.7}% 33
+\BOOKMARK [1][-]{section.7.2}{numpy utils}{chapter.7}% 34
+\BOOKMARK [1][-]{section.7.3}{Non-rectilinear Utils}{chapter.7}% 35
+\BOOKMARK [1][-]{section.7.4}{Weather Utils}{chapter.7}% 36
+\BOOKMARK [0][-]{chapter.8}{Indices and tables}{}% 37
+\BOOKMARK [0][-]{section*.143}{Python Module Index}{}% 38
