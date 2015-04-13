@@ -9,12 +9,16 @@ Welcome to mmDiagnosis's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 10
 
    getting_started
+   diag_install
    diagnosisutils
    diagnosis
-   #inheritance
+   mjo
+   miso
+   others
+
     
 Indices and tables
 ==================

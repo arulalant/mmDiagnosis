@@ -10,7 +10,7 @@ The diagnosisutils package contains the `Data Access Utils`_, `Time Axis Utils`_
 Data Access Utils
 =================
 
-This data access utils uses the `Time Axis Utils`_ and `Days Utils`_ .
+This data access utils uses the `Time Axis Utils`_ .
 
 The `xml_data_access`_ module help us to access the all the grib files through single object.
 
@@ -31,7 +31,7 @@ xml_data_access
 ---------------
 
 .. automodule:: xml_data_access
-   :members:
+	:members:
    
 
 
@@ -42,13 +42,15 @@ This `timeutils`_ module helps us to generate our own time axis, correct existin
 
 Here we used inbuilt methods of cdtime and cdutil module of uv-cdat.
 
+.. _timeutils:
+
 
 timeutils
----------
+------------
 
-.. automodule:: timeutils
-   :members:
-   
+.. autoclass:: TimeUtility
+	:members:
+
 
 
 Plot Utils
@@ -62,7 +64,9 @@ plot
 ----
 
 .. automodule:: plot
-   :members:
+	:members:
+   
+
 
 
 More

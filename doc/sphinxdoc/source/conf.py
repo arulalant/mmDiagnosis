@@ -17,8 +17,18 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../../diagnosis1/diagnosis')) 
-sys.path.insert(0, os.path.abspath('../../diagnosis1/diagnosisutils'))
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/diagnosis')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/diagnosisutils'))
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/diag_setup')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/mjo/level1/eof')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/mjo/level1/ps')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/mjo/level1/variance')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/mjo/level2/ceof')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/mjo/level2/phase3d')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/mjo/level2/wk')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/miso/harmonic')) 
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/gencode/ascii'))
+sys.path.insert(0, os.path.abspath('../../../diagnosis1/diag_setup'))
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -43,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'mmDiagnosis'
-copyright = u'2015, Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R'
+copyright = u'2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -189,7 +199,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'mmDiagnosis.tex', u'mmDiagnosis Documentation',
-   u'Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R', 'manual'),
+   u'Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -201,10 +211,10 @@ latex_documents = [
 #latex_use_parts = False
 
 # If true, show page references after internal links.
-#latex_show_pagerefs = False
+latex_show_pagerefs = True
 
 # If true, show URL addresses after external links.
-#latex_show_urls = False
+latex_show_urls = True
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
@@ -219,7 +229,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'mmdiagnosis', u'mmDiagnosis Documentation',
-     [u'Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R'], 1)
+     [u'Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -233,7 +243,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'mmDiagnosis', u'mmDiagnosis Documentation',
-   u'Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R', 'mmDiagnosis', 'Mulit model climate diagnosis framework',
+   u'Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R', 'mmDiagnosis', 'Mulit model climate diagnosis framework',
    'Diagnosis'),
 ]
 

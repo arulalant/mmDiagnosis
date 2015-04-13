@@ -6,21 +6,11 @@ Documentation of **diagnosis** source code
 
 The diagnosis package contains the following modules.
 
-* `Daily Progress`_
+
 * `Monthly Progress`_
 * `Seasonly Progress`_
 * `Statistical Scores`_
 * `More`_
-
-Daily Progress
-=================
-
-The daily progress of `diagnosis`_ are listed below.
-
-
-Anomaly
--------
-    Have to update the code. Will do it soon.
 
 
 Monthly Progress
@@ -28,12 +18,17 @@ Monthly Progress
 
 The monthly progress of `diagnosis`_ are listed below.
 
+* `Climatology`_
 * `Month Mean`_
 * `Month Anomaly`_
 * `Month Fcst Sys Error`_
 
 These monthly progress will be automated.
 
+Climatology
+-----------
+.. automodule:: climatology_utils
+   :members:
 
 .. compute_month_mean:
 
@@ -53,14 +48,6 @@ The below script *compute_month_mean.py* should explain more how we are implemen
 
 Month Anomaly
 --------------
-
-Hello This is math test. Remove me ! :math:`a^2 + b^2 a\_b = c^2`.
-
-.. math::
-
-   (a + b)^2 = a^2 + 2ab + b^2
-
-   (a - b)^2 = a^2 - 2ab a\_b + b^2
 
 Anomaly means the difference between the model analysis and climatology.
 
