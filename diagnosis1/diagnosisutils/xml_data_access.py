@@ -1,10 +1,3 @@
-"""
-.. module:: xml_data_access
-   :synopsis: A useful module for grib data access through the xml which has
-              created by cdscan
-.. moduleauthor:: Arulalan.T <arulalant@gmail.com>
-
-"""
 import os
 import sys
 import re
@@ -16,7 +9,7 @@ from timeutils import TimeUtility
 # getting the this py module path by __file__ variable
 # pass that __file__ to the os.path.dirname, returns the path of this module
 __diagnosisutilDir__ = os.path.dirname(__file__)
-previousDir = os.path.abspath(os.path.join(__diagnosisutilDir__, '../..'))
+previousDir = os.path.abspath(os.path.join(__diagnosisutilDir__, '..'))
 # adding the previous path to python path
 sys.path.append(previousDir)
 from diag_setup.varsdict import variables

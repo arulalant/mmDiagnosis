@@ -3,7 +3,8 @@ import cdms2
 import cdutil
 import pickle
 import os, sys
-from eof2 import MultipleEof
+from eof2 import Eof as MultipleEof
+#from eof2 import MultipleEof
 from regrid2 import Horizontal
 # setting the absolute path of the previous directory
 # getting the this py module path by __file__ variable

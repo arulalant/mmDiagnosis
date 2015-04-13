@@ -1,10 +1,3 @@
-"""
-.. module:: timeutils
-   :synopsis: A useful module for cdtime.comptime conversion to timestr,
-              moveTime, tRange, xtRange, cdtime.timeAxis and more ...
-.. moduleauthor:: Arulalan.T <arulalant@gmail.com>
-
-"""
 import re
 import cdms2
 import cdutil

@@ -5,10 +5,10 @@ import cdms2
 import cdutil
 from genutil import statusbar
 # getting the absolute path of the previous directory
-previousDir = os.path.abspath(os.path.join(os.getcwd(), '..'))
+previousDir = os.path.abspath(os.path.join(os.getcwd(), '../diagnosisutils'))
 # adding the previous path to python path
 sys.path.append(previousDir)
-from diagnosisutils.timeutils import TimeUtility
+from timeutils import TimeUtility
 import netcdf_settings
 cdms2.setAutoBounds('on')
 
