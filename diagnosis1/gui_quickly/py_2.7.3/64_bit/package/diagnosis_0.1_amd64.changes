@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Wed, 11 Jul 2012 01:36:46 +0530
+Source: diagnosis
+Binary: diagnosis
+Architecture: source all
+Version: 0.1
+Distribution: precise
+Urgency: low
+Maintainer: Arulalan.T <arulalant@gmail.com>
+Changed-By: arulalan <arulalan@arulalan>
+Description: 
+ diagnosis  - UI for managing diagnosis …
+Changes: 
+ diagnosis (0.1) precise; urgency=low
+ .
+   [ Arulalan ]
+   * Initial release.
+ .
+   [ arulalan ]
+Checksums-Sha1: 
+ c709444ff85eba50d61d3adcefba20e106ec6fff 574 diagnosis_0.1.dsc
+ 61a1aafdbce077982396312a0b7a9b2b43e8932e 179334 diagnosis_0.1.tar.gz
+ a7bcc826469607e1050b4730bdcb2763b944681f 168928 diagnosis_0.1_all.deb
+Checksums-Sha256: 
+ b3f3f5d27102970969f7edd095a47be78f429d0a588e718ac332bfed006dc0df 574 diagnosis_0.1.dsc
+ 17f55bff2ab0599247c95bbd5f5a9e01eed61e87eb55aa4f3c5d961aa4d72fcc 179334 diagnosis_0.1.tar.gz
+ 316479c87946884f5c614b087ae43f20c25952563f9976aac2402d5030876a9a 168928 diagnosis_0.1_all.deb
+Files: 
+ 196b2821b4c665da229fef42c546175b 574 python extra diagnosis_0.1.dsc
+ aebbdf2deb85b49a8593e1d374725b1f 179334 python extra diagnosis_0.1.tar.gz
+ ce5cbc632d4e219181c82f54da15686e 168928 python extra diagnosis_0.1_all.deb

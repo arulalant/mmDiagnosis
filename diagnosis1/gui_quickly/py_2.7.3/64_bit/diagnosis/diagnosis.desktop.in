@@ -1,0 +1,8 @@
+[Desktop Entry]
+_Name=Diagnosis
+_Comment=Diagnosis application
+Categories=GNOME;Utility;
+Exec=diagnosis
+Icon=/usr/share/diagnosis/media/icon.png
+Terminal=false
+Type=Application

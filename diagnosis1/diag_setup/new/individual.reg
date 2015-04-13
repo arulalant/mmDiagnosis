@@ -1,0 +1,58 @@
+{"individualModelProperties": [
+    {"modelName": "T254",
+
+     "variables": [
+         {"cfName": ["eastward_wind", "northward_wind"],
+          "processName": ["anomaly", "anomaly correlation"],
+          "processPeriod": ["daily", "monthly", "seasonly"],
+          "reference": "self"
+          },
+
+         {"cfName": ["eastward_wind", "northward_wind",
+                     "air_pressure_at_sea_level", "relative_humidity",
+                     "air_temperature"],
+          "processName": ["forecast systematic error"],
+          "processPeriod": ["monthly", "seasonly"],
+          "reference": "self"
+          },
+
+          {"cfName": ["precipitation_flux"],
+          "processName": ["statistical scores",
+                          "statistical scores by spatial distribution"],
+          "processPeriod": ["monthly", "seasonly"],
+          "reference": {"name": "NCMRWF",
+                        "catogory": "xml.reg",
+                        "subCatogory": "observations"}
+          }],
+
+     "useClimatology":{
+                      "name": "NCEP",
+                      "catogory": "climatology.reg"
+                      },
+     },
+
+    {"modelName": "CMA",
+
+     "variables": [
+         {"cfName": ["air_pressure_at_sea_level", "relative_humidity",
+                     "air_temperature"],
+          "processName": ["forecast systematic error"],
+          "processPeriod": ["monthly", "seasonly"],
+          "reference": "self"
+          },
+
+          {"cfName": ["precipitation_flux"],
+          "processName": ["statistical scores",
+                          "statistical scores by spatial distribution"],
+          "processPeriod": ["monthly", "seasonly"],
+          "reference": {"name": "NCMRWF",
+                        "catogory": "reference.reg"}
+          }],
+
+     "useClimatology":{
+                      "name": "ECMWF",
+                      "catogory": "climatology.reg"
+                      },
+     },
+ ]
+}

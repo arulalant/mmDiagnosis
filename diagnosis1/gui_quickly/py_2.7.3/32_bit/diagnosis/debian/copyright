@@ -1,0 +1,12 @@
+Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=135
+Name: diagnosis
+Maintainer: Arulalan.T <arulalant@gmail.com>
+Source: UNKNOWN
+
+Files: *
+Copyright: (C) 2012 <Arulalan.T> <arulalant@gmail.com>
+Copyright: (C) 2012 &lt;Arulalan.T&gt; &lt;arulalant@gmail.com&gt;
+Copyright: (C) 2012 &lt;Arulalan.T&gt; &lt;arulalant@gmail.com&gt;</property>
+License: GPL-3
+ The full text of the GPL is distributed in
+ /usr/share/common-licenses/GPL-3 on Debian systems.

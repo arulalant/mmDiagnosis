@@ -1,0 +1,947 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ctgfunction &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for ctgfunction</h1><div class="highlight"><pre>
+<span class="c">#####********************************************************########</span>
+<span class="c">#This program is for finding 2x2 condigency table weather prediction#</span>
+<span class="c"># From 2x2 condigency table we can find thse statistical scores     #</span>
+<span class="c">#Hit Rate(HR), Bias(BS), Threat Score(TS), Odd Rate(ODR)...etc      #</span>
+<span class="c">####************************************************************#####</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module::ctgfunction</span>
+<span class="sd">    :synopsis:A useful module for calculating statistical score, from 2x2</span>
+<span class="sd">             contigency table.</span>
+
+<span class="sd">.. moduleauthor:: Dileepkumar R &lt;dileepkunjaai@gmail.com&gt;</span>
+<span class="sd">    updated by : Arulalan.T &lt;arulalant@gmail.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="contingency_table_2x2"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.contingency_table_2x2">[docs]</a><span class="k">def</span> <span class="nf">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`contingency_table_2x2`:Creates the 2x2 contigency table useful for</span>
+<span class="sd">            forecast verification. From 2x2 condigency table we can find thse</span>
+<span class="sd">            statistical scores such as Hit Rate(HR), Bias(BS),</span>
+<span class="sd">            Threat Score(TS), Odds Ratio(ODR)...etc</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">    Outputs: A list of values [a, b, c, d]</span>
+<span class="sd">             where a = No of values such that both observed and</span>
+<span class="sd">                                                predicted &gt; threshold</span>
+<span class="sd">             b = No of values such that observed is &lt; threshold and</span>
+<span class="sd">                                                predicted &gt; threshold</span>
+<span class="sd">             c = No of values such that observed is &gt; threshold and</span>
+<span class="sd">                                                predicted &lt; threshold</span>
+<span class="sd">             d = No of values such that both observed and</span>
+<span class="sd">                                                predicted &lt; threshold</span>
+<span class="sd">    Usage:</span>
+
+<span class="sd">    example:</span>
+<span class="sd">            From the contingency table the following statistics can be</span>
+<span class="sd">            calculated.</span>
+<span class="sd">            &gt;&gt;&gt; HR = (a+d)/(a+b+c+d)</span>
+<span class="sd">            &gt;&gt;&gt; ETS = a/(a+b+c)</span>
+<span class="sd">            &gt;&gt;&gt; BS = (a+b)/(a+c)</span>
+<span class="sd">            &gt;&gt;&gt; ODR = (a*d)/(b*c)</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                                            Daniel S Wilks, ACADEMIC PRESS</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/#Atger_2001</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">numpy.ma</span>
+    <span class="kn">import</span> <span class="nn">numpy</span>
+
+    <span class="n">obs</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+    <span class="n">fcst</span><span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fcst</span><span class="p">)</span>
+
+    <span class="c"># We are masking observed values if it is greater than threshold value</span>
+    <span class="n">obs_t</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">obs</span><span class="o">&gt;=</span><span class="n">th</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
+    <span class="n">obs_t_mask</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">obs_t</span><span class="p">)</span>
+    <span class="c"># We are masking forcast values if it is greater than threshold value</span>
+    <span class="n">fcst_t</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">fcst</span><span class="o">&gt;=</span><span class="n">th</span><span class="p">,</span> <span class="n">fcst</span><span class="p">)</span>
+    <span class="n">fcst_t_mask</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">getmask</span><span class="p">(</span><span class="n">fcst_t</span><span class="p">)</span>
+    <span class="c"># Masking if both observed and predicted greater than threshold</span>
+    <span class="c"># i.e it goes to &quot;a&quot;</span>
+
+    <span class="n">both_agree_yes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">obs_t_mask</span><span class="p">,</span> <span class="n">fcst_t_mask</span><span class="p">)</span>
+    <span class="c"># Masking if both observed and predicted less than threshold</span>
+    <span class="c">#  ie it goes to &quot;d&quot;</span>
+    <span class="n">both_agree_no</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">obs_t_mask</span><span class="p">),</span>
+                                         <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">fcst_t_mask</span><span class="p">))</span>
+    <span class="c"># Masking if  observed &lt; threshold and predicted &gt; threshold</span>
+    <span class="c"># .i.e it goes to &quot;b    &quot;</span>
+    <span class="n">obs_no_fcst_yes</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">obs_t_mask</span><span class="p">),</span>
+                                                                <span class="n">fcst_t_mask</span><span class="p">)</span>
+    <span class="c"># Masking if  observed &gt; threshold and predicted &lt; threshold</span>
+    <span class="c"># i.e it goes to &quot;c    &quot;</span>
+    <span class="n">obs_yes_fcst_no</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">obs_t_mask</span><span class="p">,</span>
+                                        <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">fcst_t_mask</span><span class="p">))</span>
+    <span class="c"># Making an array of &quot;1&quot;s of order same as observed or predicted</span>
+    <span class="n">dummy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dummy</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span>
+    <span class="c">#Calculating the total no. of entries</span>
+
+    <span class="n">a_mat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dummy</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">mask</span><span class="o">=</span><span class="n">both_agree_yes</span><span class="p">)</span>
+    <span class="n">d_mat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dummy</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">mask</span><span class="o">=</span><span class="n">both_agree_no</span><span class="p">)</span>
+    <span class="n">c_mat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dummy</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">mask</span><span class="o">=</span><span class="n">obs_yes_fcst_no</span><span class="p">)</span>
+    <span class="n">b_mat</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dummy</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">mask</span><span class="o">=</span><span class="n">obs_no_fcst_yes</span><span class="p">)</span>
+    <span class="c">#Masking the entries of dummy array with respect to the above conditions</span>
+
+    <span class="c"># Subtact this from total (WHY???)</span>
+    <span class="c">#Actually we are masking the needed values</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">a_mat</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">b_mat</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">c_mat</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">d_mat</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span> <span class="o">==</span> <span class="n">c</span> <span class="o">==</span><span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;Error, your data is not correct&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># return the values are in 2x2 matrix table formate</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span>
+<span class="c"># end of def contingency_table_2x2(obs, fcst, th):</span>
+</div>
+<div class="viewcode-block" id="accuracy"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.accuracy">[docs]</a><span class="k">def</span> <span class="nf">accuracy</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   :func:`accuracy`:Hit Rate ,the most direct and intuitive measure of the</span>
+<span class="sd">        accuracy of categorical forecasts is hit rate. The average correspond-</span>
+<span class="sd">        ence between individual nforecasts and the events they predict. Scalar</span>
+<span class="sd">        measures  of accuracy are meant to summarize,in a single number, the</span>
+<span class="sd">        overall quality of a set of forecasts. Can be mislead, since it is</span>
+<span class="sd">        heavily influenced by the most common category, usually &quot;no event&quot;</span>
+<span class="sd">        in the case of rare weather.</span>
+
+<span class="sd">            Accuracy= (a+d)/(a+b+c+d); &#39;a&#39; -hits, &#39;b&#39;-false alarm,</span>
+<span class="sd">                    &#39;c&#39;-misses, &amp; &#39;d&#39;- correct negatives</span>
+
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        Range: 0 to 1</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                Daniel S Wilks, ACADEMIC PRESS(Page No:236-240)</span>
+
+<span class="sd">    Links : http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                    JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1e+20</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">a</span><span class="o">+</span><span class="n">d</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def accuracy(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="bias_score"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.bias_score">[docs]</a><span class="k">def</span> <span class="nf">bias_score</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`bias_score`: Bias score(frequency bias)-Measures the correspondence</span>
+<span class="sd">            between the average forecast and the average observed value of the</span>
+<span class="sd">            predictand. This is different from accuracy, which measures the</span>
+<span class="sd">            average correspondence between individual pairs of forecasts and</span>
+<span class="sd">            observations.</span>
+
+<span class="sd">                Bias= (a+b)/(a+c); &#39;a&#39; -hits, &#39;b&#39;-false alarm, &amp; &#39;c&#39;-misses</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        Range: 0 to infinity</span>
+
+<span class="sd">        Perfect score: 1</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                Daniel S Wilks, ACADEMIC PRESS(Page No: 241)</span>
+
+<span class="sd">    Links : http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1e+20</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">c</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def bias_score(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="pod"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.pod">[docs]</a><span class="k">def</span> <span class="nf">pod</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`pod`:Probability of detection(POD), simply the fraction of those</span>
+<span class="sd">            occasions when the forecast event occurred on which it was also</span>
+<span class="sd">            forecast.</span>
+
+<span class="sd">              POD= a/(a+c); &#39;a&#39; -hits, &amp; &#39;c&#39;-misses</span>
+
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        Range: 0 to 1</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                Daniel S Wilks, ACADEMIC PRESS(Page No: 240)</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1e+20</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">c</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def pod(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="far"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.far">[docs]</a><span class="k">def</span> <span class="nf">far</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`far`:False alarm ratio(FAR)-Proportion of forecast events that fail</span>
+<span class="sd">            to materialize.</span>
+
+<span class="sd">                FAR= b/(a+b); &#39;a&#39; -hits, &amp; &#39;b&#39;-false alarm</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: 0 to 1</span>
+
+<span class="sd">        Perfect Score: 0</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                Daniel S Wilks, ACADEMIC PRESS(Page No: 240-241)</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1e+20</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def far(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="pofd"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.pofd">[docs]</a><span class="k">def</span> <span class="nf">pofd</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`podf`:Probability of false detection (false alarm rate), measures</span>
+<span class="sd">            the fraction of false alarms given the event did not occur.</span>
+
+<span class="sd">                POFD=b/(d+b); &#39;b&#39;-false alarm &amp; &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs - the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: 0 to 1</span>
+
+<span class="sd">        Perfect Score: 0</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="n">b</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def pofd(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="ts"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.ts">[docs]</a><span class="k">def</span> <span class="nf">ts</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:&#39;ts&#39;:    Threat Score (Critical Success Index), a frequently used</span>
+<span class="sd">            alternative to the hit rate, particularly when the event to be</span>
+<span class="sd">            forecast (as the &quot;yes&quot; event) occurs substantially less frequently</span>
+<span class="sd">            than the non-occurrence (&quot;no&quot;).</span>
+
+<span class="sd">                TS=a/(a+b+c); &#39;a&#39; -hits, &#39;b&#39;-false alarm, &amp;&#39;c&#39;-misses</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+<span class="sd">        Range: 0 to 1</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                Daniel S Wilks, ACADEMIC PRESS(Page No: 240)</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def ts(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="ets"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.ets">[docs]</a><span class="k">def</span> <span class="nf">ets</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`ets`:Equitable threat score (Gilbert skill score), the number of</span>
+<span class="sd">            forecasts of the event correct by chance, &#39;a_random&#39;,is determined</span>
+<span class="sd">            by assuming that the forecasts are totally independent of the obs-</span>
+<span class="sd">            ervations, and forecast will match the observation only by chance.</span>
+<span class="sd">            This is one form of an unskilled forecast, which can be generated</span>
+<span class="sd">            by just guessing what will happen.</span>
+
+<span class="sd">                ETS=(a-a_random)/(a+c+b-a_random)</span>
+<span class="sd">                a_random=[(a+c)(a+b)]/(a+b+c+d); &#39;a&#39; -hits, &#39;b&#39;-false alarm,</span>
+<span class="sd">                                        &#39;c&#39;-misses, &amp; &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: -1/3 to 1, 0 indicate no skill.</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">a_random</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span><span class="o">+</span><span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">)</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="n">b</span> <span class="o">-</span><span class="n">a_random</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">a</span><span class="o">-</span><span class="n">a_random</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">b</span><span class="o">-</span><span class="n">a_random</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def ets(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="kss"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.kss">[docs]</a><span class="k">def</span> <span class="nf">kss</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`kss`:Hanssen and Kuipers discriminant(Kuipers Skill Score), the</span>
+<span class="sd">            contribution made to the Kuipers score by a correct &quot;no&quot; or</span>
+<span class="sd">            &quot;yes&quot; forecast increases as the event is more or less likely,</span>
+<span class="sd">            respectively.A drawback of this score is that it tends to converge</span>
+<span class="sd">            to the POD for rare events, because the value of &quot;d&quot; becomes very</span>
+<span class="sd">            large.</span>
+
+<span class="sd">                HK= (ad-bc)/[(a + c)(b + d)]; &#39;a&#39; -hits, &#39;b&#39;-false alarm,</span>
+<span class="sd">                &#39;c&#39;-misses, &amp; &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range:-1 to 1</span>
+<span class="sd">        Perfect Score: 1</span>
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                    Daniel S Wilks, ACADEMIC PRESS(Page No: 249-250)</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">d</span><span class="o">==</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">a</span><span class="o">*</span><span class="n">d</span><span class="o">-</span><span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">d</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def kss(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="hss"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.hss">[docs]</a><span class="k">def</span> <span class="nf">hss</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`hss`:Heidke skill score (Cohen&#39;s k), the reference accuracy</span>
+<span class="sd">            measure in the Heidke score is the hit rate that would be</span>
+<span class="sd">            achieved by random forecasts, subject to the constraint that</span>
+<span class="sd">            the marginal distributions of forecasts and observations</span>
+<span class="sd">            characterizing the contingency table for the random forecasts,</span>
+<span class="sd">            P(Yi) and p(oj), are the same as the marginal distributions in</span>
+<span class="sd">            the actual verification data set.</span>
+
+<span class="sd">                HSS= 2.( a d - bc)/[(a + c)(c + d) + (a + b)(b + d)];</span>
+<span class="sd">            &#39;a&#39; -hits, &#39;b&#39;-false alarm, &#39;c&#39;-misses, &amp; &#39;d&#39;- correct  negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: -infinity to 1, 0 indicate no skill.</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Reference: &quot;Statistical Methods in the Atmospheric Sciences&quot;,</span>
+<span class="sd">                Daniel S Wilks, ACADEMIC PRESS(Page No: 248-249)</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">((</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">))</span> <span class="o">+</span> <span class="p">((</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">d</span><span class="p">))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">d</span><span class="o">==</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="s">&quot;Data has some problem&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">d</span> <span class="o">-</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">a</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="n">d</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def hss(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="odr"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.odr">[docs]</a><span class="k">def</span> <span class="nf">odr</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`odr`:Odds ratio, the odds ratio is the ratio of the odds of an</span>
+<span class="sd">            event occurring in one group to the odds of it occurring in</span>
+<span class="sd">            another group.cThe term is also used to refer to sample-based</span>
+<span class="sd">            estimates of this ratio.Do not use if any of the cells in the</span>
+<span class="sd">            contingency table are equal to 0. The logarithm of the odds</span>
+<span class="sd">            ratio is often used instead of the original value.Used widely</span>
+<span class="sd">            in medicine but not yet in meteorology.</span>
+
+<span class="sd">                OD= ad/bc; &#39;a&#39; -hits, &#39;b&#39;-false alarm, &#39;c&#39;-misses, &amp;</span>
+<span class="sd">                            &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: 0 to infinity, 1 indicate no skill</span>
+
+<span class="sd">        Perfect Score: infinity</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1e+20</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="n">a</span><span class="o">*</span><span class="n">d</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+<span class="c"># end of def odr(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="logodr"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.logodr">[docs]</a><span class="k">def</span> <span class="nf">logodr</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`logodr`: Log Odds ratio, LOR is the logaritham of odds ratio.</span>
+<span class="sd">                When the sample is small/moderate it is better to use Log</span>
+<span class="sd">                Odds Ratio. It is a good tool for finding associations</span>
+<span class="sd">                between variables.</span>
+
+<span class="sd">                    LOR=Log(Odds Ratio); Odds Ratio=ad/bc; &#39;a&#39; -hits,</span>
+<span class="sd">                        &#39;b&#39;-false alarm, &#39;c&#39;-misses, &amp; &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: -infinity to infinity, 0 indicate no skill.</span>
+
+<span class="sd">        Perfect Score: infinity</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span>
+    <span class="n">nume</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">d</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1e+20</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">nume</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mf">1e+20</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">odr</span><span class="p">(</span><span class="n">ctg_table</span> <span class="o">=</span> <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]))</span>
+<span class="c"># end of def logodr(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="orss"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.orss">[docs]</a><span class="k">def</span> <span class="nf">orss</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`orss`: Odds ratio skill score (Yule&#39;s Q), this score was proposed</span>
+<span class="sd">            long ago as a &#39;measure of association&#39; by the statistician</span>
+<span class="sd">            G. U. Yule (Yule 1900) and is referred to as Yule&#39;s Q. It is</span>
+<span class="sd">            based entirely on the joint conditional probabilities,</span>
+<span class="sd">            and so is not influenced in any way by the marginal totals.</span>
+
+<span class="sd">            ORSS= (ad-bc)/(ad+bc); &#39;a&#39; -hits, &#39;b&#39;-false alarm, &#39;c&#39;-misses,</span>
+<span class="sd">                &amp; &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: -1 to 1, 0 indicates no skill</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Reference: Stephenson, D.B., 2000: Use of the &quot;odds ratio&quot; for diagnosing</span>
+<span class="sd">                forecast skill. Wea. Forecasting, 15, 221-232.</span>
+
+<span class="sd">    Links: http://www.cawcr.gov.au/projects/verification/</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">denom</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">d</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">denom</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">a</span><span class="o">==</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">d</span><span class="o">==</span><span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="n">c</span><span class="o">+</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">d</span> <span class="o">-</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">d</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">)</span>
+<span class="c"># end of def orss(obs=None, fcst=None, th=None, **ctg):</span>
+</div>
+<div class="viewcode-block" id="eds"><a class="viewcode-back" href="../diagnosis.html#ctgfunction.eds">[docs]</a><span class="k">def</span> <span class="nf">eds</span><span class="p">(</span><span class="n">obs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">fcst</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">th</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">ctg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:&#39;eds&#39;:Extreme dependency score, converges to 2n-1 as event</span>
+<span class="sd">            frequency approaches 0, where n is a parameter describing how</span>
+<span class="sd">            fast the hit rate converges to zero for rarer events. EDS is</span>
+<span class="sd">            independent of bias, so should be presented together with the</span>
+<span class="sd">            frequency bias.</span>
+
+<span class="sd">                EDS={2Log[(a+c)/(a+b+c+d)]/Log(a/(a+b+c+d))}-1; &#39;a&#39; -hits,</span>
+<span class="sd">                &#39;b&#39;-false alarm, &#39;c&#39;-misses, &amp; &#39;d&#39;- correct negatives</span>
+
+<span class="sd">    Inputs: obs- the observed values has to be a numpy array(or whatever</span>
+<span class="sd">                                                                you decide)</span>
+<span class="sd">            fcst - the forecast values</span>
+<span class="sd">            th  - the threshold value for which the contingency table needs</span>
+<span class="sd">                                to be created (floating point value please!!)</span>
+<span class="sd">            By default obs, fcst, th are None. Instead of passing obs, fcst,</span>
+<span class="sd">            and th values, you can pass &#39;ctg_table&#39; kwarg as 2x2 matrix value.</span>
+
+<span class="sd">    Outputs:</span>
+
+<span class="sd">        Range: -1 to 1, 0 indicate no skill.</span>
+
+<span class="sd">        Perfect Score: 1</span>
+
+<span class="sd">    Reference: [1]Stephenson D.B., B. Casati, C.A.T. Ferro and</span>
+<span class="sd">                C.A. Wilson, 2008: The extreme dependency score:</span>
+<span class="sd">                a non-vanishing measure for forecasts of rare events.</span>
+<span class="sd">                 Meteorol. Appl., 15, 41-50.</span>
+
+<span class="sd">    Link:    http://www.cawcr.gov.au/projects/verification.</span>
+
+<span class="sd">    Written by: Dileepkumar R,</span>
+<span class="sd">                JRF, IIT Delhi</span>
+
+<span class="sd">    Date: 24/02/2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="k">if</span> <span class="s">&#39;ctg_table&#39;</span> <span class="ow">in</span> <span class="n">ctg</span><span class="p">:</span>
+        <span class="c"># user passed contigency table</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ctg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ctg_table&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">obs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass obs value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fcst</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass fcst value&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">th</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;You must pass threshold value&#39;</span><span class="p">)</span>
+        <span class="c"># user passed obs, fcst, th values</span>
+        <span class="p">[[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">],</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">]]</span> <span class="o">=</span> <span class="n">contingency_table_2x2</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">fcst</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span>
+    <span class="c"># end of if &#39;ctg_table&#39; in ctg:</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span> <span class="o">+</span> <span class="n">d</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">N</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">a</span><span class="o">+</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="n">N</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="n">N</span><span class="p">)))</span><span class="o">-</span><span class="mi">1</span>
+<span class="c"># end of def eds(obs=None, fcst=None, th=None, **ctg):</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

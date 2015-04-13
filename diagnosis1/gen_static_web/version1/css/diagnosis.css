@@ -1,0 +1,123 @@
+/*
+.. module:: diagnosis.css
+   :synopsis: This script will be imported in the 'index.html' for the
+              purpose of usability events like show, hide and to make that
+              html as stylish manner.
+
+              we used showCls and hideCls to user's view purpose.
+
+Version : 0.1a
+
+Written by: Arulalan.T
+
+Date: 16.11.2011
+Updated : 20.11.2011
+*/
+
+.hideCls { display:none; }
+
+.showCls { display:block; }
+
+.headingCls{  text-align:center; }
+
+a:link {text-decoration:none;}    /* unvisited link , to remove underline */
+a:visited {text-decoration:none;} /* visited link */
+a:hover {text-decoration:underline;}   /* mouse over link */
+a:active {text-decoration:underline;}  /* selected link */
+
+/* To set background image */
+body
+{
+    background-image:url('gradient-blue.png');
+    background-repeat:repeat-x;
+}
+
+#docdivid{
+position:absolute;
+top:20px;
+right:20px;
+}
+.tableCls
+{
+margin-top:50px;
+margin-bottom:100px;
+margin-right:50px;
+margin-left:12px;
+}
+
+table
+{
+border-collapse:collapse;
+}
+table, td, th
+{
+border:1px solid #669900;
+}
+th
+{
+background-color:#669900;
+color:white;
+}
+
+/* Space in b/w the text and the table border of td elements */
+td
+{
+padding:10px;
+text-align:center;
+font-size:14px;
+}
+
+/* Change the table row background color while mouse over */
+tr:hover{ background-color:#FFFF4D;}
+
+/* Setting position alignments for the below class and id elements */
+#preview{
+position:fixed;
+top:100px;
+right:180px;
+}
+
+.previewCls{
+text-align:center;
+}
+
+#txtdiv{
+position:absolute;
+top:145px;
+left:70px;
+}
+
+#modelSpan{
+position:absolute;
+top:160px;
+left:250px;
+}
+
+#go{
+position:absolute;
+top:200px;
+left:260px;
+}
+
+.modelCls{
+position:absolute;
+top:200px;
+left:58px;
+}
+
+.leftTag{margin-left:12px;}
+
+.Pprocess{margin-top:42px;}
+
+.Pyear, .Pplot1{margin-top:22px;}
+
+.Pmonseason, .Pregionhr, .Pplot2{
+margin-top:20px;
+}
+
+.selectCls{
+margin-left:200px;
+}
+
+
+

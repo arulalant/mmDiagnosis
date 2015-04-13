@@ -1,0 +1,840 @@
+P_rightOfTop_prt(
+  Orientation(1),
+  File(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Function(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  LogicalMask(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Transform(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  source(p=1,x=2.79948e+19,y=-2,Tt=new,To=defcentup),
+  name(p=0,x=-1.5176,y=1.0842e-19,Tt=std,To=botcenter),
+  title(p=1,x=-8.22693e-20,y=0,Tt=new,To=new),
+  units(p=0,x=-1.5176,y=2,Tt=new,To=botright),
+  crdate(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  crtime(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#1(p=0,x=2.79948e+19,y=2,Tt=default,To=default),
+  comment#2(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#3(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#4(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  yvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  zvalue(p=0,x=-8.22693e-20,y=0,Th=AMIP,Tt=std,To=botleft),
+  tvalue(p=0,x=2.79948e+19,y=0,Th=AMIP,Tt=std,To=botleft),
+  mean(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  max(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  min(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  xtic#1(p=0,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xtic#2(p=1,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xmintic#a(p=0,y1=1.0842e-19,y2=-3.68935e+19,Tl=std),
+  xmintic#b(p=0,y1=-3.68935e+19,y2=-2,Tl=std),
+  ytic#1(p=0,x1=-0,x2=-8.22693e-20,Tl=std),
+  ytic#2(p=1,x1=8.22693e-20,x2=-2.79948e+19,Tl=std),
+  ymintic#a(p=0,x1=0,x2=-8.22693e-20,Tl=std),
+  ymintic#b(p=0,x1=8.22693e-20,x2=-1.5176,Tl=std),
+  xlabel#1(p=1,y=-1.0842e-19,Tt=new,To=new_bc),
+  xlabel#2(p=0,y=-3.68935e+19,Tt=default,To=default),
+  ylabel#1(p=1,x=0,Tt=new,To=new),
+  ylabel#2(p=0,x=-8.22693e-20,Tt=default,To=default),
+  box#1(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19,Tl=std),
+  box#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#1(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  legend(p=0,x1=-8.22693e-20,y1=0,x2=8.22693e-20,y2=-0,Tt=std,To=7center,Tl=std),
+  data(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19)  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botcenter(0.01,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botright(0.01,0,r,r,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new_bc(0.032,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_7center(0.007,0,r,c,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+P_rightOfTop_prt(
+  Orientation(1),
+  File(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Function(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  LogicalMask(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Transform(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  source(p=1,x=2.79948e+19,y=-2,Tt=new,To=defcentup),
+  name(p=0,x=-1.5176,y=1.0842e-19,Tt=std,To=botcenter),
+  title(p=1,x=-8.22693e-20,y=0,Tt=new,To=new),
+  units(p=0,x=-1.5176,y=2,Tt=new,To=botright),
+  crdate(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  crtime(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#1(p=0,x=2.79948e+19,y=2,Tt=default,To=default),
+  comment#2(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#3(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#4(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  yvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  zvalue(p=0,x=-8.22693e-20,y=0,Th=AMIP,Tt=std,To=botleft),
+  tvalue(p=0,x=2.79948e+19,y=0,Th=AMIP,Tt=std,To=botleft),
+  mean(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  max(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  min(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  xtic#1(p=0,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xtic#2(p=1,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xmintic#a(p=0,y1=1.0842e-19,y2=-3.68935e+19,Tl=std),
+  xmintic#b(p=0,y1=-3.68935e+19,y2=-2,Tl=std),
+  ytic#1(p=0,x1=-0,x2=-8.22693e-20,Tl=std),
+  ytic#2(p=1,x1=8.22693e-20,x2=-2.79948e+19,Tl=std),
+  ymintic#a(p=0,x1=0,x2=-8.22693e-20,Tl=std),
+  ymintic#b(p=0,x1=8.22693e-20,x2=-1.5176,Tl=std),
+  xlabel#1(p=1,y=-1.0842e-19,Tt=new,To=new_bc),
+  xlabel#2(p=0,y=-3.68935e+19,Tt=default,To=default),
+  ylabel#1(p=1,x=0,Tt=new,To=new),
+  ylabel#2(p=0,x=-8.22693e-20,Tt=default,To=default),
+  box#1(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19,Tl=std),
+  box#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#1(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  legend(p=0,x1=-8.22693e-20,y1=0,x2=8.22693e-20,y2=-0,Tt=std,To=7center,Tl=std),
+  data(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19)  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botcenter(0.01,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botright(0.01,0,r,r,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new_bc(0.032,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_7center(0.007,0,r,c,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+P_rightOfTop_prt(
+  Orientation(1),
+  File(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Function(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  LogicalMask(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Transform(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  source(p=1,x=2.79948e+19,y=-2,Tt=new,To=defcentup),
+  name(p=0,x=-1.5176,y=1.0842e-19,Tt=std,To=botcenter),
+  title(p=1,x=-8.22693e-20,y=0,Tt=new,To=new),
+  units(p=0,x=-1.5176,y=2,Tt=new,To=botright),
+  crdate(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  crtime(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#1(p=0,x=2.79948e+19,y=2,Tt=default,To=default),
+  comment#2(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#3(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#4(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  yvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  zvalue(p=0,x=-8.22693e-20,y=0,Th=AMIP,Tt=std,To=botleft),
+  tvalue(p=0,x=2.79948e+19,y=0,Th=AMIP,Tt=std,To=botleft),
+  mean(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  max(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  min(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  xtic#1(p=0,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xtic#2(p=1,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xmintic#a(p=0,y1=1.0842e-19,y2=-3.68935e+19,Tl=std),
+  xmintic#b(p=0,y1=-3.68935e+19,y2=-2,Tl=std),
+  ytic#1(p=0,x1=-0,x2=-8.22693e-20,Tl=std),
+  ytic#2(p=1,x1=8.22693e-20,x2=-2.79948e+19,Tl=std),
+  ymintic#a(p=0,x1=0,x2=-8.22693e-20,Tl=std),
+  ymintic#b(p=0,x1=8.22693e-20,x2=-1.5176,Tl=std),
+  xlabel#1(p=1,y=-1.0842e-19,Tt=new,To=new_bc),
+  xlabel#2(p=0,y=-3.68935e+19,Tt=default,To=default),
+  ylabel#1(p=1,x=0,Tt=new,To=new),
+  ylabel#2(p=0,x=-8.22693e-20,Tt=default,To=default),
+  box#1(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19,Tl=std),
+  box#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#1(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  legend(p=0,x1=-8.22693e-20,y1=0,x2=8.22693e-20,y2=-0,Tt=std,To=7center,Tl=std),
+  data(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19)  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botcenter(0.01,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botright(0.01,0,r,r,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new_bc(0.032,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_7center(0.007,0,r,c,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+P_rightOfTop_prt(
+  Orientation(1),
+  File(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Function(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  LogicalMask(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  Transform(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  source(p=1,x=2.79948e+19,y=-2,Tt=new,To=defcentup),
+  name(p=0,x=-1.5176,y=1.0842e-19,Tt=std,To=botcenter),
+  title(p=1,x=-8.22693e-20,y=0,Tt=new,To=new),
+  units(p=0,x=-1.5176,y=2,Tt=new,To=botright),
+  crdate(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  crtime(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#1(p=0,x=2.79948e+19,y=2,Tt=default,To=default),
+  comment#2(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#3(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  comment#4(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tname(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  yunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  zunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  tunits(p=0,x=-8.22693e-20,y=-3.68935e+19,Tt=default,To=default),
+  xvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  yvalue(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  zvalue(p=0,x=-8.22693e-20,y=0,Th=AMIP,Tt=std,To=botleft),
+  tvalue(p=0,x=2.79948e+19,y=0,Th=AMIP,Tt=std,To=botleft),
+  mean(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  max(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  min(p=0,x=-8.22693e-20,y=-3.68935e+19,Th=AMIP,Tt=default,To=default),
+  xtic#1(p=0,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xtic#2(p=1,y1=3.68935e+19,y2=-3.68935e+19,Tl=std),
+  xmintic#a(p=0,y1=1.0842e-19,y2=-3.68935e+19,Tl=std),
+  xmintic#b(p=0,y1=-3.68935e+19,y2=-2,Tl=std),
+  ytic#1(p=0,x1=-0,x2=-8.22693e-20,Tl=std),
+  ytic#2(p=1,x1=8.22693e-20,x2=-2.79948e+19,Tl=std),
+  ymintic#a(p=0,x1=0,x2=-8.22693e-20,Tl=std),
+  ymintic#b(p=0,x1=8.22693e-20,x2=-1.5176,Tl=std),
+  xlabel#1(p=1,y=-1.0842e-19,Tt=new,To=new_bc),
+  xlabel#2(p=0,y=-3.68935e+19,Tt=default,To=default),
+  ylabel#1(p=1,x=0,Tt=new,To=new),
+  ylabel#2(p=0,x=-8.22693e-20,Tt=default,To=default),
+  box#1(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19,Tl=std),
+  box#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  box#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#1(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#2(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#3(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  line#4(p=0,x1=-8.22693e-20,y1=-3.68935e+19,x2=-8.22693e-20,y2=-3.68935e+19,Tl=default),
+  legend(p=0,x1=-8.22693e-20,y1=0,x2=8.22693e-20,y2=-0,Tt=std,To=7center,Tl=std),
+  data(p=1,x1=-8.22693e-20,y1=-3.68935e+19,x2=8.22693e-20,y2=-3.68935e+19)  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botcenter(0.01,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botright(0.01,0,r,r,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_botleft(0.01,0,r,l,b)
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Th_AMIP(("time","month","%t[Mon/c+1979]")("mean","*","%n %g"),
+   ("max","*","%n %g")("min","*","%n %g")("month","*","%t[Mon/c+1979]"))
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new_bc(0.032,0,r,c,b)
+Tt_new(1,2,1.5,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_new(0.03,0,r,l,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+Tt_std(1,1,1,0.2,241,1,240,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )
+To_7center(0.007,0,r,c,h)
+Tl_std(
+   1, ltyp(1),
+   1, lwsf(2),
+   1, lci(241),
+   1,
+   projection=default,
+   vp(0,1,0,1),
+   wc(0,1,0,1)
+  )

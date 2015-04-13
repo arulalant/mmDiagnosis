@@ -1,0 +1,13 @@
+{ "observations": [
+    {"name": "NCMRWF",
+     "xmlPath": "/NCMRWF/ncmrwf-data-2010/rainfall",
+     "variables": ["rhprs"],
+    },
+
+    {"name": "CMA",
+     "xmlPath": "/CMA/rainfall",
+     "variables": ["rainfall"],
+    }
+
+  ]
+}

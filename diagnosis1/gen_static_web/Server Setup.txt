@@ -1,0 +1,128 @@
+Documented On : 24.11.2011
+By : Arulalan.T
+OS : ubuntu 11.04
+
+Server side:
+============
+$ sudo apt-get install apache2 libapache2-mod-wsgi
+
+$ mkdir /var/www/diagnosis
+$ mkdir /var/log/apache2/diagnosis
+
+paste the index.html, css fodler, js folder in the above directory.
+
+and create symbolic link which the plots are pointing.
+
+In my case,
+
+$ sudo mount /dev/sda8 /NCMRWF
+
+$ sudo ln -s /NCMRWF /var/www/diagnosis
+
+$ sudo chown -R arulalan:www-data /var/www/diagnosis
+
+
+Thats it. It should created the NCMRWF folder link inside diagnosis folder.
+
+That index.html points out the /NCMRWF path. So it should work fine, since the NCMRWF fodler is inside the diagnosis fodler.
+
+
+
+$ sudo vim /etc/hosts
+
+127.0.0.1       localhost
+127.0.0.1       diagnosis.com
+127.0.0.1       www.diagnosis.com
+127.0.1.1       diagnosis.com
+127.0.1.1       www.diagnosis.com
+
+
+$ cd /etc/apache2/sites-available/
+
+// create a empty host name file
+
+$ sudo vim diagnosis
+
+// copy the below and paste in the above file
+
+<VirtualHost *:80>
+        ServerAdmin webmaster@diagnosis.org
+        ServerName diagnosis.org
+        ServerAlias www.diagnosis.org diagnosis.org
+
+        DocumentRoot /var/www/diagnosis
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /var/www/diagnosis/>
+                Options -Indexes FollowSymLinks -MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
+        
+        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+        <Directory /usr/lib/cgi-bin>
+                AllowOverride All
+                Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        ErrorLog /var/log/apache2/diagnosis/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog /var/log/apache2/diagnosis/access.log combined
+
+</VirtualHost>
+
+
+// ****** end of diagnosis stuff ****//
+
+In the above config file, 
+
+We given 
+Options -Indexes FollowSymLinks -MultiViews
+
+for diagnosis DocumentRoot.
+purpose for minus (-) sign is to protect the list of sub directories & file (in browser view) inside the /var/www/diagnosis directory.
+so minus for Indexes and MultiViews only. Not for FollowSymLinks.
+
+
+Then,
+
+$ sudo a2ensite diagnosis
+
+$ cd
+
+$ sudo /etc/init.d/apache2 reload
+
+$ sudo /etc/init.d/apache2 restart
+
+Thats it. Now open the browser (ff) in server, type www.diagnosis.com
+
+It should work our stuff.
+
+Note : consider ip address of server 10.24.224.9
+
+
+Big Note : The firefox browser doesnt enabled the proxy network.
+If proxy is enabled, then the hosts (host name) will not be recognized.
+
+Client side:
+============
+
+$ sudo vim /etc/hosts
+
+Add the below line  in ipv4.
+
+10.24.224.9 www.diagnosis.com diagnosis.com
+
+
+Big Note : The firefox browser doesnt enabled the proxy network.
+If proxy is enabled, then the hosts (host name) will not be recognized.
+

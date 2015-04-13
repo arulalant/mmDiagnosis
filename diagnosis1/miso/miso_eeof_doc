@@ -1,0 +1,89 @@
+
+
+Extended Matrix Algorithm :
+*array*
+    A 2-dimensional (nxm) `numpy.ndarray` or `numpy.ma.MaskedArray`.
+
+*window*
+    An integer specifying the length of the extend window.
+
+**Returns:**
+
+     A 2-dimenensional ((n-window+1) x (m*window)) `numpy.ndarray` or
+    `numpy.ma.MaskedArray` which is a view on the input *array*.
+
+**Example:**
+
+    data = numpy.arange(4*3).reshape(4, 3)
+    >>> data
+    array([[ 0,  1,  2],
+           [ 3,  4,  5],
+           [ 6,  7,  8],
+           [ 9, 10, 11]])
+
+    >>> extend_dimension(data, window=2)
+    array([[ 0,  1,  2,  3,  4,  5],
+           [ 3,  4,  5,  6,  7,  8],
+           [ 6,  7,  8,  9, 10, 11]])
+
+    >>> extend_dimension(data, window=3)
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8],
+           [ 3,  4,  5,  6,  7,  8,  9, 10, 11]])
+           
+   For general case, input array shape of (n, m), this 
+   extend_dimension returns shape of (n - window + 1, m * window),
+   where n is no of rows and m is no of columns.
+
+ Note1 : For window is 1, then there would be no changes in 
+        input data shape. i.e. For lag=0, EEof is equal to
+        normal Eof.
+
+   >>> extend_dimension(data, window=1)
+    array([[ 0,  1,  2],
+           [ 3,  4,  5],
+           [ 6,  7,  8],
+           [ 9, 10, 11]])
+
+Note 2 : window = lag + 1
+
+References : A.Hannachi, 2004, "A Primer for EOF Analysis of Climate
+     Data", Department of Meteorology, University of Reading Reading
+     RG6 6BB, U.K. (page numbers 15-28) 
+Link : http://eros.eas.gatech.edu/eas-8803/lectures/EOFs/eofprimer.pdf
+        
+        
+        
+data(time, latitude, longitude) needs to reshape into two dimensions 
+such as data(time, space), where space = latitude x longitude.
+
+
+Lets assume data[::-1] will reverse data in time axis.
+
+# Get covariance matrix of eeof by passing reverse time axis input data
+cov_matrix_eeof = embed_dimension(data[::-1], window)
+
+A, Lh, E = numpy.linalg.svd(cov_matrix_eeof, full_matrices=False)
+
+P = A * Lh # PCTS 
+
+# Singular values are the square-root of the eigenvalues of the
+# covariance matrix. Construct the eigenvalues appropriately and
+# normalize by N-ddof where N is the number of observations. This
+# corresponds to the eigenvalues of the normalized covariance matrix.
+
+# Store the number of eigenvalues (and hence EEOFs) that were actually
+# computed.
+
+neeofs = len(Lh) 
+
+E has shape of E(neeofs, new_channels)
+
+new_channels = window x space
+
+flat_eofs = E[0: neeofs]       
+
+eeofs = flat_eofs.reshape(neeofs, window, space)
+
+
+        
+        

@@ -1,0 +1,24 @@
+{"multiModelProperties": [
+    {"modelName": "ECMWF",
+     "reference": "T254",
+     "diagnosis": [
+        {"processName": "correlation",
+         "processPeriod": ["daily", "monthly", "seasonly"],
+         "variable": ['uwnd', 'vwnd']
+         },
+         {"processName": "forecast systematic error",
+         "processPeriod": ["seasonly"],
+         "variable": ["huml", "plmslmsl"]
+         }]
+     },
+
+    {"modelName": "T254",
+     "reference": "NCMRWF",
+     "diagnosis": [
+        {"processName": "statistical scores",
+         "processPeriod": ["monthly", "seasonly"],
+         "variable": ["rhprs"]
+         }]
+     }
+ ]
+}

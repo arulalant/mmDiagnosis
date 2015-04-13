@@ -1,0 +1,42 @@
+{"models": [
+    {"modelName": "T254",
+     "processRelativePath": "Process_T254_Vs_CMA_Files",
+     "plotsRelativePath": "Plots_T254_Vs_CMA_Graphs",
+     "processAbsolutePath" : "None",
+     "plotsAbsolutePath" : "None",
+     
+     "variables": [
+         {"cfName": ["eastward_wind", "northward_wind"],
+          "processName": ["anomaly", "anomaly correlation"], /* register process name */
+          "processPeriod": "None", 
+          "processTRange": ['2010-5-1','2010-6-31'] /* time range. Either processPeriod or processTRange takes actions */
+          
+          "reference": {"name": "CMA",  /* here reference is another model's reference (i.e. analysis) */
+                        "catogory": "xml.reg",
+                        "subCatogory": "models"
+                        },
+          "plotType": "vector",
+          "vectorType": "pair" /* Accepts either single or pair. */
+          },
+
+         {"cfName": ["eastward_wind", "northward_wind",
+                     "air_pressure_at_sea_level", "relative_humidity",
+                     "air_temperature"],
+          "processName": ["forecast systematic error"],
+          "processPeriod": ["daily", "monthly", "seasonly"], /* register process period. Here it accepts pre-defined periods */
+          "processTRange": "None", /* here it is None */
+          
+          "reference": {"name": "CMA",  /* here reference is another model's reference (i.e. analysis) */
+                        "catogory": "xml.reg",
+                        "subCatogory": "models"
+                        },
+          "plotType": "isoFill"
+          },
+          
+     "useClimatology":{
+                      "name": "NCEP",
+                      "catogory": "climatology.reg"
+                      },
+     },
+    ]
+}

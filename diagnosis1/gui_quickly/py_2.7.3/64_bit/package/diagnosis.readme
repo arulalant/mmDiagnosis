@@ -1,0 +1,5 @@
+After installed the diagnosis via deb file in ubuntu, we must execute the following.
+
+$ sudo chmod -R 777 /usr/share/diagnosis/xml 
+
+Then only user can write/register/edit/copy/add/remove the new model, climatology, observartion.

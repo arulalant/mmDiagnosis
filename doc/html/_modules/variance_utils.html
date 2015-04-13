@@ -1,0 +1,976 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>variance_utils &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for variance_utils</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">cdms2</span>
+<span class="kn">import</span> <span class="nn">cdtime</span>
+<span class="kn">import</span> <span class="nn">vcs</span>
+<span class="c">#import numarray.fft.fftpack as fftpack</span>
+<span class="kn">from</span> <span class="nn">genutil</span> <span class="kn">import</span> <span class="n">statistics</span>
+<span class="kn">from</span> <span class="nn">genutil</span> <span class="kn">import</span> <span class="n">statusbar</span>
+<span class="kn">from</span> <span class="nn">regrid2</span> <span class="kn">import</span> <span class="n">Regridder</span>
+<span class="c"># setting the absolute path of the previous directory</span>
+<span class="c"># getting the this py module path by __file__ variable</span>
+<span class="c"># pass that __file__ to the os.path.dirname, returns the path of this module</span>
+<span class="n">__curDir__</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">diagDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__curDir__</span><span class="p">,</span> <span class="s">&#39;../../..&#39;</span><span class="p">))</span>
+<span class="c"># adding the previous diagnosisutils path to python path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">diagDir</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">diagnosisutils.timeutils</span> <span class="kn">import</span> <span class="n">TimeUtility</span>
+<span class="kn">import</span> <span class="nn">diag_setup.netcdf_settings</span>
+
+
+<span class="c"># create time utility object</span>
+<span class="n">timobj</span> <span class="o">=</span> <span class="n">TimeUtility</span><span class="p">()</span>
+<span class="n">__showStatusBar</span> <span class="o">=</span> <span class="bp">False</span>
+
+
+<span class="k">def</span> <span class="nf">convertTimeIntegratedToNormal</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+    <span class="c"># Time integrated data unit Wsm^-2. Converted to Wm^2.</span>
+    <span class="k">return</span> <span class="n">data</span> <span class="o">/</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">hour</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+<span class="c"># end of def convertTimeIntegratedToNormal(data, hour, sign=1):</span>
+
+
+<div class="viewcode-block" id="anomaly"><a class="viewcode-back" href="../mjo.html#variance_utils.anomaly">[docs]</a><span class="k">def</span> <span class="nf">anomaly</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">climatology</span><span class="p">,</span> <span class="n">climyear</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculating anomaly.</span>
+<span class="sd">    Anomaly = model data - climatology</span>
+
+<span class="sd">    In this function, it should find out either data has leap year day data</span>
+<span class="sd">    or not. Also find out either climatology data has leap year day data or</span>
+<span class="sd">    not.</span>
+
+<span class="sd">    Depends upon these case, it should remove the leap day data from either</span>
+<span class="sd">    model data or climatology data, when shapes are mis-match (i.e. both leap</span>
+<span class="sd">    and non leap year data has passed as arguments) to compute anomaly.</span>
+
+<span class="sd">    KWargs :</span>
+<span class="sd">        When data and climatology shapes are mis-match, then</span>
+<span class="sd">        cregrid : if True, then climatology data will be regridded w.r.t</span>
+<span class="sd">                  model/obs/data and then anomaly will be calculated.</span>
+
+<span class="sd">        dregrid : if True, then model/obs/data will be regridded w.r.t</span>
+<span class="sd">                 climatology data and then anomaly will be calculated.</span>
+
+<span class="sd">        ..note:: We can not enable both cregrid and dregrid at the same time.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 11.06.2012</span>
+<span class="sd">    Updated : 24.06.2013</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timeAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+    <span class="n">latAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+    <span class="n">lonAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+
+    <span class="n">modelCompTime</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()</span>
+    <span class="n">startday</span> <span class="o">=</span> <span class="n">modelCompTime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">endday</span> <span class="o">=</span> <span class="n">modelCompTime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">varid</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">modeldays</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">modelCompTime</span><span class="p">)</span>
+    <span class="n">climyear</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">climyear</span><span class="p">)</span>
+
+    <span class="n">cregrid</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;cregrid&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">dregrid</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;dregrid&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">modeldays</span> <span class="o">&lt;</span> <span class="mi">365</span><span class="p">:</span>
+        <span class="c"># the data time axis length is less than 365. i.e. it has partial data</span>
+        <span class="c"># of the year. So need to calculate anomaly according to that dates</span>
+        <span class="c"># of the climatology data.</span>
+
+        <span class="c"># generate the climatology start day and endday w.r.t available data</span>
+        <span class="n">cstartday</span> <span class="o">=</span> <span class="n">climyear</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">startday</span><span class="o">.</span><span class="n">month</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">startday</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+        <span class="n">cendday</span> <span class="o">=</span> <span class="n">climyear</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">endday</span><span class="o">.</span><span class="n">month</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">endday</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+
+        <span class="c"># generate the leap day to check the leap year status</span>
+        <span class="n">leapday</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">startday</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="n">startday</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">leapday</span> <span class="ow">in</span> <span class="n">modelCompTime</span><span class="p">:</span>
+            <span class="c"># it contains leap day data</span>
+            <span class="n">leapYear</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># it doesnt have leap day data</span>
+            <span class="n">leapYear</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">elif</span> <span class="n">modeldays</span> <span class="o">==</span> <span class="mi">365</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">startday</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">startday</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">endday</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">31</span> <span class="ow">and</span> <span class="n">endday</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">12</span><span class="p">):</span>
+            <span class="c"># generate the climatology start day &amp; end day of the whole year</span>
+            <span class="n">cstartday</span> <span class="o">=</span> <span class="n">climyear</span> <span class="o">+</span> <span class="s">&#39;-1-1&#39;</span>
+            <span class="n">cendday</span> <span class="o">=</span> <span class="n">climyear</span> <span class="o">+</span> <span class="s">&#39;-12-31&#39;</span>
+            <span class="c"># it is non-leap year. so need to remove the leap day data from</span>
+            <span class="c"># the climatology data, if that contains leap day data.</span>
+            <span class="n">leapYear</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The passed data time axis doesnt start &amp; end </span><span class="se">\</span>
+<span class="s">                with proper year dates. (</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">). Pass the correct data &quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="n">startday</span><span class="p">,</span> <span class="n">endday</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">modeldays</span> <span class="o">==</span> <span class="mi">366</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">startday</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">startday</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="ow">and</span> <span class="n">endday</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">31</span> <span class="ow">and</span> <span class="n">endday</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">12</span><span class="p">):</span>
+            <span class="c"># generate the climatology start day &amp; end day of the whole year</span>
+            <span class="n">cstartday</span> <span class="o">=</span> <span class="n">climyear</span> <span class="o">+</span> <span class="s">&#39;-1-1&#39;</span>
+            <span class="n">cendday</span> <span class="o">=</span> <span class="n">climyear</span> <span class="o">+</span> <span class="s">&#39;-12-31&#39;</span>
+            <span class="c"># it is leap year. so either climatology data should contains</span>
+            <span class="c"># leap day data or remove the leap day data from the model data,</span>
+            <span class="c"># in case climatology doesnt have leap day data.</span>
+            <span class="n">leapYear</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The passed data time axis doesnt start &amp; end </span><span class="se">\</span>
+<span class="s">                with proper year dates. (</span><span class="si">%s</span><span class="s">, </span><span class="si">%s</span><span class="s">). Pass the correct data &quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="n">startday</span><span class="p">,</span> <span class="n">endday</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Data passed with more than 366 days. Please pass </span><span class="se">\</span>
+<span class="s">                            correct data set&quot;</span><span class="p">)</span>
+
+    <span class="c"># get the total days in climatology data</span>
+    <span class="n">climCompTime</span> <span class="o">=</span> <span class="n">climatology</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()</span>
+    <span class="n">climdays</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">climCompTime</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">climCompTime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">climyear</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">climCompTime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">climyear</span><span class="p">),</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)):</span>
+        <span class="k">print</span> <span class="s">&quot;Climatology Start Date &quot;</span><span class="p">,</span> <span class="n">climCompTime</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&quot;Climatology End Date &quot;</span><span class="p">,</span> <span class="n">climCompTime</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The climatology data timeAxis is not correct&quot;</span><span class="p">)</span>
+    <span class="c"># extract the needed climatology data alone (w.r.t to the model data timeAxis)</span>
+    <span class="n">climatology</span> <span class="o">=</span> <span class="n">climatology</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">cstartday</span><span class="p">,</span> <span class="n">cendday</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">climdays</span> <span class="o">==</span> <span class="mi">366</span><span class="p">:</span>
+        <span class="c"># climatology data contains 366 days. i.e. including leap day data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">leapYear</span><span class="p">:</span>
+            <span class="c"># i.e. previous leapYear flag is False. So we need to remove</span>
+            <span class="c"># leap day data from climatology.</span>
+            <span class="c"># generate the leap day to check the leap year status</span>
+            <span class="n">cleapday</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">climyear</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">)</span>
+            <span class="c"># climatology component time</span>
+            <span class="n">climTime</span> <span class="o">=</span> <span class="n">climatology</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cleapday</span> <span class="ow">in</span> <span class="n">climTime</span><span class="p">:</span>
+                <span class="c"># get the index of the leap day</span>
+                <span class="n">leapidx</span> <span class="o">=</span> <span class="n">climTime</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cleapday</span><span class="p">)</span>
+                <span class="c"># remove leap day from the climatology data</span>
+                <span class="n">climatology</span> <span class="o">=</span> <span class="n">climatology</span><span class="p">[:</span><span class="n">leapidx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">climatology</span><span class="p">[</span><span class="n">leapidx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">climatology</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">climatology</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">climdays</span> <span class="o">==</span> <span class="mi">365</span><span class="p">:</span>
+        <span class="c"># climatology data contains 365 days only. i.e. it doesnt have leap</span>
+        <span class="c"># day data.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">leapYear</span><span class="p">:</span>
+            <span class="c"># i.e. previous leapYear flag is False. So we need to remove</span>
+            <span class="c"># leap day data from model.</span>
+            <span class="c"># generate the leap day to check the leap year status</span>
+            <span class="n">mleapday</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">startday</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="n">startday</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mleapday</span> <span class="ow">in</span> <span class="n">timeAxis</span><span class="p">:</span>
+                <span class="c"># get the index of the leap day</span>
+                <span class="n">leapidx</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="o">.</span><span class="n">indexof</span><span class="p">(</span><span class="n">mleapday</span><span class="p">)</span>
+                <span class="c"># remove leap day from the model data</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="n">leapidx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">leapidx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="c"># re-genearate the time axis obj excluding the leap day</span>
+                <span class="n">timeAxis</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_genTimeAxis</span><span class="p">(</span><span class="n">startday</span><span class="p">,</span> <span class="n">endday</span><span class="p">,</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">NoLeapCalendar</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;The climatology data has wrong length of time axis </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">climdays</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">(</span><span class="n">squeeze</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">levAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">climatology</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="c"># calculate anomaly</span>
+        <span class="n">anomaly</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">climatology</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">clim_grid</span> <span class="o">=</span> <span class="n">climatology</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+        <span class="n">data_grid</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getGrid</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cregrid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dregrid</span><span class="p">:</span>
+            <span class="c"># Regridding the climatology data</span>
+            <span class="c"># Creating the horizontal lat,lon regrid</span>
+            <span class="c"># Here &#39;clim_grid&#39; is the source and &#39;data_grid&#39; is the target</span>
+            <span class="n">regridfunc</span> <span class="o">=</span> <span class="n">Regridder</span><span class="p">(</span><span class="n">clim_grid</span><span class="p">,</span> <span class="n">data_grid</span><span class="p">)</span>
+            <span class="n">climatology</span> <span class="o">=</span> <span class="n">regridfunc</span><span class="p">(</span><span class="n">climatology</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">dregrid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cregrid</span><span class="p">:</span>
+            <span class="c"># Regridding the model/obs data</span>
+            <span class="c"># Creating the horizontal lat,lon regrid</span>
+            <span class="c"># Here &#39;data_grid&#39; is the source and &#39;clim_grid&#39; is the target</span>
+            <span class="n">regridfunc</span> <span class="o">=</span> <span class="n">Regridder</span><span class="p">(</span><span class="n">data_grid</span><span class="p">,</span> <span class="n">clim_grid</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">regridfunc</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="c"># update the regridded data axis</span>
+            <span class="n">latAxis</span> <span class="o">=</span> <span class="n">climatology</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+            <span class="n">lonAxis</span> <span class="o">=</span> <span class="n">climatology</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+            <span class="n">levAxis</span> <span class="o">=</span> <span class="n">climatology</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">dregrid</span> <span class="ow">and</span> <span class="n">cregrid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Can not do both &#39;cregrid&#39; and &#39;dregrid&#39;. Make one option as False.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dregrid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">cregrid</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;model data shape &quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">print</span> <span class="s">&quot;climatology data shape &quot;</span><span class="p">,</span> <span class="n">climatology</span><span class="o">.</span><span class="n">shape</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;model data and climatology data shapes are mis-match.&quot;</span><span class="p">)</span>
+        <span class="c"># end of if cregrid and not dregrid:</span>
+        <span class="c"># calculate anomaly for regridded data sets.</span>
+        <span class="n">anomaly</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">climatology</span>
+    <span class="c"># end of if data.shape == climatology.shape:</span>
+    <span class="c"># make free memory</span>
+    <span class="k">del</span> <span class="n">data</span><span class="p">,</span> <span class="n">climatology</span>
+
+    <span class="c"># get the needed axis list</span>
+    <span class="n">axislist</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">timeAxis</span><span class="p">,</span> <span class="n">levAxis</span><span class="p">,</span> <span class="n">latAxis</span><span class="p">,</span> <span class="n">lonAxis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span><span class="p">]</span>
+    <span class="c"># set the axis information to the anomaly</span>
+    <span class="n">anomaly</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">(</span><span class="n">axislist</span><span class="p">)</span>
+    <span class="n">anomaly</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">varid</span>
+
+    <span class="k">return</span> <span class="n">anomaly</span>
+<span class="c"># end of def anomaly(...):</span>
+
+</div>
+<div class="viewcode-block" id="computeAnomaly"><a class="viewcode-back" href="../mjo.html#variance_utils.computeAnomaly">[docs]</a><span class="k">def</span> <span class="nf">computeAnomaly</span><span class="p">(</span><span class="n">mvar</span><span class="p">,</span> <span class="n">modelPath</span><span class="p">,</span> <span class="n">cvar</span><span class="p">,</span> <span class="n">climPath</span><span class="p">,</span> <span class="n">climyear</span><span class="p">,</span> <span class="n">outPath</span><span class="p">,</span>
+                            <span class="n">convertTI2N</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">hour</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    computeAnomaly : compute the anomaly by opening the model and climatology</span>
+<span class="sd">        data from the files. Finally writes the output anomaly into outpath</span>
+<span class="sd">        file.</span>
+
+<span class="sd">    Input :</span>
+<span class="sd">        mvar - model variable name</span>
+<span class="sd">        modelPath - model nc file absolute path</span>
+<span class="sd">        cvar - climatology variable name</span>
+<span class="sd">        climPath - climatology nc file absolute path</span>
+<span class="sd">        climyear - Year in climatology file</span>
+<span class="sd">        outPath - anomaly nc file (output) absolute path</span>
+<span class="sd">        convertTI2N - It takes either True or False. If it is True, then the</span>
+<span class="sd">            model data will be converted from Time Integrated to Normal form.</span>
+<span class="sd">            i.e. Units will be converted from Wsm^-2 to Wm^2.</span>
+<span class="sd">        hour - hour of the model data (will be used in convertTI2N function)</span>
+<span class="sd">        sign - change sign of the model data (will be used in convertTI2N fn)</span>
+
+<span class="sd">        kWargs :-</span>
+<span class="sd">            long_name - long name for the output anomaly</span>
+<span class="sd">            comments - comments for the output anomaly</span>
+<span class="sd">            cregrid - climatology data will be regridded w.r.t model data</span>
+<span class="sd">            dregrid - model data will be regridded w.r.t climatology data</span>
+<span class="sd">                      by default both cregrid &amp; dregrid are False</span>
+<span class="sd">    Refer : anomaly, convertTimeIntegratedToNormal</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 11.06.2012</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># Opening model (OLR) Data</span>
+    <span class="n">mfile</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">modelPath</span><span class="p">)</span>
+    <span class="n">model_data</span> <span class="o">=</span> <span class="n">mfile</span><span class="p">[</span><span class="n">mvar</span><span class="p">]</span>
+
+    <span class="c">#print model_data.getTime(), type(model_data.getTime())</span>
+    <span class="n">avlYears</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_getYears</span><span class="p">(</span><span class="n">model_data</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+
+    <span class="c"># Opening Climatology Data</span>
+    <span class="n">cfile</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">climPath</span><span class="p">)</span>
+    <span class="n">clim_data</span> <span class="o">=</span> <span class="n">cfile</span><span class="p">(</span><span class="n">cvar</span><span class="p">)</span>
+    <span class="n">cfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">timeAxisCollections</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lname</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="n">cmt</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="s">&#39;long_name&#39;</span> <span class="ow">in</span> <span class="n">kwarg</span><span class="p">:</span>
+        <span class="n">lname</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;long_name&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s">&#39;comments&#39;</span> <span class="ow">in</span> <span class="n">kwarg</span><span class="p">:</span>
+        <span class="n">cmt</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;comments&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">avlYears</span><span class="p">:</span>
+        <span class="n">sdate</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-1-1&#39;</span>
+        <span class="n">edate</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;-12-31 23:59.0&#39;</span>
+        <span class="n">model_data</span> <span class="o">=</span> <span class="n">mfile</span><span class="p">(</span><span class="n">mvar</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">sdate</span><span class="p">,</span> <span class="n">edate</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">convertTI2N</span><span class="p">:</span>
+            <span class="c"># Time integrated data unit Wsm^-2. Converted to Wm^2.</span>
+            <span class="n">model_data</span> <span class="o">=</span> <span class="n">convertTimeIntegratedToNormal</span><span class="p">(</span><span class="n">model_data</span><span class="p">,</span> <span class="n">hour</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c"># Changing Sign and making OLR data Positive</span>
+            <span class="n">model_data</span> <span class="o">=</span> <span class="n">model_data</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c"># get anomaly</span>
+        <span class="n">ano</span> <span class="o">=</span> <span class="n">anomaly</span><span class="p">(</span><span class="n">model_data</span><span class="p">(</span><span class="n">squeeze</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">clim_data</span><span class="p">,</span> <span class="n">climyear</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
+        <span class="c"># make free memory</span>
+        <span class="k">del</span> <span class="n">model_data</span>
+        <span class="n">timeAxisCollections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ano</span><span class="o">.</span><span class="n">getTime</span><span class="p">())</span>
+        <span class="n">ano</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">ano</span><span class="p">)</span>
+        <span class="n">ano</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">mvar</span>
+        <span class="n">ano</span><span class="o">.</span><span class="n">long_name</span> <span class="o">=</span> <span class="n">lname</span>
+        <span class="n">ano</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="n">cmt</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">outPath</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outPath</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">outPath</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ano</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c"># make free memory</span>
+        <span class="k">del</span> <span class="n">ano</span>
+    <span class="c"># for year in avlYears:</span>
+    <span class="c"># make memory free</span>
+    <span class="k">del</span> <span class="n">clim_data</span>
+    <span class="c"># close the file</span>
+    <span class="n">mfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;The Output Anomaly File has Created &quot;</span><span class="p">,</span> <span class="n">outPath</span>
+<span class="c"># end of def computeAnomaly(...):</span>
+
+</div>
+<div class="viewcode-block" id="calculateVariance"><a class="viewcode-back" href="../mjo.html#variance_utils.calculateVariance">[docs]</a><span class="k">def</span> <span class="nf">calculateVariance</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    calculate Variance for anomaly data in temporal way.All Seasonal Variance.</span>
+
+<span class="sd">    if speed is True, then it should calculate the variance for the whole</span>
+<span class="sd">    data.</span>
+
+<span class="sd">    If data size is too large which cant handle by normal system, then we</span>
+<span class="sd">    should off the speed arg. speed = False. So it will take the partial data</span>
+<span class="sd">    (in latitude and/or level wise) with its full time axis. By this way, we</span>
+<span class="sd">    can calculate the variance for large size of data.</span>
+
+<span class="sd">    It should loop through the each and every latitude grid point, (but not by</span>
+<span class="sd">    longitude) get the full time series with full longitude wise data and</span>
+<span class="sd">    compute the statistics.variance and store it.</span>
+
+<span class="sd">    KWargs:</span>
+<span class="sd">        year : Its optional only. By default it is None. i.e. It will</span>
+<span class="sd">             extract all the available years data to compute variance over timeAxis.</span>
+<span class="sd">             If one interger year has passed means, then it will do</span>
+<span class="sd">             extract of that particular year data alone.</span>
+<span class="sd">             If two years has passed in tuple, then it will extract</span>
+<span class="sd">             the range of years data from year[0] to year[1].</span>
+<span class="sd">             eg1 : year=2005 it will extract seasonData of 2005 alone.</span>
+<span class="sd">             eg2 : year=(1971, 2013) it will extract seasonData from</span>
+<span class="sd">                   1971 to 2013 years.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 26.07.2012</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;year&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">year</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">tyear</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">syear</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">year</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">eyear</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">year</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">)</span>
+            <span class="n">tyear</span> <span class="o">=</span> <span class="p">(</span><span class="n">syear</span><span class="p">,</span> <span class="n">eyear</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Extract &amp; do variance of data for time&quot;</span><span class="p">,</span> <span class="n">tyear</span>
+    <span class="c"># end of if year:</span>
+
+    <span class="c"># open the file path</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">speed</span><span class="p">:</span>
+        <span class="c"># if speed flag is true, then the calculate the variance in time axis</span>
+        <span class="c"># (temporal) and return it.</span>
+        <span class="c"># Cause : If user passes the very large size data,</span>
+        <span class="c"># then it may not work. For large size data, user may off the speed</span>
+        <span class="c"># arg flag.</span>
+        <span class="k">if</span> <span class="n">year</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tyear</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
+        <span class="c"># end of if year:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c"># calculate variance over timeAxis</span>
+        <span class="n">resultVariance</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+        <span class="c"># By default it id has changed into variance. So reset its varName</span>
+        <span class="n">resultVariance</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">varName</span>
+        <span class="k">return</span> <span class="n">resultVariance</span>
+    <span class="c"># end of if speed:</span>
+
+    <span class="c"># speed is slow/off/0, to handle the large size data, by calculate</span>
+    <span class="c"># variance along its levels, latitude wise. It may be slow. But it works</span>
+    <span class="c"># for large time scale data with its levels(optional).</span>
+
+    <span class="c"># get the data information</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">varName</span><span class="p">]</span>  <span class="c"># (transiant object)</span>
+    <span class="c"># collect the lat, lon details from the data</span>
+    <span class="n">latAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+    <span class="n">lonAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+    <span class="n">levAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+    <span class="n">latlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">latAxis</span><span class="p">)</span>
+    <span class="n">lonlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lonAxis</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">levAxis</span><span class="p">:</span>
+        <span class="n">levlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">levAxis</span><span class="p">)</span>
+        <span class="n">resultVariance</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">levlen</span><span class="p">,</span> <span class="n">latlen</span><span class="p">,</span> <span class="n">lonlen</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">levlen</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">resultVariance</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">latlen</span><span class="p">,</span> <span class="n">lonlen</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="c"># end of if level:</span>
+
+    <span class="k">for</span> <span class="n">levidx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">levlen</span><span class="p">):</span>
+        <span class="c"># loop through the level (if data doesnt have level, it is single</span>
+        <span class="c"># dummy loop)</span>
+        <span class="k">for</span> <span class="n">latidx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">latlen</span><span class="p">):</span>
+            <span class="c"># Loop through the latitude axis. i.e. calculate the variance of</span>
+            <span class="c"># the data along with its time axis and longitude axis of each &amp;</span>
+            <span class="c"># every latitude points. By this way we can handle the large size</span>
+            <span class="c"># data. But it is slow, because it needs to loop through the lat</span>
+            <span class="c"># axis fully.</span>
+            <span class="k">if</span> <span class="n">levAxis</span><span class="p">:</span>
+                <span class="c"># if data have level, then variance will be stored w.r.t level</span>
+                <span class="c"># index also.</span>
+                <span class="k">if</span> <span class="n">year</span><span class="p">:</span>
+                    <span class="n">resultVariance</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">levidx</span><span class="p">,</span> <span class="n">latidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span>
+                        <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tyear</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">levidx</span><span class="p">,</span> <span class="n">levidx</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+                                 <span class="n">latitude</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">latidx</span><span class="p">,</span> <span class="n">latidx</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">resultVariance</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">levidx</span><span class="p">,</span> <span class="n">latidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span>
+                                 <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">levidx</span><span class="p">,</span> <span class="n">levidx</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+                                 <span class="n">latitude</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">latidx</span><span class="p">,</span> <span class="n">latidx</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+                <span class="c"># end of if year:</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">year</span><span class="p">:</span>
+                    <span class="n">resultVariance</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">latidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span>
+                     <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tyear</span><span class="p">,</span> <span class="n">latitude</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">latidx</span><span class="p">,</span> <span class="n">latidx</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">resultVariance</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">latidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span>
+                      <span class="n">f</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">latitude</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">latidx</span><span class="p">,</span> <span class="n">latidx</span><span class="o">+</span><span class="mi">1</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+                <span class="c"># end of if year:</span>
+            <span class="c"># end of if levAxis:</span>
+       <span class="c"># end of for latidx in range(0, latlen):</span>
+    <span class="c"># end of for levidx in range(0, levlen):</span>
+
+    <span class="c"># create the resultant variance data variable</span>
+    <span class="n">resultVariance</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">resultVariance</span><span class="p">)</span>
+    <span class="n">resultVariance</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">varName</span>
+    <span class="n">vtime</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c"># get the needed axis list</span>
+    <span class="n">axislist</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">vtime</span><span class="p">,</span> <span class="n">levAxis</span><span class="p">,</span> <span class="n">latAxis</span><span class="p">,</span> <span class="n">lonAxis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span><span class="p">]</span>
+    <span class="c"># set the axis information</span>
+    <span class="n">resultVariance</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">(</span><span class="n">axislist</span><span class="p">)</span>
+
+    <span class="c"># close the data file obj</span>
+    <span class="c">#f.close() #??? Have to fix this transiant variable file close problem</span>
+    <span class="c"># return the variance</span>
+    <span class="k">return</span> <span class="n">resultVariance</span>
+<span class="c"># end of def calculateVariance(varName, fpath, speed=True):</span>
+
+</div>
+<div class="viewcode-block" id="calculateSeasonalVariance"><a class="viewcode-back" href="../mjo.html#variance_utils.calculateSeasonalVariance">[docs]</a><span class="k">def</span> <span class="nf">calculateSeasonalVariance</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">sday</span><span class="p">,</span> <span class="n">smon</span><span class="p">,</span> <span class="n">eday</span><span class="p">,</span> <span class="n">emon</span><span class="p">,</span>
+                                                        <span class="n">hr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    calculateSeasonalVariance : calculate Variance for anomaly seasonal data</span>
+<span class="sd">          in temporal way. It should extract the data only for the seasonal</span>
+<span class="sd">          days of the year. Even it has more years, then it should extract</span>
+<span class="sd">          only the seasonal days data of all the years, and then calculate</span>
+<span class="sd">          the variance for the seasonal days of the all the years of the data.</span>
+
+<span class="sd">    Inputs:</span>
+<span class="sd">        varName : anomaly variable name</span>
+<span class="sd">        fpath : anomaly (nc) file path</span>
+<span class="sd">        sday : starting day of the season [of all the years of the data].</span>
+<span class="sd">        smon : starting month of the season [of all the years of the data].</span>
+<span class="sd">        eday : ending day of the season [of all the years of the data].</span>
+<span class="sd">        emon : ending month of the season [of all the years of the data].</span>
+<span class="sd">        hr : hour for both start and end date</span>
+
+<span class="sd">    KWargs:</span>
+<span class="sd">        year : Its optional only. By default it is None. i.e. It will</span>
+<span class="sd">             extract all the available years seasonalData.</span>
+<span class="sd">             If one interger year has passed means, then it will do</span>
+<span class="sd">             extract of that particular year seasonData alone.</span>
+<span class="sd">             If two years has passed in tuple, then it will extract</span>
+<span class="sd">             the range of years seasonData from year[0] to year[1].</span>
+<span class="sd">             eg1 : year=2005 it will extract seasonData of 2005 alone.</span>
+<span class="sd">             eg2 : year=(1971, 2013) it will extract seasonData from</span>
+<span class="sd">                   1971 to 2013 years.</span>
+
+<span class="sd">    ..note::    If end day and end month is lower than the start day and start</span>
+<span class="sd">             month, then we need to extract the both current and next year</span>
+<span class="sd">             data. For eg : Winter Season (November to April).</span>
+<span class="sd">             It can not be reversed for this winter season. We need to</span>
+<span class="sd">             extract data from current year november month upto next year</span>
+<span class="sd">             march month.</span>
+<span class="sd">                If you pass one year data and passed the above</span>
+<span class="sd">             winter season, then it will be extracted november and december</span>
+<span class="sd">             months data and will be calculated variance for that alone.</span>
+<span class="sd">                If you will pass two year data then it will extract the data</span>
+<span class="sd">             from november &amp; december of first year and january, feburary &amp;</span>
+<span class="sd">             march of next year will be extracted and calculated variance</span>
+<span class="sd">             for that.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 26.07.2012</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># season data for all the years of the data</span>
+    <span class="n">seasonalData</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">getSeasonalData</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">sday</span><span class="p">,</span> <span class="n">smon</span><span class="p">,</span>
+                                              <span class="n">eday</span><span class="p">,</span> <span class="n">emon</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
+
+    <span class="c"># calculate the statistics.variance for all the seasonalData of the all</span>
+    <span class="c"># the years.</span>
+    <span class="n">seasonalVariance</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span><span class="n">seasonalData</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s">&#39;t&#39;</span><span class="p">)</span>
+
+    <span class="c"># get the lat, lon axis information</span>
+    <span class="n">latAxis</span> <span class="o">=</span> <span class="n">seasonalData</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+    <span class="n">lonAxis</span> <span class="o">=</span> <span class="n">seasonalData</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+    <span class="n">levAxis</span> <span class="o">=</span> <span class="n">seasonalData</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+    <span class="c"># make memory free</span>
+    <span class="k">del</span> <span class="n">seasonalData</span>
+
+    <span class="c"># genearate the variance single dimension time axis</span>
+    <span class="n">vtime</span> <span class="o">=</span> <span class="n">timobj</span><span class="o">.</span><span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hr</span><span class="p">))</span>
+    <span class="n">seasonalVariance</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">seasonalVariance</span><span class="p">)</span>
+    <span class="n">seasonalVariance</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">varName</span>
+
+    <span class="n">newshape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">seasonalVariance</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">newshape</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">seasonalVariance</span> <span class="o">=</span> <span class="n">seasonalVariance</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape</span><span class="p">)</span>
+    <span class="c"># get the needed axis list</span>
+    <span class="n">axislist</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">vtime</span><span class="p">,</span> <span class="n">levAxis</span><span class="p">,</span> <span class="n">latAxis</span><span class="p">,</span> <span class="n">lonAxis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span><span class="p">]</span>
+    <span class="c"># set axis information</span>
+    <span class="n">seasonalVariance</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">(</span><span class="n">axislist</span><span class="p">)</span>
+    <span class="c"># return the variance</span>
+    <span class="k">return</span> <span class="n">seasonalVariance</span>
+<span class="c"># end of def calculateSeasonalVariance(...):</span>
+
+</div>
+<div class="viewcode-block" id="summerVariance"><a class="viewcode-back" href="../mjo.html#variance_utils.summerVariance">[docs]</a><span class="k">def</span> <span class="nf">summerVariance</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">sday</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">smon</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">eday</span><span class="o">=</span><span class="mi">31</span><span class="p">,</span> <span class="n">emon</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                                      <span class="n">hr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    summerVariance : summer season (May to October) variance</span>
+
+<span class="sd">    Inputs :</span>
+<span class="sd">      varName - anomaly variable name</span>
+<span class="sd">      fpath - anomaly file path</span>
+<span class="sd">      sday : starting day of the summer season [of all the years of the data].</span>
+<span class="sd">      smon : starting month of the summer season [of all the years of the data].</span>
+<span class="sd">      eday : ending day of the summer season [of all the years of the data].</span>
+<span class="sd">      emon : ending month of the summer season [of all the years of the data].</span>
+<span class="sd">      hr : hour for both start and end date</span>
+
+<span class="sd">    KWargs :</span>
+<span class="sd">        year : It could be single year or range of years in tuple.</span>
+<span class="sd">               By default it is None. So it will calculate all available years</span>
+<span class="sd">               summerVariance</span>
+<span class="sd">    Refer: calculateSeasonalVariance</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 26.07.2012</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">calculateSeasonalVariance</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">sday</span><span class="p">,</span> <span class="n">smon</span><span class="p">,</span>
+                                        <span class="n">eday</span><span class="p">,</span> <span class="n">emon</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
+<span class="c"># end of def summerVariance(...):</span>
+
+</div>
+<div class="viewcode-block" id="winterVariance"><a class="viewcode-back" href="../mjo.html#variance_utils.winterVariance">[docs]</a><span class="k">def</span> <span class="nf">winterVariance</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">sday</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">smon</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">eday</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">emon</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                                      <span class="n">hr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    winterVariance : winter season (November to April) variance</span>
+
+<span class="sd">    Inputs :</span>
+<span class="sd">      varName - anomaly variable name</span>
+<span class="sd">      fpath - anomaly file path</span>
+<span class="sd">      sday : starting day of the winter season [of all the years of the data].</span>
+<span class="sd">      smon : starting month of the winter season [of all the years of the data].</span>
+<span class="sd">      eday : ending day of the winter season [of all the years of the data].</span>
+<span class="sd">      emon : ending month of the winter season [of all the years of the data].</span>
+<span class="sd">      hr : hour for both start and end date</span>
+
+<span class="sd">    KWargs :</span>
+<span class="sd">        year : It could be single year or range of years in tuple.</span>
+<span class="sd">               By default it is None. So it will calculate all available years</span>
+<span class="sd">               winterVariance</span>
+<span class="sd">    Refer: calculateSeasonalVariance</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 26.07.2012</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">calculateSeasonalVariance</span><span class="p">(</span><span class="n">varName</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">sday</span><span class="p">,</span> <span class="n">smon</span><span class="p">,</span>
+                                        <span class="n">eday</span><span class="p">,</span> <span class="n">emon</span><span class="p">,</span> <span class="n">hr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">)</span>
+<span class="c"># end of def winterVariance(...):</span>
+
+</div>
+<div class="viewcode-block" id="lfilter"><a class="viewcode-back" href="../mjo.html#variance_utils.lfilter">[docs]</a><span class="k">def</span> <span class="nf">lfilter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">cyclic</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Lanczos Filtered</span>
+<span class="sd">    Todo : Write doc of the work flow</span>
+<span class="sd">    KWarg:</span>
+<span class="sd">        returntlen : return time axis length. By default it takes None.</span>
+<span class="sd">                     It can take positive or negative integer as value.</span>
+<span class="sd">                     If it is +ve no, then it will do filter only to</span>
+<span class="sd">                     the first no days rather than doing filter to the</span>
+<span class="sd">                     whole available days of the data.</span>
+<span class="sd">                     If it is -ve no, then it will do filter only to</span>
+<span class="sd">                     the last no days.</span>
+<span class="sd">                     Timeaxis also will set properly w.r.t return data.</span>
+<span class="sd">                     if cyclic is enabled or disabled, then returntlen</span>
+<span class="sd">                     index will change according to cyclic flag.</span>
+
+<span class="sd">                     Lets assume weights length is 101.</span>
+<span class="sd">                     Eg1: Lets consider data length is 365.</span>
+<span class="sd">                          If cyclic is False, then filteredData length is</span>
+<span class="sd">                          365-(100*2)=165 when returntlen is None.</span>
+<span class="sd">                          If returntlen = 10, so filteredData length is 10</span>
+<span class="sd">                          and its index is range(100, 110).</span>
+<span class="sd">                          If returntlen = -10, so filteredData length is 10</span>
+<span class="sd">                          and its index is range(255, 265).</span>
+
+<span class="sd">                     Eg2: If cyclic is True, then filteredData length is</span>
+<span class="sd">                          365 when returntlen is None.</span>
+<span class="sd">                          If returntlen = 10, so filteredData length is 10</span>
+<span class="sd">                          and its index is range(0, 10).</span>
+<span class="sd">                          If returntlen = -10, so filteredData length is 10</span>
+<span class="sd">                          and its index is range(355, 365).</span>
+
+<span class="sd">                    So returntlen option is useful when we need to filter</span>
+<span class="sd">                    only to the certain days. But regardless of returntlen</span>
+<span class="sd">                    option, we need to pass the full data to apply Lanczos</span>
+<span class="sd">                    Filter to either returntlen days or full days.</span>
+<span class="sd">                    This option will save a lot of time when returntlen is</span>
+<span class="sd">                    very less compare to the total length of the data.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 15.09.2012</span>
+<span class="sd">    Updated : 22.09.2013</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">returntlen</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;returntlen&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">returntlen</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">returntlen</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Keyword arg returntlen must be an integer&quot;</span><span class="p">)</span>
+    <span class="c"># end of if returntlen:</span>
+
+    <span class="n">timeAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+    <span class="n">latAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+    <span class="n">lonAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+    <span class="n">levAxis</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLevel</span><span class="p">()</span>
+
+    <span class="n">dataid</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">id</span>
+    <span class="c"># get the total length of the timeAxis of the original data</span>
+    <span class="n">tlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">timeAxis</span><span class="p">)</span>
+    <span class="c"># get the units of timeAxis of the original data</span>
+    <span class="n">tunits</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="o">.</span><span class="n">units</span>
+
+    <span class="c"># we can use the below option if we dont want to initialize it with</span>
+    <span class="c"># size/dimension. But we need to add append option instead of assign</span>
+    <span class="c"># resultant filteredData.</span>
+    <span class="c">#filteredData = numpy.array([0])</span>
+    <span class="n">zweight</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">wlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="c"># get the axis length shape</span>
+    <span class="n">axshape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">[</span><span class="n">levAxis</span><span class="p">,</span> <span class="n">latAxis</span><span class="p">,</span> <span class="n">lonAxis</span><span class="p">]</span> <span class="k">if</span> <span class="n">axis</span><span class="p">]</span>
+    <span class="c"># reshape the weights according to the passed data shape</span>
+    <span class="c"># (just to shape match to multiply with data)</span>
+    <span class="n">wshape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">[</span><span class="n">levAxis</span><span class="p">,</span> <span class="n">latAxis</span><span class="p">,</span> <span class="n">lonAxis</span><span class="p">]</span> <span class="k">if</span> <span class="n">axis</span><span class="p">]</span>
+    <span class="n">wshape</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">wlen</span><span class="p">)</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">wshape</span><span class="p">)</span>
+    <span class="c"># set flag if returntlen is -ve integer</span>
+    <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span> <span class="k">if</span> <span class="n">returntlen</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">False</span>
+    <span class="k">if</span> <span class="n">cyclic</span><span class="p">:</span>
+        <span class="c"># for cyclic, the filteredData timeAxis should be same as passed</span>
+        <span class="c"># data&#39;s timeAxis. i.e. tlen length.</span>
+        <span class="c"># get full tlen or returntlen as length of the return filteredData</span>
+        <span class="n">loopCount</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">returntlen</span><span class="p">)</span> <span class="k">if</span> <span class="n">returntlen</span> <span class="k">else</span> <span class="n">tlen</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="c"># return the last loopCount days</span>
+            <span class="n">loopdays</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">tlen</span><span class="o">-</span><span class="n">loopCount</span><span class="p">,</span> <span class="n">tlen</span><span class="p">)</span>
+            <span class="n">timeAxisList</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="p">[</span><span class="n">tlen</span><span class="o">-</span><span class="n">loopCount</span><span class="p">:</span> <span class="n">tlen</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># return loopCount days from the begining of the data</span>
+            <span class="n">loopdays</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">loopCount</span><span class="p">)</span>
+            <span class="n">timeAxisList</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="p">[:</span><span class="n">loopCount</span><span class="p">]</span>
+        <span class="c"># end of if reverse:</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># if it non-cyclic, then we will lost the timeAxis length of wlen*2</span>
+        <span class="c"># days. i.e tlen-(wlen*2) length.</span>
+        <span class="c"># get tlen-(wlen*2) or returntlen as length of the return filteredData</span>
+        <span class="n">loopCount</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">returntlen</span><span class="p">)</span> <span class="k">if</span> <span class="n">returntlen</span> <span class="k">else</span> <span class="n">tlen</span><span class="o">-</span><span class="p">(</span><span class="n">wlen</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="c"># return the last loopCount days</span>
+            <span class="n">loopdays</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">tlen</span><span class="o">-</span><span class="n">wlen</span><span class="o">-</span><span class="n">loopCount</span><span class="p">,</span> <span class="n">tlen</span><span class="o">-</span><span class="n">wlen</span><span class="p">)</span>
+            <span class="n">timeAxisList</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="p">[</span><span class="n">tlen</span><span class="o">-</span><span class="n">wlen</span><span class="o">-</span><span class="n">loopCount</span><span class="p">:</span> <span class="n">tlen</span><span class="o">-</span><span class="n">wlen</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># return loopCount days from the begining of the data</span>
+            <span class="n">loopdays</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">wlen</span><span class="p">,</span> <span class="n">wlen</span><span class="o">+</span><span class="n">loopCount</span><span class="p">)</span>
+            <span class="n">timeAxisList</span> <span class="o">=</span> <span class="n">timeAxis</span><span class="p">[</span><span class="n">wlen</span><span class="p">:</span> <span class="n">wlen</span><span class="o">+</span><span class="n">loopCount</span><span class="p">]</span>
+        <span class="c"># end of if reverse:</span>
+    <span class="c"># end of if cyclic:</span>
+
+    <span class="c"># insert the tlength at first in the axis length shape</span>
+    <span class="n">axshape</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">loopCount</span><span class="p">)</span>
+    <span class="c"># filteredDate dummy initialization shape</span>
+    <span class="n">filteredData</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">axshape</span><span class="p">)</span>
+
+    <span class="c"># overwrite the timeAxis</span>
+    <span class="n">timeAxis</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createAxis</span><span class="p">(</span><span class="n">timeAxisList</span><span class="p">)</span>
+    <span class="n">timeAxis</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s">&#39;time&#39;</span>
+    <span class="n">timeAxis</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">tunits</span>
+    <span class="n">timeAxis</span><span class="o">.</span><span class="n">designateTime</span><span class="p">()</span>
+
+    <span class="n">preview</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">cday</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">loopdays</span><span class="p">):</span>
+        <span class="c"># loop through all the days (check above)</span>
+        <span class="c"># apply zeroth weight to the current day data</span>
+        <span class="n">cfilter</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">cday</span><span class="p">]</span> <span class="o">*</span> <span class="n">zweight</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="p">(</span><span class="n">tlen</span> <span class="o">-</span> <span class="n">wlen</span><span class="p">)</span> <span class="o">+</span> <span class="n">cday</span>
+        <span class="c">#pe = (tlen + cday) % tlen</span>
+
+        <span class="k">if</span> <span class="n">ps</span> <span class="o">&lt;=</span> <span class="n">tlen</span><span class="p">:</span>
+            <span class="n">preData</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">ps</span><span class="p">:],</span> <span class="n">data</span><span class="p">[:</span><span class="n">cday</span><span class="p">]))</span>
+        <span class="k">elif</span> <span class="n">ps</span> <span class="o">&gt;</span> <span class="n">tlen</span><span class="p">:</span>
+            <span class="n">ps</span> <span class="o">=</span> <span class="n">ps</span> <span class="o">%</span> <span class="n">tlen</span>
+            <span class="n">preData</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ps</span><span class="p">:</span><span class="n">cday</span><span class="p">]</span>
+        <span class="c"># end of if ps &lt;= tlen:</span>
+
+        <span class="c"># reverse the previous data of length wlen</span>
+        <span class="n">preData</span> <span class="o">=</span> <span class="n">preData</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="n">cday</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">ne</span> <span class="o">=</span> <span class="n">ns</span> <span class="o">+</span> <span class="n">wlen</span>
+
+        <span class="k">if</span> <span class="n">ne</span> <span class="o">&lt;=</span> <span class="n">tlen</span><span class="p">:</span>
+            <span class="n">nextData</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">ns</span><span class="p">:</span><span class="n">ne</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">ne</span> <span class="o">&gt;</span> <span class="n">tlen</span><span class="p">:</span>
+            <span class="n">ne</span> <span class="o">=</span> <span class="n">ne</span> <span class="o">%</span> <span class="n">tlen</span>
+            <span class="n">nextData</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">ns</span><span class="p">:],</span> <span class="n">data</span><span class="p">[:</span><span class="n">ne</span><span class="p">]))</span>  <span class="c">#data[ns:ne]</span>
+        <span class="c"># end of if ne &lt;= tlen:</span>
+
+        <span class="c"># add together the wlen days previous (reversed) data &amp; wlen days next</span>
+        <span class="c"># data (with out reversed) to the current day data.</span>
+        <span class="c"># And then multiplied with wlen size of weights</span>
+        <span class="c"># (multiplied in all dimensions).</span>
+        <span class="c"># now sum together, the time dimension length becomes one.</span>
+        <span class="n">wlenfilter</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">preData</span> <span class="o">+</span> <span class="n">nextData</span><span class="p">)</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span>
+        <span class="c"># finally again sum together the above wlenfilter (wlength filtered</span>
+        <span class="c"># data) with current day filtered (zeroth day filtered) data.</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cyclic</span><span class="p">:</span>
+            <span class="c"># get the proper index to store into the filteredData array</span>
+            <span class="n">cday</span> <span class="o">=</span> <span class="n">cday</span> <span class="o">%</span> <span class="n">wlen</span>
+        <span class="c"># end of if not cyclic:</span>
+
+        <span class="c"># store to the filteredData array</span>
+        <span class="n">filteredData</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">cfilter</span> <span class="o">+</span> <span class="n">wlenfilter</span>
+        <span class="c"># make memory free</span>
+        <span class="k">del</span> <span class="n">preData</span><span class="p">,</span> <span class="n">nextData</span><span class="p">,</span> <span class="n">wlenfilter</span>
+        <span class="k">if</span> <span class="n">__showStatusBar</span><span class="p">:</span>
+            <span class="n">preview</span> <span class="o">=</span> <span class="n">statusbar</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">loopCount</span><span class="p">,</span>
+                        <span class="n">title</span><span class="o">=</span><span class="s">&#39;Filtering&#39;</span><span class="p">,</span> <span class="n">prev</span><span class="o">=</span><span class="n">preview</span><span class="p">)</span>
+        <span class="c"># end of if __showStatusBar:</span>
+    <span class="c"># end of for idx, cday in enumerate(loopdays):</span>
+    <span class="k">print</span>
+    <span class="c"># make memory free</span>
+    <span class="k">del</span> <span class="n">data</span>
+
+    <span class="c"># get the needed axis list</span>
+    <span class="n">axislist</span> <span class="o">=</span> <span class="p">[</span><span class="n">axis</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">timeAxis</span><span class="p">,</span> <span class="n">levAxis</span><span class="p">,</span> <span class="n">latAxis</span><span class="p">,</span> <span class="n">lonAxis</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span><span class="p">]</span>
+    <span class="c"># set the axis information to the filteredData variable</span>
+    <span class="n">filteredData</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">filteredData</span><span class="p">)</span>
+    <span class="n">filteredData</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">dataid</span>
+    <span class="n">filteredData</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">(</span><span class="n">axislist</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">filteredData</span>
+<span class="c"># end of def lfilter(data, weights, cyclic=True, **kwarg):</span>
+
+</div>
+<div class="viewcode-block" id="plotVariance"><a class="viewcode-back" href="../mjo.html#variance_utils.plotVariance">[docs]</a><span class="k">def</span> <span class="nf">plotVariance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">season</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwarg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Written By : Alok Singh, Arulalan.T</span>
+
+<span class="sd">    Date : 28.05.2012</span>
+<span class="sd">    Updated : 08.07.2013</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bg</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;bg&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">kwarg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+    <span class="c"># end of if x is None:</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">isofill</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">getisofill</span><span class="p">(</span><span class="s">&#39;quick&#39;</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">setcolormap</span><span class="p">(</span><span class="s">&quot;ASD&quot;</span><span class="p">)</span>
+    <span class="n">isofill</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1200</span><span class="p">,</span> <span class="mi">1400</span><span class="p">,</span> <span class="mi">1600</span><span class="p">,</span>
+                      <span class="mi">1800</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">2200</span><span class="p">,</span> <span class="mi">2100</span><span class="p">,</span> <span class="mi">2400</span><span class="p">,</span> <span class="mi">2600</span><span class="p">,</span> <span class="mi">2800</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span>
+                                  <span class="mi">3200</span><span class="p">,</span> <span class="mi">3400</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="mi">3800</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">4200</span><span class="p">]</span>
+    <span class="n">isofill</span><span class="o">.</span><span class="n">fillareacolors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">252</span><span class="p">,</span> <span class="mi">112</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">137</span><span class="p">,</span> <span class="mi">155</span><span class="p">,</span> <span class="mi">171</span><span class="p">,</span> <span class="mi">185</span><span class="p">,</span>
+                              <span class="mi">190</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">204</span><span class="p">,</span> <span class="mi">215</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">229</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span>
+                                             <span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+    <span class="c">##### remove the below comments</span>
+    <span class="c">#isofill.fillareacolors=[252,253,254,116,120,125,130,135,141,148,155,162,166,171,185,190,197,200,204,210]</span>
+    <span class="c">#isofill.fillareacolors=[252,253,10,30,40,55,65,90,110,125,155,162,166,171,185,190,197,200,204,210]</span>
+    <span class="c">#[252,40,30,25,20,15,12,95,110,117,125,137,155,171,185,190,200,204,215,225,229]</span>
+    <span class="c">##### remove the above comments</span>
+
+    <span class="k">if</span> <span class="s">&#39;genVTemplate&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;template&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;genTemplate&#39; template object from temporary memory of vcs</span>
+        <span class="c"># template</span>
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">gettemplate</span><span class="p">(</span><span class="s">&#39;genVTemplate&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># creating &#39;genTemplate&#39; object</span>
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtemplate</span><span class="p">(</span><span class="s">&#39;genVTemplate&#39;</span><span class="p">,</span> <span class="s">&#39;ASD&#39;</span><span class="p">)</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">dataname</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">crdate</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">crtime</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">tvalue</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">tname</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">tunits</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">comment1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">comment2</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">comment3</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">comment4</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">zvalue</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="o">.</span><span class="mi">92</span>
+
+        <span class="n">to</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtextorientation</span><span class="p">(</span><span class="s">&#39;new&#39;</span><span class="p">,</span> <span class="s">&#39;centerup&#39;</span><span class="p">)</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">23</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">to</span>
+    <span class="c"># end of if &#39;genVTemplate&#39; in x.listelements(&#39;template&#39;):</span>
+
+    <span class="k">if</span> <span class="s">&#39;tropbox&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;line&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;genTemplate&#39; line object from temporary memory of vcs</span>
+        <span class="n">tropbox</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">getline</span><span class="p">(</span><span class="s">&#39;tropbox&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tropbox</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">(</span><span class="s">&#39;tropbox&#39;</span><span class="p">)</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">241</span><span class="p">]</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">]</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;solid&#39;</span><span class="p">]</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">viewport</span> <span class="o">=</span> <span class="p">[</span><span class="n">gentemp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">x1</span><span class="p">,</span> <span class="n">gentemp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">x2</span><span class="p">,</span>
+                            <span class="n">gentemp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">y1</span><span class="p">,</span> <span class="n">gentemp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">y2</span><span class="p">]</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">worldcoordinate</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">360.</span><span class="p">,</span> <span class="o">-</span><span class="mf">90.</span><span class="p">,</span> <span class="mf">90.</span><span class="p">]</span>
+    <span class="c"># end of if &#39;tropbox&#39; in x.listelements(&#39;line&#39;):</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">isofill</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="n">bg</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">season</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;sum&#39;</span><span class="p">,</span> <span class="s">&#39;jjas&#39;</span><span class="p">]:</span>
+        <span class="c"># summer boxes</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">80.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">80.</span><span class="p">,</span> <span class="mf">80.</span><span class="p">],</span> <span class="p">[</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">80.</span><span class="p">],</span> <span class="p">[</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">75.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">75.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">75.</span><span class="p">,</span> <span class="mf">75.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">115.</span><span class="p">,</span> <span class="mf">140.</span><span class="p">],</span> <span class="p">[</span><span class="mf">115.</span><span class="p">,</span> <span class="mf">140.</span><span class="p">],</span> <span class="p">[</span><span class="mf">115.</span><span class="p">,</span> <span class="mf">115.</span><span class="p">],</span> <span class="p">[</span><span class="mf">140.</span><span class="p">,</span> <span class="mf">140.</span><span class="p">]]</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">],</span> <span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">],</span> <span class="p">[</span><span class="mf">20.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">25.</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">25.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">]]</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tropbox</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="n">bg</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">season</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;win&#39;</span><span class="p">,</span> <span class="s">&#39;djf&#39;</span><span class="p">]:</span>
+        <span class="c">#winter Boxes</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">115.</span><span class="p">,</span> <span class="mf">145.</span><span class="p">],</span> <span class="p">[</span><span class="mf">115.</span><span class="p">,</span> <span class="mf">145.</span><span class="p">],</span> <span class="p">[</span><span class="mf">115.</span><span class="p">,</span> <span class="mf">115.</span><span class="p">],</span> <span class="p">[</span><span class="mf">145.</span><span class="p">,</span> <span class="mf">145.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">75.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">75.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">100.</span><span class="p">,</span> <span class="mf">100.</span><span class="p">],</span> <span class="p">[</span><span class="mf">75.</span><span class="p">,</span> <span class="mf">75.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">160.</span><span class="p">,</span> <span class="mf">185.</span><span class="p">],</span> <span class="p">[</span><span class="mf">160.</span><span class="p">,</span> <span class="mf">185.</span><span class="p">],</span> <span class="p">[</span><span class="mf">160.</span><span class="p">,</span> <span class="mf">160.</span><span class="p">],</span> <span class="p">[</span><span class="mf">185.</span><span class="p">,</span> <span class="mf">185.</span><span class="p">]]</span>
+        <span class="n">tropbox</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">17.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">17.5</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">17.5</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">17.5</span><span class="p">],</span>
+                     <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">10.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">10.</span><span class="p">],</span>
+                     <span class="p">[</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">20.</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">20.</span><span class="p">]]</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tropbox</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="n">bg</span><span class="p">)</span>
+    <span class="c"># end of if season in [&#39;sum&#39;, &#39;jjas&#39;]:</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pdf</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">outfile</span> <span class="o">+</span> <span class="s">&#39;.pdf&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">png</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">outfile</span> <span class="o">+</span> <span class="s">&#39;.png&#39;</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="c"># make memory free</span>
+    <span class="k">del</span> <span class="n">data</span>
+<span class="c"># end of def plotVariance(data, outfile, season, title=&#39;&#39;, pdf=1, png=0):</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
