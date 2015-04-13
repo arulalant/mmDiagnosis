@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="mmDiagnosis 1a documentation" href="index.html" />
-    <link rel="next" title="Documentation of diagnosisutils source code" href="diagnosisutils.html" />
+    <link rel="next" title="Installation and Setup of mmDiagnosis Framework" href="diag_install.html" />
     <link rel="prev" title="Welcome to mmDiagnosis’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="diagnosisutils.html" title="Documentation of diagnosisutils source code"
+          <a href="diag_install.html" title="Installation and Setup of mmDiagnosis Framework"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to mmDiagnosis’s documentation!"
@@ -55,23 +55,298 @@
             
   <div class="section" id="getting-started">
 <span id="id1"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-uv-cdat-in-system">
-<h2>Installing uv-cdat in system<a class="headerlink" href="#installing-uv-cdat-in-system" title="Permalink to this headline">¶</a></h2>
-<p>To install uv-cdat in your system, please follow the following links.</p>
-<p><a class="reference external" href="http://uv-cdat.llnl.gov/wiki/CDATCMakeBuild">http://uv-cdat.llnl.gov/wiki/CDATCMakeBuild</a></p>
-<p><a class="reference external" href="http://uv-cdat.llnl.gov/wiki/CDATBuild">http://uv-cdat.llnl.gov/wiki/CDATBuild</a></p>
+<p>UV-CDAT (Ultrascale Visualization Climate Data Analysis Tools) is a powerful and complete front-end to a rich set of visual-data exploration and analysis capabilities well suited for climate-data analysis problems. For more details visit <a class="reference external" href="http://uv-cdat.org/">http://uv-cdat.org/</a></p>
+<div class="section" id="uv-cdat-installation-guide">
+<h2>UV-CDAT Installation Guide<a class="headerlink" href="#uv-cdat-installation-guide" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dependencies-on-linux">
+<h3>Dependencies on Linux<a class="headerlink" href="#dependencies-on-linux" title="Permalink to this headline">¶</a></h3>
+<p>The following are dependencies need to be installed before installing UV-CDAT in all   Linux distributions</p>
+<ul class="simple">
+<li>git</li>
+<li>libqt4-dev (under RedHAT the system qt isn&#8217;t working, user will need to get the binaries from the website)</li>
+<li>libpng-dev</li>
+<li>libxml2-dev</li>
+<li>libxslt-dev</li>
+<li>xorg-dev</li>
+<li>sqlite3</li>
+<li>libsqlite3-dev</li>
+<li>libbz2-dev</li>
+<li>libgdbm-dev</li>
+<li>libxt-dev</li>
+<li>openssl-dev (libssl-dev)</li>
+<li>gfortran</li>
+<li>g++</li>
+<li>qt4-dev-tools / qtcreator</li>
+<li>tcl-dev</li>
+<li>tk-dev</li>
+<li>libgdbm-dev</li>
+<li>libdb4.8-dev</li>
+<li>yasm</li>
+<li>grace</li>
+<li>grads</li>
+</ul>
 </div>
-<div class="section" id="installing-the-diagnosisutils">
-<h2>Installing the Diagnosisutils<a class="headerlink" href="#installing-the-diagnosisutils" title="Permalink to this headline">¶</a></h2>
-<p>Have to write it</p>
+<div class="section" id="dependencies-on-ubuntu-extra-dependencies">
+<h3>Dependencies on Ubuntu (extra dependencies)<a class="headerlink" href="#dependencies-on-ubuntu-extra-dependencies" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>libicu48</li>
+<li>libxi-dev</li>
+<li>libglu1-mesa-dev</li>
+<li>libgl1-mesa-dev</li>
+<li>libqt4-opengl-dev</li>
+</ul>
 </div>
-<div class="section" id="installing-the-diagnosis">
-<h2>Installing the Diagnosis<a class="headerlink" href="#installing-the-diagnosis" title="Permalink to this headline">¶</a></h2>
-<p>Have to write it</p>
+<div class="section" id="dependencies-on-centos-6-3-extra-dependencies">
+<h3>Dependencies on CentOS 6.3 (extra dependencies)<a class="headerlink" href="#dependencies-on-centos-6-3-extra-dependencies" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>bzip2-devel</li>
+<li>dbus-devel</li>
+<li>dbus-c++-devel</li>
+<li>dbus-glib-devel</li>
+<li>gtkglext-devel</li>
+<li>mesalibGL</li>
+<li>mesalibGLU</li>
+<li>openGL</li>
+<li>gstreamer-devel</li>
+<li>gstreamer-plugins-base*devel</li>
+<li>gstreamer-plugins-bad*devel</li>
+<li>gstreamer-plugins-good*devel</li>
+<li>libcurl4</li>
+<li>openssl-devel</li>
+</ul>
 </div>
-<div class="section" id="setup-and-configuration">
-<h2>Setup and Configuration<a class="headerlink" href="#setup-and-configuration" title="Permalink to this headline">¶</a></h2>
-<p>Have to write it</p>
+</div>
+<div class="section" id="download-uv-cdat-binary">
+<h2>Download UV-CDAT Binary<a class="headerlink" href="#download-uv-cdat-binary" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>More detailed system requirements can be found <a class="reference external" href="https://github.com/UV-CDAT/uvcdat/wiki/System-Requirements">here</a></li>
+<li>UV-CDAT latest releases binary tar ball can be found <a class="reference external" href="http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/">here</a></li>
+<li>Download UV-CDAT latest binary version (2.0.0 as on Nov-2014) from <a class="reference external" href="http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/">here</a>  with respect to your linux distribution.</li>
+<li>You will need admin privileges to install UV-CDAT in your system.</li>
+</ul>
+</div>
+<div class="section" id="installation-on-linux-pre-built-binary">
+<h2>Installation on Linux  (Pre-Built Binary)<a class="headerlink" href="#installation-on-linux-pre-built-binary" title="Permalink to this headline">¶</a></h2>
+<p><strong>Step 1:</strong> Download and untar the binaries matching best your OS.</p>
+<blockquote>
+<div>$ cd /
+$ sudo tar xjvf UV-CDAT-[version-no]-[your OS here].tar.bz2</div></blockquote>
+<p><strong>Step 2:</strong> For Mac and RH6 ONLY</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>Download the tarsal containing the version of QT UVCDAT has been compiled against RedHAT6</dt>
+<dd><p class="first last">$ cd /
+$ sudo tar xjvf qt-RH6-64bit-4.8.0.tar.bz2</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Mac</dt>
+<dd><p class="first last">double click the .dmg file and follow instructions</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Step 3:</strong> Set Environment Variables</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>Bash users:</dt>
+<dd><p class="first last">$ source /usr/local/uvcdat/[version-no]/bin/setup_cdat.sh</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>t/csh users</dt>
+<dd><p class="first last">$ source /usr/local/uvcdat/[version-no]/bin/setup_cdat.csh</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p><strong>Step 4:</strong> Set Alias Paths</p>
+<blockquote>
+<div><p>In your system ~/.bash_aliases or ~/.bashrc  add the following 4 lines.</p>
+<blockquote>
+<div><p>source /usr/local/uvcdat/2.0.0/bin/setup_cdat.sh</p>
+<p>alias  uvcdat = &#8216;/usr/local/uvcdat/2.0.0/bin/python&#8217;</p>
+<p>alias  uvcdat-gui = &#8216;/usr/local/uvcdat/2.0.0/bin/uvcdat&#8217;</p>
+<p>alias  uvcdscan = &#8216;/usr/local/uvcdat/2.0.0/bin/cdscan&#8217;</p>
+</div></blockquote>
+<p>Here shown version 2.0.0 for example only. User need to set proper version no whichever they installed in their system.</p>
+</div></blockquote>
+<p><strong>Step 5:</strong> Start enjoying UVCDAT</p>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>GUI</dt>
+<dd><ul class="first last simple">
+<li>Type  $ uvcdat-gui  in your linux terminal to use gui</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Command Line Python</dt>
+<dd><ul class="first last simple">
+<li>Type $ uvcdat  in your linux terminal to use python shell</li>
+<li>Type $ uvcdat  sample_program.py to execute any uvcdat support python programs.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Cdscan</dt>
+<dd><ul class="first last simple">
+<li>Type $ uvcdsan  –x out.xml <a href="#id4"><span class="problematic" id="id5">*</span></a>.nc  to scan all available nc files and make links into small xml file which can be used to load all nc files data inside uvcdat scripts from single xml file.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="installation-on-linux-build-from-source">
+<h2>Installation on Linux  (Build From Source)<a class="headerlink" href="#installation-on-linux-build-from-source" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">User can visit the following links to install from source. For AIX, UNIX kind of systems, its better start to build and install from UV-CDAT latest source itself.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Download UV-CDAT latest Source Code from the following link</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="https://github.com/UV-CDAT/uvcdat/releases">https://github.com/UV-CDAT/uvcdat/releases</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Guide to Install from Source</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://uv-cdat.org/installing.html">http://uv-cdat.org/installing.html</a></li>
+<li><a class="reference external" href="https://github.com/UV-CDAT/uvcdat/wiki/zold-Building-UVCDAT">https://github.com/UV-CDAT/uvcdat/wiki/zold-Building-UVCDAT</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="installation-on-ubuntu">
+<h2>Installation on Ubuntu<a class="headerlink" href="#installation-on-ubuntu" title="Permalink to this headline">¶</a></h2>
+<p>Current Stable Release 2.0 Supporting for <strong>Ubuntu 13.x</strong> and <strong>14.x</strong></p>
+<p><strong>System Requirements</strong></p>
+<p>$ sudo apt-get install cmake cmake-curses-gui wget libqt4-dev libpng12-dev libxml2-dev libxslt1-dev xorg-dev sqlite3 libsqlite3-dev libbz2-dev libgdbm-dev libxt-dev libssl-dev gfortran g++ qt4-dev-tools tcl-dev tk-dev libgdbm-dev libdb-dev libicu-dev libxi-dev libglu1-mesa-dev libgl1-mesa-dev libqt4-opengl-dev libbz2-dev grads grace</p>
+<div class="section" id="installing-the-binaries-strongly-suggested">
+<h3>Installing the Binaries (Strongly Suggested)<a class="headerlink" href="#installing-the-binaries-strongly-suggested" title="Permalink to this headline">¶</a></h3>
+<p>You must be Root</p>
+<p>$ sudo -s</p>
+<p>$ cd /</p>
+<p>$ wget <a class="reference external" href="http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/UV-CDAT-2.0.0-Ubuntu-14.04-64bit.tar.gz">http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/UV-CDAT-2.0.0-Ubuntu-14.04-64bit.tar.gz</a></p>
+<p>$ tar xvjf UV-CDAT-2.0.0-Ubuntu-14.04-64bit.tar.gz</p>
+<p>$ source /usr/local/uvcdat/2.0.0/bin/setup_runtime.sh</p>
+<p>Running UV-CDAT GUI</p>
+<p>(Don&#8217;t forget to source setup_runtime.sh)</p>
+<p>$ uvcdat</p>
+<p>Bash users add source /usr/local/uvcdat/2.0.0/bin/setup_runtime.sh to your ~/.bashrc file</p>
+<p>Csh users add source /usr/local/uvcdat/2.0.0/bin/setup_runtime.csh to your ~/.cshrc file</p>
+<p>Set aliases in your bashrc file as mentioned in the previous section.</p>
+<p><a class="reference external" href="https://github.com/UV-CDAT/uvcdat/wiki/Installation-on-Ubuntu">https://github.com/UV-CDAT/uvcdat/wiki/Installation-on-Ubuntu</a></p>
+</div>
+<div class="section" id="installation-on-redhat-fedora-centos">
+<h3>Installation on RedHat, Fedora &amp; CentOS<a class="headerlink" href="#installation-on-redhat-fedora-centos" title="Permalink to this headline">¶</a></h3>
+<p>Current Stable Release 2.0 Supporting for <strong>RedHat6</strong> / <strong>CentOS6</strong></p>
+<p>System Requirements (Must be Root)</p>
+<p>You must have access to the EPEL Repos <a class="reference external" href="http://www.thegeekstuff.com/2012/06/enable-epel-repository">help link</a></p>
+<p>$ sudo yum install cmake cmake-gui wget libpng-devel libxml2-devel libxslt-devel xorg* sqlite-devel bzip2 gdbm-devel libXt-devel openssl-devel gcc-gfortran libgfortran tcl-devel tk-devel libdbi-devel libicu-devel libXi-devel mesa-libGLU-devel mesa-libGL-devel PyQt4-devel gcc-c++ patch grace grads
+Installation Qt Binary :</p>
+<p>$ cd /</p>
+<p>$ wget <a class="reference external" href="http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/qt-CentOS-6.5-RedHat6-64bit-4.8.4.tar.bz2">http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/qt-CentOS-6.5-RedHat6-64bit-4.8.4.tar.bz2</a></p>
+<p>$ tar xvjf qt-CentOS-6.5-RedHat6-64bit-4.8.4.tar.bz2</p>
+<p>please add Qt to your path (example in bash) add this to your .bashrc</p>
+<blockquote>
+<div><p>export Qt=/usr/local/uvcdat/Qt/4.8.4/bin/</p>
+<p>export PATH=$PATH:$Qt</p>
+</div></blockquote>
+<p>Installing the Binaries (Strongly Suggested)</p>
+<p>You must be Root</p>
+<p>$ sudo -s</p>
+<p>$ cd /</p>
+<p>$ wget <a class="reference external" href="http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/UV-CDAT-2.0.0-CentOS6.5-RedHat6-64bit.tar.gz">http://sourceforge.net/projects/cdat/files/Releases/UV-CDAT/2.0.0/UV-CDAT-2.0.0-CentOS6.5-RedHat6-64bit.tar.gz</a></p>
+<p>$ tar xvjf  UV-CDAT-2.0.0-CentOS6.5-RedHat6-64bit.tar.gz</p>
+<p>$ source /usr/local/uvcdat/2.0.0/bin/setup_runtime.sh</p>
+<p>Set aliases in your bashrc file as mentioned in the previous section.</p>
+<p>Bash users add source /usr/local/uvcdat/2.0.0/bin/setup_runtime.sh to your ~/.bashrc file</p>
+<p>Csh users add source /usr/local/uvcdat/2.0.0/bin/setup_runtime.csh to your ~/.cshrc file</p>
+<p><a class="reference external" href="https://github.com/UV-CDAT/uvcdat/wiki/installation-on-RedHat---CentOS">https://github.com/UV-CDAT/uvcdat/wiki/installation-on-RedHat&#8212;CentOS</a></p>
+</div>
+</div>
+<div class="section" id="uv-cdat-documentation">
+<h2>UV-CDAT Documentation<a class="headerlink" href="#uv-cdat-documentation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="official-documentation">
+<h3>Official Documentation<a class="headerlink" href="#official-documentation" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://uv-cdat.org/documentation/cdms/cdms.html">CDMS</a> Manual</li>
+<li>UV-CDAT <a class="reference external" href="http://uv-cdat.org/documentation/utilities/utilities.html">Utilities</a> Manual</li>
+<li><a class="reference external" href="http://uv-cdat.org/documentation/vcs/vcs.html">VCS</a> Manual</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="useful-tips-tricks">
+<h3>Useful Tips &amp; Tricks<a class="headerlink" href="#useful-tips-tricks" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.johnny-lin.com/cdat_tips/">http://www.johnny-lin.com/cdat_tips/</a></li>
+<li><a class="reference external" href="http://drclimate.wordpress.com/2014/01/02/a-beginners-guide-to-scripting-with-uv-cdat/">http://drclimate.wordpress.com/2014/01/02/a-beginners-guide-to-scripting-with-uv-cdat/</a></li>
+<li><a class="reference external" href="http://tuxcoder.wordpress.com/category/python/cdat/">http://tuxcoder.wordpress.com/category/python/cdat/</a></li>
+<li><a class="reference external" href="http://tuxcoder.wordpress.com/category/uvcdat-2/">http://tuxcoder.wordpress.com/category/uvcdat-2/</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="slides">
+<h3>Slides<a class="headerlink" href="#slides" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Lesson-1 <a class="reference external" href="https://www.scribd.com/doc/56253490/Lesson1-Python-An-Introduction">Python An Introduction</a></li>
+<li>Lesson-2 <a class="reference external" href="https://www.scribd.com/doc/56254041/Lesson2-Numpy-Arrays">Numpy Arrays</a></li>
+<li>Lesson-3 <a class="reference external" href="https://www.scribd.com/doc/56254387/Lesson3-cdutil-genutil">cdutil_genutil</a></li>
+<li>Lesson-4 <a class="reference external" href="https://www.scribd.com/doc/56254572/Lesson4-VCS-XmGrace-CDAT-Graphics">VCS_XmGrace_Graphics</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="ipython-with-interactive-live-execution-examples-outputs">
+<h3>IPython With Interactive Live Execution Examples Outputs<a class="headerlink" href="#ipython-with-interactive-live-execution-examples-outputs" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li>Introduction to <a class="reference external" href="http://nbviewer.ipython.org/github/arulalant/UV-CDAT-IPython-Notebooks/blob/outputs/1.Introduction_to_NumPy_Arrays.ipynb">NumPy Arrays</a></li>
+<li>UV-CDAT-<a class="reference external" href="http://nbviewer.ipython.org/github/arulalant/UV-CDAT-IPython-Notebooks/blob/outputs/2.UV-CDAT-cdms.ipynb">cdms</a></li>
+<li>UV-CDAT-<a class="reference external" href="http://nbviewer.ipython.org/github/arulalant/UV-CDAT-IPython-Notebooks/blob/outputs/3.UV-CDAT-cdutil_gentuil.ipynb">cdutil_gentuil</a></li>
+<li>UV-CDAT-<a class="reference external" href="http://nbviewer.ipython.org/github/arulalant/UV-CDAT-IPython-Notebooks/blob/outputs/4.UV-CDAT-Graphics-vcs-xmgrace.ipynb">Graphics-vcs-xmgrace</a></li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>UV-CDAT IPython Notebooks Source</dt>
+<dd><a class="reference external" href="https://github.com/arulalant/UV-CDAT-IPython-Notebooks">https://github.com/arulalant/UV-CDAT-IPython-Notebooks</a></dd>
+</dl>
+</div>
+</div>
+<div class="section" id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mailing-list">
+<h3>Mailing List<a class="headerlink" href="#mailing-list" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="http://uv-cdat.org/mailing-list.html">http://uv-cdat.org/mailing-list.html</a>  and  <a class="reference external" href="https://uvcdat.llnl.gov/mailing-list/">https://uvcdat.llnl.gov/mailing-list/</a></p>
+</div>
+</div>
+<div class="section" id="gallery">
+<h2>Gallery<a class="headerlink" href="#gallery" title="Permalink to this headline">¶</a></h2>
+<p>The UV-CDAT gallery images contains all different type of plots, projection, 2D &amp;
+3D visualization can be found from this link  <a class="reference external" href="http://uvcdat.llnl.gov/gallery.php">http://uvcdat.llnl.gov/gallery.php</a></p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>UVCDAT comes under Free Open Source GNU GENERAL PUBLIC LICENSE V3+
+Read about GPL License here <a class="reference external" href="https://www.gnu.org/licenses/gpl.html">https://www.gnu.org/licenses/gpl.html</a></p>
 </div>
 </div>
 
@@ -84,10 +359,33 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Getting started</a><ul>
-<li><a class="reference internal" href="#installing-uv-cdat-in-system">Installing uv-cdat in system</a></li>
-<li><a class="reference internal" href="#installing-the-diagnosisutils">Installing the Diagnosisutils</a></li>
-<li><a class="reference internal" href="#installing-the-diagnosis">Installing the Diagnosis</a></li>
-<li><a class="reference internal" href="#setup-and-configuration">Setup and Configuration</a></li>
+<li><a class="reference internal" href="#uv-cdat-installation-guide">UV-CDAT Installation Guide</a><ul>
+<li><a class="reference internal" href="#dependencies-on-linux">Dependencies on Linux</a></li>
+<li><a class="reference internal" href="#dependencies-on-ubuntu-extra-dependencies">Dependencies on Ubuntu (extra dependencies)</a></li>
+<li><a class="reference internal" href="#dependencies-on-centos-6-3-extra-dependencies">Dependencies on CentOS 6.3 (extra dependencies)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#download-uv-cdat-binary">Download UV-CDAT Binary</a></li>
+<li><a class="reference internal" href="#installation-on-linux-pre-built-binary">Installation on Linux  (Pre-Built Binary)</a></li>
+<li><a class="reference internal" href="#installation-on-linux-build-from-source">Installation on Linux  (Build From Source)</a></li>
+<li><a class="reference internal" href="#installation-on-ubuntu">Installation on Ubuntu</a><ul>
+<li><a class="reference internal" href="#installing-the-binaries-strongly-suggested">Installing the Binaries (Strongly Suggested)</a></li>
+<li><a class="reference internal" href="#installation-on-redhat-fedora-centos">Installation on RedHat, Fedora &amp; CentOS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#uv-cdat-documentation">UV-CDAT Documentation</a><ul>
+<li><a class="reference internal" href="#official-documentation">Official Documentation</a></li>
+<li><a class="reference internal" href="#useful-tips-tricks">Useful Tips &amp; Tricks</a></li>
+<li><a class="reference internal" href="#slides">Slides</a></li>
+<li><a class="reference internal" href="#ipython-with-interactive-live-execution-examples-outputs">IPython With Interactive Live Execution Examples Outputs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#support">Support</a><ul>
+<li><a class="reference internal" href="#mailing-list">Mailing List</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gallery">Gallery</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
 </ul>
 </li>
 </ul>
@@ -96,8 +394,8 @@
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to mmDiagnosis&#8217;s documentation!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="diagnosisutils.html"
-                        title="next chapter">Documentation of <strong>diagnosisutils</strong> source code</a></p>
+  <p class="topless"><a href="diag_install.html"
+                        title="next chapter">Installation and Setup of mmDiagnosis Framework</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/getting_started.txt"
@@ -130,7 +428,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="diagnosisutils.html" title="Documentation of diagnosisutils source code"
+          <a href="diag_install.html" title="Installation and Setup of mmDiagnosis Framework"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to mmDiagnosis’s documentation!"
@@ -139,7 +437,7 @@
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R.
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>

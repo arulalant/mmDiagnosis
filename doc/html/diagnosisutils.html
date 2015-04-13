@@ -26,7 +26,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="mmDiagnosis 1a documentation" href="index.html" />
     <link rel="next" title="Documentation of diagnosis source code" href="diagnosis.html" />
-    <link rel="prev" title="Getting started" href="getting_started.html" /> 
+    <link rel="prev" title="Installation and Setup of mmDiagnosis Framework" href="diag_install.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,7 +42,7 @@
           <a href="diagnosis.html" title="Documentation of diagnosis source code"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="getting_started.html" title="Getting started"
+          <a href="diag_install.html" title="Installation and Setup of mmDiagnosis Framework"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">mmDiagnosis 1a documentation</a> &raquo;</li> 
       </ul>
@@ -58,7 +58,7 @@
 <p>The diagnosisutils package contains the <a class="reference internal" href="#data-access-utils">Data Access Utils</a>, <a class="reference internal" href="#time-axis-utils">Time Axis Utils</a>, and <a class="reference internal" href="#plot-utils">Plot Utils</a> modules.</p>
 <div class="section" id="data-access-utils">
 <h2>Data Access Utils<a class="headerlink" href="#data-access-utils" title="Permalink to this headline">¶</a></h2>
-<p>This data access utils uses the <a class="reference internal" href="#time-axis-utils">Time Axis Utils</a> and <a href="#id2"><span class="problematic" id="id3">`Days Utils`_</span></a> .</p>
+<p>This data access utils uses the <a class="reference internal" href="#time-axis-utils">Time Axis Utils</a> .</p>
 <p>The <a class="reference internal" href="#xml-data-access">xml_data_access</a> module help us to access the all the grib files through single object.</p>
 <p>Basically all the grib files are pointed into xml dom by cdscan command.</p>
 <p>Then we can the xml files through uv-cdat.</p>
@@ -67,7 +67,7 @@
 <p>And once one xml object has initiated then through out that program execute session, it will remains exists and use when ever user needs it.</p>
 <div class="section" id="xml-data-access">
 <span id="id1"></span><h3>xml_data_access<a class="headerlink" href="#xml-data-access" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-xml_data_access"></span><span class="target" id="module-xml_data_access"></span><dl class="class">
+<span class="target" id="module-xml_data_access"></span><dl class="class">
 <dt id="xml_data_access.GribXmlAccess">
 <em class="property">class </em><tt class="descclassname">xml_data_access.</tt><tt class="descname">GribXmlAccess</tt><big>(</big><em>XmlDir</em><big>)</big><a class="reference internal" href="_modules/xml_data_access.html#GribXmlAccess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#xml_data_access.GribXmlAccess" title="Permalink to this definition">¶</a></dt>
 <dd><p>xml access methods</p>
@@ -700,9 +700,1204 @@ it will return the listvariable method of the appropriate xml file.</p>
 <h2>Time Axis Utils<a class="headerlink" href="#time-axis-utils" title="Permalink to this headline">¶</a></h2>
 <p>This <a class="reference internal" href="#timeutils">timeutils</a> module helps us to generate our own time axis, correct existing time axis bounds and generate bounds.</p>
 <p>Here we used inbuilt methods of cdtime and cdutil module of uv-cdat.</p>
-<div class="section" id="module-timeutils">
-<span id="timeutils"></span><h3>timeutils<a class="headerlink" href="#module-timeutils" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-timeutils"></span></div>
+<div class="section" id="timeutils">
+<span id="id2"></span><h3>timeutils<a class="headerlink" href="#timeutils" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="xml_data_access.TimeUtility">
+<em class="property">class </em><tt class="descclassname">xml_data_access.</tt><tt class="descname">TimeUtility</tt><a class="headerlink" href="#xml_data_access.TimeUtility" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="xml_data_access.TimeUtility.comp2timestr">
+<tt class="descname">comp2timestr</tt><big>(</big><em>comptime</em>, <em>returnHour='y'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.comp2timestr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.comp2timestr" title="xml_data_access.TimeUtility.comp2timestr"><tt class="xref py py-func docutils literal"><span class="pre">comp2timestr()</span></tt></a>: To convert date from cdtime.comptime into</dt>
+<dd>&#8216;yyyymmdd&#8217; formate or &#8216;yyyymmddhh&#8217; formate
+as string</dd>
+</dl>
+<p>Condition :   passing date must be comptime formate</p>
+<dl class="docutils">
+<dt>Inputs <span class="classifier-delimiter">:</span> <span class="classifier">date in comptime.</span></dt>
+<dd>returnHour takes &#8216;y&#8217; or &#8216;yes&#8217; or &#8216;n&#8217; or &#8216;no&#8217;.
+Default it takes &#8216;y&#8217;.</dd>
+<dt>Outputs <span class="classifier-delimiter">:</span> <span class="classifier">It should return the date in &#8216;yyyymmddhh&#8217; string formate, if</span></dt>
+<dd>returnHour passed &#8216;y&#8217; or &#8216;yes&#8217;.
+It should return the date in &#8216;yyyymmdd&#8217; string formate, if
+returnHour passed &#8216;n&#8217; or &#8216;no&#8217;.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>example1 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">compobj</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">29</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">2010</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">29</span> <span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp2timestr</span><span class="p">(</span><span class="n">compobj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;2010042900&#39;</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It should return in yyyymmddhh string formate by default.
+Hour is 00.</p>
+</div>
+</dd>
+<dt>example2 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">compobj</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">2010</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">29</span> <span class="mi">10</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp2timestr</span><span class="p">(</span><span class="n">compobj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;2010042910&#39;</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It should return in yyyymmddhh string formate by default.
+Hour is 10.</p>
+</div>
+</dd>
+<dt>example2 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">compobj</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">29</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">2010</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">29</span> <span class="mi">10</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comp2timestr</span><span class="p">(</span><span class="n">compobj</span><span class="p">,</span> <span class="n">returnHour</span> <span class="o">=</span> <span class="s">&#39;n&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;20100429&#39;</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It should return in yyyymmdd string formate only even
+though hour passed in the component object. Because we
+passed returnHour as &#8216;n&#8217;.</p>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written by : Arulalan.T</p>
+<p>Date : 29.04.2011
+Updated : 21.08.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getSameDayData">
+<tt class="descname">getSameDayData</tt><big>(</big><em>varName</em>, <em>fpath</em>, <em>day</em>, <em>mon</em>, <em>hr=0</em>, <em>**kwarg</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getSameDayData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>getSameDayData <span class="classifier-delimiter">:</span> <span class="classifier">get same day data from all the available years or</span></dt>
+<dd>needed year/s.</dd>
+<dt>Inputs :</dt>
+<dd><p class="first">varName - variable name
+fpath - file path
+day : day of the needed  [of all the years of the data].
+mon : month of the needed [of all the years of the data].
+hr : hour of the needed
+KWargs : (latitude and/or longitude) or (region) and/or level</p>
+<blockquote class="last">
+<div>and/or year</div></blockquote>
+</dd>
+<dt>..note:: It will extract the particular day from all the available years.</dt>
+<dd><p class="first">Ofcourse you can control the needed year/s also by using year kwarg.
+Eg1: To get leap day data from all the available years,</p>
+<blockquote class="last">
+<div>getSameDayData(varName, path, day=29, mon=2)
+It will return all years the leapday data (Feb 29) along with
+its timeAxis and missing values.</div></blockquote>
+</dd>
+</dl>
+<p>Refer: getSeasonData</p>
+<p>Written By : Arulalan.T</p>
+<p>Date : 13.08.2013</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getSeasonName">
+<tt class="descname">getSeasonName</tt><big>(</big><em>startBound</em>, <em>endBound</em>, <em>year='1'</em>, <em>units='days'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getSeasonName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs : start bound and end bound of the season.
+Returns : Season name
+Date : 03.06.2012</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getSeasonalData">
+<tt class="descname">getSeasonalData</tt><big>(</big><em>varName</em>, <em>fpath</em>, <em>sday</em>, <em>smon</em>, <em>eday</em>, <em>emon</em>, <em>hr=0</em>, <em>**kwarg</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getSeasonalData" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>getSeasonalData <span class="classifier-delimiter">:</span> <span class="classifier">user defined season data extraction from the filepath.</span></dt>
+<dd>It will extract the specified season (passed in the args)
+from all the available years or user can pass the needed
+year/s.
+User can extract same day for all the available years/
+needed year/s. For eg : One can get all the leapday data
+alone from all the years.</dd>
+<dt>Inputs:</dt>
+<dd><p class="first">varName : variable name
+fpath : data (nc/ctl/grib/xml/cdml) file path
+sday : starting day of the season [of all the years of the data]
+smon : starting month of the season [of all the years of the data]
+eday : ending day of the season [of all the years of the data]
+emon : ending month of the season [of all the years of the data]
+hr : hour for both start and end date
+KWargs : (latitude and/or longitude) or (region) and/or level</p>
+<blockquote class="last">
+<div><blockquote>
+<div>and/or cyclic.</div></blockquote>
+<dl class="docutils">
+<dt>cyclic <span class="classifier-delimiter">:</span> <span class="classifier">If cyclic is true, it extract the cyclic year data also.</span></dt>
+<dd><blockquote class="first">
+<div><p>i.e. In winter season (Nov to Apr), then it will extract the
+first year (Jan to Apr) and last year (Nov to Dec) also.
+So it will be look like cyclic year of seasonData.</p>
+<blockquote>
+<div>If cyclic is false means, it will not extract the last</div></blockquote>
+<p>year partial months data. i.e. it will not extract last year
+(Nov to Dec) for winter season.</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt>year <span class="classifier-delimiter">:</span> <span class="classifier">Its optional only. By default it is None. i.e. It will</span></dt>
+<dd><p class="first">extract all the available years seasonalData.
+If one interger year has passed means, then it will do
+extract of that particular year seasonData alone.
+If two years has passed in tuple, then it will extract
+the range of years seasonData from year[0] to year[1].
+eg1 : year=2005 it will extract seasonData of 2005 alone.
+eg2 : year=(1971, 2013) it will extract seasonData from</p>
+<blockquote class="last">
+<div>1971 to 2013 years.</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>..note:: If end day and end month is lower than the start day &amp; start</dt>
+<dd><blockquote class="first">
+<div><p>month, then we need to extract the both current and next year
+data. For eg : Winter Season (November to April).
+It can not be reversed for this winter season. We need to
+extract data from current year november month upto next year
+march month.</p>
+<blockquote>
+<div>If you pass one year data and passed the above</div></blockquote>
+<p>winter season, then it will be extracted november and december
+months data and will be calculated variance for that alone.</p>
+<blockquote>
+<div>If you will pass two year data then it will extract the data</div></blockquote>
+<p>from november &amp; december of first year and january, feburary &amp;
+march of next year will be extracted and calculated variance
+for that.</p>
+</div></blockquote>
+<dl class="last docutils">
+<dt>..note:: If both sday == eday and smon == emon then it will extract</dt>
+<dd><p class="first">the this particular day from all the available years.
+Ofcourse you can control the needed year/s also.
+Eg1: To get leap day data from all the available years,</p>
+<blockquote class="last">
+<div>getSeasonalData(varName, path, sday=29, smon=2, emon=29, emon=2)
+It will return all years the leapday data (Feb 29) along with
+its timeAxis and missing values.</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 26.07.2012
+Updated : 13.08.2013</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getSummerData">
+<tt class="descname">getSummerData</tt><big>(</big><em>varName</em>, <em>fpath</em>, <em>sday=1</em>, <em>smon=5</em>, <em>eday=31</em>, <em>emon=10</em>, <em>hr=0</em>, <em>**kwarg</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getSummerData" title="Permalink to this definition">¶</a></dt>
+<dd><p>getSummerData : summer season (May to October) data</p>
+<dl class="docutils">
+<dt>Inputs :</dt>
+<dd>varName - variable name
+fpath - file path
+sday : starting day of the summer season [of all the years of the data].
+smon : starting month of the summer season [of all the years of the data].
+eday : ending day of the summer season [of all the years of the data].
+emon : ending month of the summer season [of all the years of the data].
+hr : hour for both start and end date
+KWargs : (latitude and/or longitude) or (region) and/or level</dd>
+</dl>
+<p>Refer: getSeasonData</p>
+<p>Written By : Arulalan.T</p>
+<p>Date : 26.07.2012</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getTimeAxisFullMonths">
+<tt class="descname">getTimeAxisFullMonths</tt><big>(</big><em>timeAxis</em>, <em>returnType='c'</em>, <em>returnHour='y'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getTimeAxisFullMonths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.getTimeAxisFullMonths" title="xml_data_access.TimeUtility.getTimeAxisFullMonths"><tt class="xref py py-func docutils literal"><span class="pre">getTimeAxisFullMonths()</span></tt></a>: Get the fully available months name and</dt>
+<dd>its firstday &amp; lastday from the passed timeAxis.</dd>
+</dl>
+<p>Condition : timeAxis must be an instance of cdms2.axis.TransientAxis</p>
+<dl class="docutils">
+<dt>Inputs <span class="classifier-delimiter">:</span> <span class="classifier">Pass the any range of timeAxis object.</span></dt>
+<dd>returnType is either &#8216;c&#8217; or &#8216;s&#8217;. If &#8216;c&#8217; means the dates are
+cdtime.comptime object itself. if &#8216;s&#8217; means the dates are
+yyyymmddhh string (by default) or yyyymmdd w.r.t returnHour.
+returnHour takes either &#8216;y/yes&#8217; or &#8216;n/no&#8217;.</dd>
+<dt>Outputs <span class="classifier-delimiter">:</span> <span class="classifier">It should return a dictionary which has key as the year.</span></dt>
+<dd>This year key has the value as dictionary type itself.
+The nested dictionary has month as key and
+value as tuple, which contains the stardate and enddate of
+that month.
+It should return month only for fully available month in the
+passed timeAxis.
+i.e. If timeAxis has some incomplete months of particular
+year means, it should not return that month and its dates.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>..seealso:: we can pass any range of timeAxis. Even its hourly</dt>
+<dd>series, it should works. But it should return month &amp;
+dates for fully available dates of months in timeAxis.</dd>
+<dt>example 1:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span> <span class="o">=</span> <span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;2011-5-25&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span>
+<span class="go">   id: time</span>
+<span class="go">   Designated a time axis.</span>
+<span class="go">   units:  days since 2011-5-25</span>
+<span class="go">   Length: 70</span>
+<span class="go">   First:  0</span>
+<span class="go">   Last:   69</span>
+<span class="go">   Other axis attributes:</span>
+<span class="go">      calendar: gregorian</span>
+<span class="go">      axis: T</span>
+<span class="go">   Python id:  0x8aea74c</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">getTimeAxisFullMonths</span><span class="p">(</span><span class="n">tim</span><span class="p">)</span>
+<span class="go">{2011: {</span>
+<span class="go">&#39;JULY&#39;: (2011-7-1 0:0:0.0, 2011-7-31 0:0:0.0),</span>
+<span class="go">&#39;JUNE&#39;: (2011-6-1 0:0:0.0, 2011-6-30 0:0:0.0)}</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note::  Here 2011 as the key for the primary dictionary.</dt>
+<dd><blockquote class="first">
+<div>And JUNE, JULY are the keys for the secondary(inner)
+dictionary, which contains the stardate and enddate
+of that month and year.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">2011-5-25 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: The actual firstdate of the timeAxis is 25th may 2011.</dt>
+<dd><blockquote class="first">
+<div>But its not complete month. So this may month is not
+returned in the above.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">2011-8-2 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: The actual lastdate of the timeAxis is 2nd aug 2011.</dt>
+<dd>But its not complete month. So this aug month is not
+returned in the above.</dd>
+</dl>
+</dd>
+<dt>example 2:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim1</span> <span class="o">=</span> <span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;2011-12-1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tim1</span>
+<span class="go">   id: time</span>
+<span class="go">   Designated a time axis.</span>
+<span class="go">   units:  days since 2011-12-1</span>
+<span class="go">   Length: 70</span>
+<span class="go">   First:  0</span>
+<span class="go">   Last:   69</span>
+<span class="go">   Other axis attributes:</span>
+<span class="go">      calendar: gregorian</span>
+<span class="go">      axis: T</span>
+<span class="go">   Python id:  0xa2c10ac</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">getTimeAxisFullMonths</span><span class="p">(</span><span class="n">tim1</span><span class="p">,</span> <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">,</span>
+<span class="go">                                            returnHour = &#39;n&#39;)</span>
+<span class="go">{2011: {&#39;DECEMBER&#39;: (&#39;20111201&#39;, &#39;20111231&#39;)},</span>
+<span class="go"> 2012: {&#39;JANUARY&#39;: (&#39;20120101&#39;, &#39;20120131&#39;)}}</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note:: In this example, we will get 2011 and 2012 are the</dt>
+<dd>keys of the primary dictionary. And 2011 has &#8216;DECEMBER&#8217;
+month and its startdate &amp; enddate as key and value.
+Same as for 2012 has &#8216;JANUARY&#8217; month and its startdate
+&amp; enddate as key and value. Here dates are in yyyymmdd
+string formate. Here we passed returnHour as &#8216;n&#8217;.</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 24.08.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getTimeAxisMonths">
+<tt class="descname">getTimeAxisMonths</tt><big>(</big><em>timeAxis</em>, <em>returnType='c'</em>, <em>returnHour='y'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getTimeAxisMonths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.getTimeAxisMonths" title="xml_data_access.TimeUtility.getTimeAxisMonths"><tt class="xref py py-func docutils literal"><span class="pre">getTimeAxisMonths()</span></tt></a>: Get the available months name and its</dt>
+<dd>firstday &amp; lastday from the passed timeAxis.</dd>
+</dl>
+<p>Condition : timeAxis must be an instance of cdms2.axis.TransientAxis</p>
+<dl class="docutils">
+<dt>Inputs <span class="classifier-delimiter">:</span> <span class="classifier">Pass the any range of timeAxis object.</span></dt>
+<dd>returnType is either &#8216;c&#8217; or &#8216;s&#8217;. If &#8216;c&#8217; means the dates are
+cdtime.comptime object itself. if &#8216;s&#8217; means the dates are
+yyyymmddhh string (by default) or yyyymmdd w.r.t returnHour.
+returnHour takes either &#8216;y/yes&#8217; or &#8216;n/no&#8217;.</dd>
+<dt>Outputs <span class="classifier-delimiter">:</span> <span class="classifier">It should return a dictionary which has key as the year.</span></dt>
+<dd>This year key has the value as dictionary type itself.
+The nested dictionary has month as key and
+value as tuple, which contains the stardate and enddate of
+that month.
+It should return month only for the available months in the
+passed timeAxis.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>..seealso:: we can pass any range of timeAxis. Even its hourly</dt>
+<dd>series, it should works.</dd>
+</dl>
+</dd>
+</dl>
+<p>..seealso:: getTimeAxisFullMonths(), getTimeAxisPartialMonths()</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>example 1:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span> <span class="o">=</span> <span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;2011-5-25&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span>
+<span class="go">   id: time</span>
+<span class="go">   Designated a time axis.</span>
+<span class="go">   units:  days since 2011-5-25</span>
+<span class="go">   Length: 70</span>
+<span class="go">   First:  0</span>
+<span class="go">   Last:   69</span>
+<span class="go">   Other axis attributes:</span>
+<span class="go">      calendar: gregorian</span>
+<span class="go">      axis: T</span>
+<span class="go">   Python id:  0x8aea74c</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">getTimeAxisMonths</span><span class="p">(</span><span class="n">tim</span><span class="p">)</span>
+<span class="go">{2011: {</span>
+<span class="go">&#39;MAY&#39;: (2011-5-25 0:0:0.0, 2011-5-31 0:0:0.0),</span>
+<span class="go">&#39;JUNE&#39;: (2011-6-1 0:0:0.0, 2011-6-30 0:0:0.0),</span>
+<span class="go">&#39;JULY&#39;: (2011-7-1 0:0:0.0, 2011-7-31 0:0:0.0),</span>
+<span class="go">&#39;AUGUST&#39;: (2011-8-1 :0:0.0, 2011-8-2 0:0:0.0)}</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note::  Here 2011 as the key for the primary dictionary.</dt>
+<dd><blockquote class="first">
+<div>And MAY, JUNE, JULY and AUGUST are the keys for the
+secondary(inner) dictionary, which contains the
+stardate and enddate of that month and year.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">2011-5-25 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: The actual firstdate of the timeAxis is 25th may 2011.</dt>
+<dd><blockquote class="first">
+<div>But its not complete month. Even though it is returning
+that available may month startdate and its enddate.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">2011-8-2 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: The actual lastdate of the timeAxis is 2nd aug 2011.</dt>
+<dd>But its not complete month. Even though it is returning
+that available may month startdate and its enddate.</dd>
+<dt>..note:: It also returnning the fully available months, in this</dt>
+<dd>example June &amp; July.</dd>
+</dl>
+</dd>
+<dt>example 2:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim1</span> <span class="o">=</span> <span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="s">&#39;2011-12-1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tim1</span>
+<span class="go">   id: time</span>
+<span class="go">   Designated a time axis.</span>
+<span class="go">   units:  days since 2011-12-1</span>
+<span class="go">   Length: 70</span>
+<span class="go">   First:  0</span>
+<span class="go">   Last:   69</span>
+<span class="go">   Other axis attributes:</span>
+<span class="go">      calendar: gregorian</span>
+<span class="go">      axis: T</span>
+<span class="go">   Python id:  0xa2c10ac</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">getTimeAxisMonths</span><span class="p">(</span><span class="n">tim1</span><span class="p">,</span> <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">,</span>
+<span class="go">                             returnHour = &#39;n&#39;)</span>
+<span class="go">{2011: {&#39;DECEMBER&#39;: (&#39;20111201&#39;, &#39;20111231&#39;)},</span>
+<span class="go"> 2012: {&#39;JANUARY&#39;: (&#39;20120101&#39;, &#39;20120131&#39;)}}</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note:: In this example, we will get 2011 and 2012 are the</dt>
+<dd>keys of the primary dictionary. And 2011 has &#8216;DECEMBER&#8217;
+month and its startdate &amp; enddate as key and value.
+Same as for 2012 has &#8216;JANUARY&#8217; month and its startdate
+&amp; enddate as key and value. Here dates are in yyyymmdd
+string formate. Here we passed returnHour as &#8216;n&#8217;.</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>Written By : Arulalan.T</p>
+<p>Date : 06.03.2013</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getTimeAxisPartialMonths">
+<tt class="descname">getTimeAxisPartialMonths</tt><big>(</big><em>timeAxis</em>, <em>fullMonths='auto'</em>, <em>returnType='c'</em>, <em>returnHour='y'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getTimeAxisPartialMonths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.getTimeAxisPartialMonths" title="xml_data_access.TimeUtility.getTimeAxisPartialMonths"><tt class="xref py py-func docutils literal"><span class="pre">getTimeAxisPartialMonths()</span></tt></a>: Get the partially available months</dt>
+<dd>name and  its firstday &amp; lastday from the passed timeAxis.
+Its not fully available months.</dd>
+</dl>
+<p>Condition : timeAxis must be an instance of cdms2.axis.TransientAxis</p>
+<p>Inputs : Pass the any range of timeAxis object.</p>
+<blockquote>
+<div><p>fullMonths is which contains the year and its full months
+name in dictionary. i.e. fullMonths is the output of the
+<cite>getTimeAxisFullMonths`(...) method for the same timeAxis.
+By default it takes &#8216;auto&#8217; string. It means, it should call
+the `getTimeAxisFullMonths</cite> method. Otherwise user can pass
+the same kind of input.</p>
+<p>returnType is either &#8216;c&#8217; or &#8216;s&#8217;. If &#8216;c&#8217; means the dates are
+cdtime.comptime object itself. if &#8216;s&#8217; means the dates are
+yyyymmddhh string (by default) or yyyymmdd w.r.t returnHour.</p>
+<p>returnHour takes either &#8216;y/yes&#8217; or &#8216;n/no&#8217;.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Outputs <span class="classifier-delimiter">:</span> <span class="classifier">It should return a dictionary which has key as the year.</span></dt>
+<dd>This year key has the value as dictionary type itself.
+The nested dictionary has month as key and
+value as tuple, which contains the stardate, enddate and
+no of days of that partial month.
+It should return month only for partially available month
+in the passed timeAxis.
+i.e. If timeAxis has some incomplete months of particular
+year means, those months start,enddate and its no of days
+should be retuned.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>..seealso:: we can pass any range of timeAxis. Even its hourly</dt>
+<dd>series, it should works. But it should return month,
+dates, total days for partially available dates of
+months in timeAxis.</dd>
+<dt>example 1:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span> <span class="o">=</span> <span class="n">_generateTimeAxis</span><span class="p">(</span><span class="mi">37</span><span class="p">,</span> <span class="s">&#39;2011-5-25&#39;</span><span class="p">)</span>
+<span class="go"># here we genearate the time axis with partial May month and</span>
+<span class="go"># complete June month.</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span>
+<span class="go">   id: time</span>
+<span class="go">   Designated a time axis.</span>
+<span class="go">   units:  days since 2011-5-25</span>
+<span class="go">   Length: 37</span>
+<span class="go">   First:  0</span>
+<span class="go">   Last:   36</span>
+<span class="go">   Other axis attributes:</span>
+<span class="go">      calendar: gregorian</span>
+<span class="go">      axis: T</span>
+<span class="go">   Python id:  0xa5604ec</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">getTimeAxisPartialMonths</span><span class="p">(</span><span class="n">tim</span><span class="p">)</span>
+<span class="go">{2011: {&#39;MAY&#39;: (2011-5-25 0:0:0.0, 2011-5-31 0:0:0.0, 7)}}</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note::  Here 2011 as the key for the primary dictionary.</dt>
+<dd><blockquote class="first">
+<div><blockquote>
+<div>And May is the key for the secondary(inner)
+dictionary, which contains the stardate, enddate and
+total days of the May month.
+of that month and year.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">getTimeAxisFullMonths</span><span class="p">(</span><span class="n">tim</span><span class="p">)</span>
+<span class="go">{2011: {&#39;JUNE&#39;: (2011-6-1 0:0:0.0, 2011-6-30 0:0:0.0)}}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<dl class="last docutils">
+<dt>..note:: Here we called the fullMonths. So the June month has</dt>
+<dd><blockquote class="first">
+<div>returned with its stardate and enddate.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">2011-5-25 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+<dt>..note:: The actual firstdate of the timeAxis is 25th may 2011.</dt>
+<dd><blockquote class="first">
+<div>But its not complete month. So this may month is
+returned in the above getTimeAxisPartialMonths() method
+example.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tim</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">2011-6-30 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: The June month is complete month. So it should return</dt>
+<dd>only when we call the getTimeAxisFullMonths() method,
+not in getTimeAxisPartialMonths() method.</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 28.11.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.getWinterData">
+<tt class="descname">getWinterData</tt><big>(</big><em>varName</em>, <em>fpath</em>, <em>sday=1</em>, <em>smon=11</em>, <em>eday=30</em>, <em>emon=4</em>, <em>hr=0</em>, <em>**kwarg</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.getWinterData" title="Permalink to this definition">¶</a></dt>
+<dd><p>getWinterData : winter season (November to April) data</p>
+<dl class="docutils">
+<dt>Inputs :</dt>
+<dd>varName - variable name
+fpath - file path
+sday : starting day of the winter season [of all the years of the data].
+smon : starting month of the winter season [of all the years of the data].
+eday : ending day of the winter season [of all the years of the data].
+emon : ending month of the winter season [of all the years of the data].
+hr : hour for both start and end date
+KWargs : (latitude and/or longitude) or (region) and/or level</dd>
+</dl>
+<p>Refer: getSeasonData</p>
+<p>Written By : Arulalan.T</p>
+<p>Date : 26.07.2012</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.has_all">
+<tt class="descname">has_all</tt><big>(</big><em>timeAxis</em>, <em>deepsearch=False</em>, <em>missingYears=0</em>, <em>missingMonths=0</em>, <em>missingHours=0</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.has_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>has_all : either the passed time axis has all the time series or not !</p>
+<dl class="docutils">
+<dt>Returns <span class="classifier-delimiter">:</span> <span class="classifier">True it timeAxis has no missing value and no duplicates.</span></dt>
+<dd>Otherwise returns False.</dd>
+<dt>deepsearch - 1 | 0.</dt>
+<dd><p class="first">If deepsearch enabled return if it has missing time series
+in between, then it should return those missing time series
+as component time string in list along with False.</p>
+<p class="last">deepsearch 0 will return the boolean value in rapid speed.</p>
+</dd>
+<dt>missingYears - 1 | 0.</dt>
+<dd>If deepsearch is 1 and missingYears is 1, then it should find
+only the missing years from the passed timeAxis. It will not
+worry about the months &amp; hours until missingMonths &amp;
+missingHours are enabled.</dd>
+<dt>missingMonths - 1 | 0.</dt>
+<dd>If deepsearch is 1, missingYears is 1 and missingHours is 1,
+then it will find the missing months also in the timeAxis.
+It will not worry about the missing hours.</dd>
+<dt>missingHours - 1 | 0.</dt>
+<dd><p class="first">If deepsearch is 1, missingYears is 1, missingMonths is 1
+and missingHours is 1, it will do just find all missing
+sequance time slice from the timeAxis.</p>
+<p class="last">User can enable deepsearch alone instead of enabling all the
+missingYears, missingMonths and missingHours.</p>
+</dd>
+<dt>..note:: By default deepsearch flag, will try to find out the missing</dt>
+<dd>time sequance from the user passed timeAxis itself.
+This function should works correctly for the timeAxis which
+contains same delta(diff b/w first and second timeAxisIndex)
+through out the timeAxis. Otherwise user can use missingYears
+and/or missingMonths for complex timeAxis.</dd>
+<dt>..note:: return true if user passed length of 1 timeAxis or if user</dt>
+<dd>enabled missingYears, then if that retunes only one year,
+then we can just return True ! (In that case it could be
+daily or monthly or hourly) it may be have missing time
+slice also, if user passed missingYears. so user has take
+care of this !</dd>
+</dl>
+<p>Refer : _getYears()</p>
+<p>Written By : Arulalan.T</p>
+<p>Date : 09.10.2012</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.has_missing">
+<tt class="descname">has_missing</tt><big>(</big><em>timeAxis</em>, <em>deepsearch=False</em>, <em>missingYears=0</em>, <em>missingMonths=0</em>, <em>missingHours=0</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.has_missing" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>has_missing <span class="classifier-delimiter">:</span> <span class="classifier">either the passed time axis has missing time series</span></dt>
+<dd>or not !</dd>
+</dl>
+<p>It just return the opposite boolean flag of the function
+self.has_all(timeAxis, ...)</p>
+<p>For more doc, see the has_all.__doc__</p>
+<p>Refer : has_all(), _getYears()</p>
+<p>Date : 11.10.2012</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.monthFirstLast">
+<tt class="descname">monthFirstLast</tt><big>(</big><em>month</em>, <em>year</em>, <em>calendarName=None</em>, <em>returnType='c'</em>, <em>returnHour='n'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.monthFirstLast" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#xml_data_access.TimeUtility.monthFirstLast" title="xml_data_access.TimeUtility.monthFirstLast"><tt class="xref py py-func docutils literal"><span class="pre">monthFirstLast()</span></tt></a>: To find and return the first date and
+last date of the given month of the year, with cdtime.calendar option.</p>
+<dl class="docutils">
+<dt>Condition :</dt>
+<dd>passing month should be either integer of month or name of
+the month in string.
+year should be an integer or string
+calendar is optional. It takes default calendar</dd>
+<dt>Inputs :</dt>
+<dd>month may be even in 3 char like &#8216;apr&#8217; or &#8216;April&#8217; or &#8216;aPRiL&#8217; or
+like any month
+year must be passed as integer.
+returnType is either &#8216;c&#8217; or &#8216;s&#8217;. If &#8216;c&#8217; means it should return
+as cdtime.comptime object and if &#8216;s&#8217; means it should return date as
+yyymmddhh or yyyymmdd string formate.
+returnHour is either &#8216;y&#8217; or &#8216;n&#8217;. If yes means, and returnType is
+&#8216;s&#8217; means, it should return hour also.(i.e yyymmddhh), otherwise
+yyyymmdd only (by default).</dd>
+<dt>Outputs :</dt>
+<dd>It should return the first date and last date of the given month
+&amp; year in yyyymmdd string formate inside tuple</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>example1 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monthFirstLast</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2010</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">2010</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">1</span> <span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2010</span><span class="o">-</span><span class="mi">4</span><span class="o">-</span><span class="mi">30</span> <span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It should return as cdtime.comptime object</p>
+</div>
+</dd>
+<dt>example2 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monthFirstLast</span><span class="p">(</span><span class="s">&#39;feb&#39;</span><span class="p">,</span><span class="s">&#39;2010&#39;</span><span class="p">,</span><span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="s">&#39;20100228&#39;</span><span class="p">,</span> <span class="s">&#39;20100228&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It should return in yyyymmdd string formate</p>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written by : Arulalan.T</p>
+<p>Date : 29.04.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.moveTime">
+<tt class="descname">moveTime</tt><big>(</big><em>year</em>, <em>month</em>, <em>day</em>, <em>moveday=0</em>, <em>movehour=0</em>, <em>calendarName=None</em>, <em>returnType='c'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.moveTime" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.moveTime" title="xml_data_access.TimeUtility.moveTime"><tt class="xref py py-func docutils literal"><span class="pre">moveTime()</span></tt></a>: To move the day or/and hour in both direction and</dt>
+<dd>get the moved date yyyymmdd/yyyymmddhh format</dd>
+<dt>Condition <span class="classifier-delimiter">:</span> <span class="classifier">passing year,month,day,moveday,movehour should be integer</span></dt>
+<dd>type.</dd>
+<dt>Inputs <span class="classifier-delimiter">:</span> <span class="classifier">moveday is an integer to move the date. If it is negative,</span></dt>
+<dd><p class="first">then we should get the previous date with interval of the
+no of days [i.e. moveday]</p>
+<p>movehour is an integer to move the hours. If it is negative,
+then we should get the previous day hours with interval of
+the hours [i.e. movehour]</p>
+<p>returnType is either &#8216;c&#8217; or &#8216;s&#8217;.
+&#8216;c&#8217; means cdtime.comptime object
+&#8216;s&#8217; means yyyymmdd string formate if movehour is 0 and</p>
+<blockquote class="last">
+<div>yyyymmddhh if movehour has passed some hour.</div></blockquote>
+</dd>
+<dt>Outputs <span class="classifier-delimiter">:</span> <span class="classifier">It should return the comptime date object by default.</span></dt>
+<dd>using returnType = &#8216;s&#8217;, we can get yyyymmdd or yyymmddhh
+string formate.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>example1 :</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mo">04</span><span class="p">,</span> <span class="mo">03</span><span class="p">,</span> <span class="n">moveday</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="go">2011-10-20 0:0:0.0</span>
+<span class="go">    ..note:: 200 days moved</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mo">04</span><span class="p">,</span> <span class="mo">03</span><span class="p">,</span> <span class="n">moveday</span> <span class="o">=</span> <span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="n">returnType</span><span class="o">=</span><span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="go">&#39;2010-9-15&#39;</span>
+<span class="go">    ..note:: 200 days moved in backward and return as string</span>
+<span class="go">             in yyyymmdd formate</span>
+</pre></div>
+</div>
+</dd>
+<dt>example2 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">moveday</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">movehour</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="go">2011-4-3 10:0:0.0</span>
+<span class="go">    ..note:: 0 days moved.But 10 hours moved.</span>
+</pre></div>
+</div>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">moveday</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">movehour</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="go">2011-4-5 10:0:0.0</span>
+<span class="go">    ..note:: Both days and hours are moved.</span>
+<span class="go">             2 days, 10 hours moved.</span>
+</pre></div>
+</div>
+</dd>
+<dt>example3 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">moveday</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">movehour</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">returnType</span><span class="o">=</span><span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="go">&#39;2011040510&#39;</span>
+<span class="go">    ..note:: Here passed returnType as &#39;s&#39;. Also passed hour</span>
+<span class="go">             as 10. So it should return as yyyymmddhh fromate</span>
+</pre></div>
+</div>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">moveday</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span><span class="n">returnType</span><span class="o">=</span><span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="go">&#39;20110405&#39;</span>
+<span class="go">    ..note:: Here we didnt pass hour. So it should return</span>
+<span class="go">             yyyymmdd formate only.</span>
+</pre></div>
+</div>
+</dd>
+<dt>example4 :</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">returnType</span><span class="o">=</span><span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="go">&#39;20110403&#39;</span>
+<span class="go">    ..note:: Here we didnt pass any moveday and any movehour.</span>
+<span class="go">             So it should return only what we passed the date,</span>
+<span class="go">             without any movements in days/hours.</span>
+</pre></div>
+</div>
+</dd>
+<dt>example4 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">366</span><span class="p">)</span>
+<span class="go">2012-2-29 0:0:0.0</span>
+<span class="go">    ..note:: 2012 is a leap year. By default it take</span>
+<span class="go">             cdtime.DefaultCalendar.</span>
+</pre></div>
+</div>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">moveTime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">366</span><span class="p">,</span><span class="n">calendarName</span><span class="o">=</span><span class="n">cdtime</span><span class="o">.</span><span class="n">NoLeapCalendar</span><span class="p">)</span>
+<span class="go">2012-3-1 0:0:0.0</span>
+<span class="go">    ..note:: Eventhough 2012 is a leap year, it doesnt give</span>
+<span class="go">             date like previous example, because we have</span>
+<span class="go">             passed cdtime.cdtime.NoLeapCalendar.</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written by : Arulalan.T</p>
+<p>Date : 06.04.2011
+Updated : 21.08.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.tRange">
+<tt class="descname">tRange</tt><big>(</big><em>startdate</em>, <em>enddate</em>, <em>stepday=0</em>, <em>stephour=0</em>, <em>calendarName=None</em>, <em>returnType='c'</em>, <em>returnHour='y'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.tRange" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.tRange" title="xml_data_access.TimeUtility.tRange"><tt class="xref py py-func docutils literal"><span class="pre">tRange()</span></tt></a>: generate the dates in yyyymmdd formate or yyymmddhh</dt>
+<dd><p class="first">formate or cdtime.comptime object from startdate to enddate
+with stepday or stephour.
+we can set the cdtime.calendarName to generate the date(s)
+in between the given range.</p>
+<p class="last">tRange means timeRange</p>
+</dd>
+<dt>Condition :</dt>
+<dd>The startdate and enddate must be either yyyymmdd or
+yyyymmddhh or cdtime.comptime object or cdtime.comptime
+string formate.
+We can use either stepday or stephour at a time. Can not use
+both(stepday and stephour) at the same time.
+if enddate is higher than the startdate, then stepday/
+stephour must be +ve.
+if enddate is lower than the startdate, then stepday/stephour
+must be -ve.
+By default stepday is 0 day and stephour is 0 hour.</dd>
+<dt>Inputs :</dt>
+<dd>startdate, enddate
+stepday to skip the days.
+stephour to skip the hours.
+calendarName is one of the cdtime calendar type
+returnType is either &#8216;s&#8217; or &#8216;c&#8217;. if &#8216;s&#8217; means the return date
+should be in string type. if &#8216;c&#8217; means the return date should
+be cdtime type itself.
+Default returnType takes &#8216;c&#8217; as arg.
+returnHour is either &#8216;y&#8217; or &#8216;yes&#8217; or &#8216;n&#8217; or &#8216;no&#8217;. If &#8216;y/yes&#8217;
+means it should return the hour (yyymmddhh), if returnType
+is &#8216;s&#8217;. If &#8216;n/no&#8217; means it shouldnt return hour (yyyymmdd),
+if returnType is &#8216;s&#8217;.
+Default returnHour takes &#8216;y&#8217; as arg.</dd>
+<dt>Outputs :</dt>
+<dd>It should return a list which contains the date(s) in between
+the startdate and enddate including both the startdate and
+enddate.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>example1 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="mi">20110407</span><span class="p">,</span> <span class="mi">20110410</span><span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="go">[&#39;2011040700&#39;, &#39;2011040800&#39;, &#39;2011040900&#39;, &#39;2011041000&#39;]</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note::  Here returnType is &#8216;s&#8217; and returnHour is &#8216;yes&#8217; by</dt>
+<dd><blockquote class="first">
+<div>default. So it should return with hour (yyymmddhh).</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="mi">20110407</span><span class="p">,</span> <span class="mi">20110410</span><span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">,</span>
+<span class="go">                                         returnHour = &#39;no&#39;)</span>
+<span class="go">[&#39;20110407&#39;, &#39;20110408&#39;, &#39;20110409&#39;, &#39;20110410&#39;]</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: Here we passed returnHour is &#8216;no&#8217;. So it should not</dt>
+<dd>return hour. (only yyyymmdd)</dd>
+</dl>
+</dd>
+<dt>example2 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="mi">20120227</span><span class="p">,</span> <span class="mi">20120301</span> <span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="go">                  calendarName = cdtime.NoLeapCalendar,</span>
+<span class="go">                  returnType = &#39;s&#39;, returnHour = &#39;no&#39;)</span>
+<span class="go">[&#39;20120227&#39;, &#39;20120228&#39;, &#39;20120301&#39;]</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the example 2, 2012 is leap year, since we passed
+cdtime.NoLeapCalendar it generated without 29th day in feb 2012.
+we can use stepday as any +ve integer number.
+The generator returns both startdate and enddate also.</p>
+</div>
+</dd>
+<dt>example3 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="n">startdate</span> <span class="o">=</span> <span class="mi">20110407</span><span class="p">,</span> <span class="n">enddate</span> <span class="o">=</span> <span class="mi">20110410</span><span class="p">)</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this example it should not generate any dates in
+between the startdate and enddate, since we didnt pass
+either stepday or stephour.</p>
+</div>
+</dd>
+<dt>example4 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="n">startdate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mo">07</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">enddate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                                           <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span><span class="p">)</span>
+<span class="go">[2011-4-7 0:0:0.0, 2011-4-8 0:0:0.0, 2011-4-9 0:0:0.0,</span>
+<span class="go">                                    2011-4-10 0:0:0.0]</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Here the input dates are cdtime.comptime object itself.</p>
+</div>
+</dd>
+<dt>example5 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="n">startdate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mi">11</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">enddate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="n">stepday</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span><span class="p">)</span>
+<span class="go">[2011-4-11 0:0:0.0, 2011-4-10 0:0:0.0, 2011-4-9 0:0:0.0,</span>
+<span class="go">                      2011-4-8 0:0:0.0, 2011-4-7 0:0:0.0]</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this example we have passed startdate is higher than
+then enddate, So we must have to pass the stepdays in -ve sign.</p>
+</div>
+</dd>
+<dt>example 6:</dt>
+<dd><blockquote class="first">
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="s">&#39;2011-4-7&#39;</span><span class="p">,</span> <span class="s">&#39;2011-4-10&#39;</span><span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">[2011-4-7 0:0:0.0, 2011-4-8 0:0:0.0, 2011-4-9 0:0:0.0,</span>
+<span class="go">                                     2011-4-10 0:0:0.0]</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>..note:: Here it genearates the cdtime.comptime object by default</dt>
+<dd><blockquote class="first">
+<div>We passed the inputs are cdtime.comptime date string
+formate (yyyymmdd)only.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="s">&#39;2011-4-7 12:0:0.0&#39;</span><span class="p">,</span> <span class="s">&#39;2011-4-10 0:0:0.0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                           <span class="n">stephour</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
+<span class="go">[2011-4-7 12:0:0.0, 2011-4-8 0:0:0.0, 2011-4-8 12:0:0.0,</span>
+<span class="go"> 2011-4-9 0:0:0.0, 2011-4-9 12:0:0.0, 2011-4-10 0:0:0.0]</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: Here we passed 12:0:0.0 hours in startdate, 0:0:0.0</dt>
+<dd>hours in enddate, and stephour as 12. Note here the
+input dates are not cdtime.comptime object. But those
+are cdtime.comptime string formate (yyymmddhh).</dd>
+</dl>
+</div></blockquote>
+<dl class="last docutils">
+<dt>example 7:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tRange</span><span class="p">(</span><span class="s">&#39;2011040712&#39;</span><span class="p">,</span> <span class="s">&#39;2011-4-10 10:0:0.0&#39;</span><span class="p">,</span> <span class="n">stephour</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
+<span class="go">[2011-4-7 12:0:0.0, 2011-4-8 0:0:0.0, 2011-4-8 12:0:0.0,</span>
+<span class="go"> 2011-4-9 0:0:0.0, 2011-4-9 12:0:0.0, 2011-4-10 0:0:0.0]</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: Here startdate as in &#8216;yyymmddhh&#8217; string formate and</dt>
+<dd>enddate as in cdtime.comptime string formate. you can
+play with combination of differnt inputs.</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written by : Arulalan.T</p>
+<p>Date : 23.08.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.timestr2comp">
+<tt class="descname">timestr2comp</tt><big>(</big><em>date</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.timestr2comp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.timestr2comp" title="xml_data_access.TimeUtility.timestr2comp"><tt class="xref py py-func docutils literal"><span class="pre">timestr2comp()</span></tt></a>: To convert date from yyyymmdd[hh] formate into</dt>
+<dd>cdtime.comptime formate</dd>
+<dt>Condition :</dt>
+<dd>passing date must be yyyymmdd formate in either int or str</dd>
+<dt>Inputs:</dt>
+<dd>date in yyyymmdd formate or yyyymmddhh formate.
+i.e. hour(hh) is optional.</dd>
+<dt>Outputs:</dt>
+<dd>It should return the date in cdtime.comptime object type</dd>
+<dt>Usage:</dt>
+<dd><dl class="first last docutils">
+<dt>example1:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">timestr2comp</span><span class="p">(</span><span class="mi">20110423</span><span class="p">)</span>
+<span class="go">2011-4-23 0:0:0.0</span>
+<span class="go">  .. note:: It should return as cdtime.comptype. Here we didnt</span>
+<span class="go">            pass the hour. i.e only yyyymmdd formate</span>
+</pre></div>
+</div>
+</dd>
+<dt>example2:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">timestr2comp</span><span class="p">(</span><span class="mi">2011082010</span><span class="p">)</span>
+<span class="go">2011-8-20 10:0:0.0</span>
+<span class="go">  ..note:: Here it should return cdtime with hours also.</span>
+<span class="go">           We passed yyyymmddhh formate. i.e include hh</span>
+</pre></div>
+</div>
+</dd>
+<dt>example3:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">timestr2comp</span><span class="p">(</span><span class="mi">2011082023</span><span class="p">)</span>
+<span class="go">2011-8-20 23:0:0.0</span>
+<span class="go">  ..note:: we cannot pass 24 as hour here. Max 23 hours only.</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written by: Arulalan.T</p>
+<p>Date: 23.04.2011
+Updated : 21.08.2011</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xml_data_access.TimeUtility.xtRange">
+<tt class="descname">xtRange</tt><big>(</big><em>startdate</em>, <em>enddate</em>, <em>stepday=0</em>, <em>stephour=0</em>, <em>calendarName=None</em>, <em>returnType='c'</em>, <em>returnHour='y'</em><big>)</big><a class="headerlink" href="#xml_data_access.TimeUtility.xtRange" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><a class="reference internal" href="#xml_data_access.TimeUtility.xtRange" title="xml_data_access.TimeUtility.xtRange"><tt class="xref py py-func docutils literal"><span class="pre">xtRange()</span></tt></a>: generate the dates in yyyymmdd formate or yyymmddhh</dt>
+<dd><p class="first">formate or cdtime.comptime object from startdate to enddate
+with stepday or stephour.
+we can set the cdtime.calendarName to generate the date(s)
+in between the given range.</p>
+<p class="last">xtRange means xtimeRange</p>
+</dd>
+<dt>Condition :</dt>
+<dd>The startdate and enddate must be either yyyymmdd or
+yyyymmddhh or cdtime.comptime object or cdtime.comptime
+string formate.
+We can use either stepday or stephour at a time. Can not use
+both(stepday and stephour) at the same time.
+if enddate is higher than the startdate, then stepday/
+stephour must be +ve.
+if enddate is lower than the startdate, then stepday/stephour
+must be -ve.
+By default stepday is 0 day and stephour is 0 hour.</dd>
+<dt>Inputs :</dt>
+<dd>startdate, enddate
+stepday to skip the days.
+stephour to skip the hours.
+calendarName is one of the cdtime calendar type
+returnType is either &#8216;s&#8217; or &#8216;c&#8217;. if &#8216;s&#8217; means the return date
+should be in string type. if &#8216;c&#8217; means the return date should
+be cdtime type itself.
+Default returnType takes &#8216;c&#8217; as arg.
+returnHour is either &#8216;y&#8217; or &#8216;yes&#8217; or &#8216;n&#8217; or &#8216;no&#8217;. If &#8216;y/yes&#8217;
+means it should return the hour (yyymmddhh), if returnType
+is &#8216;s&#8217;. If &#8216;n/no&#8217; means it shouldnt return hour (yyyymmdd),
+if returnType is &#8216;s&#8217;.
+Default returnHour takes &#8216;y&#8217; as arg.</dd>
+<dt>Outputs :</dt>
+<dd>It should return a generator not as list.
+Using this generator we can produce the date(s) in between
+the startdate and enddate including both the startdate and
+enddate.</dd>
+<dt>Usage :</dt>
+<dd><dl class="first last docutils">
+<dt>example1 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="mi">20110407</span><span class="p">,</span> <span class="mi">20110410</span><span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                                        <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">2011040700</span>
+<span class="go">2011040800</span>
+<span class="go">2011040900</span>
+<span class="go">2011041000</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note::  Here returnType is &#8216;s&#8217; and returnHour is &#8216;yes&#8217; by</dt>
+<dd><blockquote class="first">
+<div>default. So it should return with hour (yyymmddhh).</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="mi">20110407</span><span class="p">,</span> <span class="mi">20110410</span><span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                      <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="n">returnHour</span> <span class="o">=</span> <span class="s">&#39;no&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">20110407</span>
+<span class="go">20110408</span>
+<span class="go">20110409</span>
+<span class="go">20110410</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: Here we passed returnHour is &#8216;no&#8217;. So it should not</dt>
+<dd>return hour. (only yyyymmdd)</dd>
+</dl>
+</dd>
+<dt>example2 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="mi">20120227</span><span class="p">,</span> <span class="mi">20120301</span> <span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                 <span class="n">calendarName</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">NoLeapCalendar</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="n">returnHour</span> <span class="o">=</span> <span class="s">&#39;no&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">20120227</span>
+<span class="go">20120228</span>
+<span class="go">20120301</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the example 2, 2012 is leap year, since we passed
+cdtime.NoLeapCalendar it generated without 29th day in feb 2012.
+we can use stepday as any +ve integer number.
+The generator returns both startdate and enddate also.</p>
+</div>
+</dd>
+<dt>example3 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="n">startdate</span> <span class="o">=</span> <span class="mi">20110407</span><span class="p">,</span> <span class="n">enddate</span> <span class="o">=</span> <span class="mi">20110410</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this example it should not generate any dates in
+between the startdate and enddate, since we didnt pass
+either stepday or stephour.</p>
+</div>
+</dd>
+<dt>example4 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="n">startdate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mo">07</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">enddate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                                           <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">2011-4-7 0:0:0.0</span>
+<span class="go">2011-4-8 0:0:0.0</span>
+<span class="go">2011-4-9 0:0:0.0</span>
+<span class="go">2011-4-10 0:0:0.0</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Here the input dates are cdtime.comptime object itself.</p>
+</div>
+</dd>
+<dt>example5 :</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="n">startdate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mi">11</span><span class="p">),</span>
+<span class="gp">... </span>         <span class="n">enddate</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span><span class="mo">04</span><span class="p">,</span><span class="mi">7</span><span class="p">),</span> <span class="n">stepday</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>         <span class="n">returnType</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">2011-4-10 0:0:0.0</span>
+<span class="go">2011-4-9 0:0:0.0</span>
+<span class="go">2011-4-8 0:0:0.0</span>
+<span class="go">2011-4-7 0:0:0.0</span>
+</pre></div>
+</div>
+<div class="last admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this example we have passed startdate is higher than
+then enddate, So we must have to pass the stepdays in -ve sign.</p>
+</div>
+</dd>
+<dt>example 6:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="s">&#39;2011-4-7&#39;</span><span class="p">,</span> <span class="s">&#39;2011-4-10&#39;</span><span class="p">,</span> <span class="n">stepday</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">2011-4-7 0:0:0.0</span>
+<span class="go">2011-4-8 0:0:0.0</span>
+<span class="go">2011-4-9 0:0:0.0</span>
+<span class="go">2011-4-10 0:0:0.0</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note:: Here it genearates the cdtime.comptime object by default</dt>
+<dd><blockquote class="first">
+<div>We passed the inputs are cdtime.comptime date string
+formate (yyyymmdd)only.</div></blockquote>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="s">&#39;2011-4-7 12:0:0.0&#39;</span><span class="p">,</span> <span class="s">&#39;2011-4-10 0:0:0.0&#39;</span><span class="p">,</span>
+<span class="go">                                                  stephour = 12)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">2011-4-7 12:0:0.0</span>
+<span class="go">2011-4-8 0:0:0.0</span>
+<span class="go">2011-4-8 12:0:0.0</span>
+<span class="go">2011-4-9 0:0:0.0</span>
+<span class="go">2011-4-9 12:0:0.0</span>
+<span class="go">2011-4-10 0:0:0.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>..note:: Here we passed 12:0:0.0 hours in startdate, 0:0:0.0</dt>
+<dd>hours in enddate, and stephour as 12. Note here the
+input dates are not cdtime.comptime object. But those
+are cdtime.comptime string formate (yyymmddhh).</dd>
+</dl>
+</dd>
+<dt>example 7:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">xtRange</span><span class="p">(</span><span class="s">&#39;2011040712&#39;</span><span class="p">,</span> <span class="s">&#39;2011-4-10 10:0:0.0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>                                            <span class="n">stephour</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">i</span>
+<span class="gp">...</span>
+<span class="go">2011-4-7 12:0:0.0</span>
+<span class="go">2011-4-8 0:0:0.0</span>
+<span class="go">2011-4-8 12:0:0.0</span>
+<span class="go">2011-4-9 0:0:0.0</span>
+<span class="go">2011-4-9 12:0:0.0</span>
+<span class="go">2011-4-10 0:0:0.0</span>
+</pre></div>
+</div>
+<dl class="last docutils">
+<dt>..note:: Here startdate as in &#8216;yyymmddhh&#8217; string formate and</dt>
+<dd>enddate as in cdtime.comptime string formate. you can
+play with combination of differnt inputs.</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Written by : Arulalan.T</p>
+<p>Date : 07.04.2011</p>
+<p>Updated : 23.08.2011</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="plot-utils">
 <h2>Plot Utils<a class="headerlink" href="#plot-utils" title="Permalink to this headline">¶</a></h2>
@@ -791,7 +1986,7 @@ extensions in the filename.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#time-axis-utils">Time Axis Utils</a><ul>
-<li><a class="reference internal" href="#module-timeutils">timeutils</a></li>
+<li><a class="reference internal" href="#timeutils">timeutils</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#plot-utils">Plot Utils</a><ul>
@@ -804,8 +1999,8 @@ extensions in the filename.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="getting_started.html"
-                        title="previous chapter">Getting started</a></p>
+  <p class="topless"><a href="diag_install.html"
+                        title="previous chapter">Installation and Setup of mmDiagnosis Framework</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="diagnosis.html"
                         title="next chapter">Documentation of <strong>diagnosis</strong> source code</a></p>
@@ -844,13 +2039,13 @@ extensions in the filename.</p>
           <a href="diagnosis.html" title="Documentation of diagnosis source code"
              >next</a> |</li>
         <li class="right" >
-          <a href="getting_started.html" title="Getting started"
+          <a href="diag_install.html" title="Installation and Setup of mmDiagnosis Framework"
              >previous</a> |</li>
         <li><a href="index.html">mmDiagnosis 1a documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dilipkumar.R.
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>

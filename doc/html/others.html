@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Documentation of Other Utils source code &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="index.html" />
+    <link rel="prev" title="Documentation of MISO source code" href="miso.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="miso.html" title="Documentation of MISO source code"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">mmDiagnosis 1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="documentation-of-other-utils-source-code">
+<span id="other"></span><h1>Documentation of <strong>Other Utils</strong> source code<a class="headerlink" href="#documentation-of-other-utils-source-code" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="binary2ascii-convertor">
+<h2>binary2ascii convertor<a class="headerlink" href="#binary2ascii-convertor" title="Permalink to this headline">¶</a></h2>
+<p>This function used to convert any kind of climate model binary files such as netcdf, grib1, grib2, pp, ctl, etc., to ascii / csv file.</p>
+<span class="target" id="module-binary2ascii"><span id="binary2ascii"></span></span><dl class="function">
+<dt id="binary2ascii.binary2ascii">
+<tt class="descclassname">binary2ascii.</tt><tt class="descname">binary2ascii</tt><big>(</big><em>var</em>, <em>fpath</em>, <em>opath=None</em>, <em>dlat=None</em>, <em>dlon=None</em>, <em>freq='daily'</em>, <em>missing_value='default'</em>, <em>speedup='True'</em><big>)</big><a class="reference internal" href="_modules/binary2ascii.html#binary2ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#binary2ascii.binary2ascii" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>binary2ascii <span class="classifier-delimiter">:</span> <span class="classifier">Convert the binary file such as nc, ctl, pp into ascii csv</span></dt>
+<dd><p class="first">files. It should create individual files for each years.
+Csv file contains the month, day, lat &amp; lon information
+along with its corresponding data.</p>
+<p class="last">It has optimised code to extract data and write into file
+by using numpy.tofile() function. Its just extract the
+particular/each lat grid, extract all the longitude values
+in single dimension array and write into file object at a
+time. So it is more optimised.</p>
+</dd>
+<dt>Inputs :</dt>
+<dd><p class="first">var - variable name</p>
+<p>fpath - binary file input absolute path</p>
+<dl class="docutils">
+<dt>opath - output directory path. Inside this folder, it should create</dt>
+<dd>csv files with variable name along with year. If user didnt
+pass any value for this, then it should create variable name
+as folder name for the output in the current working
+directory path.</dd>
+</dl>
+<p>dlat - need data lat shape in ascii. eg (0, 40)
+dlon - need data lon shape in ascii. eg (60, 100)</p>
+<dl class="last docutils">
+<dt>freq - it takes either &#8216;daily&#8217; or &#8216;monthly&#8217;.</dt>
+<dd>It is just to fastup the time dimension loop by skipping 365
+days in daily and 12 months in monthly to access the another/
+next year dataset.</dd>
+<dt>missing_value - if missing_value passed by user, then that value</dt>
+<dd>should be set while writing into csv file. By default it takes
+&#8216;default&#8217; value, i.e. it will take fill_value from the binary
+file information itself.</dd>
+<dt>speedup - This binary2ascii.py works fine only for all 12 months or </dt>
+<dd>365 days data. If some months are missing in b/w means, 
+it will fail to work. So in that case, you switch off this 
+speedup option.</dd>
+<dt>todo - to get the available years, we need to use timeutils.py module.</dt>
+<dd>in that case, the above speedup option no need.</dd>
+</dl>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 22.08.2012</p>
+</dd></dl>
+
+</div>
+<div class="section" id="numpy-utils">
+<h2>numpy utils<a class="headerlink" href="#numpy-utils" title="Permalink to this headline">¶</a></h2>
+<p>This <a class="reference internal" href="#numutils">numutils</a> module helps us to generate our own time axis, correct existing time axis bounds and generate bounds.</p>
+<p>Here we used inbuilt methods of cdtime and cdutil module of uv-cdat.</p>
+<div class="section" id="numutils">
+<span id="id1"></span><h3>numutils<a class="headerlink" href="#numutils" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-numutils"></span><span class="target" id="module-numutis.py"></span><dl class="function">
+<dt id="numutils.nextmax">
+<tt class="descclassname">numutils.</tt><tt class="descname">nextmax</tt><big>(</big><em>x</em>, <em>val=None</em><big>)</big><a class="reference internal" href="_modules/numutils.html#nextmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numutils.nextmax" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><tt class="xref py py-func docutils literal"><span class="pre">nextmax()</span></tt>: Returns the max value next to the top max value of the</dt>
+<dd>numpy x. If val doesnot passed by user, it returns the
+second most max value.</dd>
+<dt>Inputs <span class="classifier-delimiter">:</span> <span class="classifier">x, numpy array</span></dt>
+<dd>val, any value. If value passed, then it should return the max
+value of the next to the passed value.</dd>
+</dl>
+<p>Usage :</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[  10,    1],</span>
+<span class="go">       [ 100, 1000]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nextmax</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">100</span>
+<span class="go">    we didnt pass any val, so it should return 2nd max value</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nextmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">99</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="go">    we passed 99 as the val. So it should return the next max value</span>
+<span class="go">    to the 99 is 10.</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nextmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">100</span>
+<span class="go">    we passed 1000 as the val. So it should return the next max value</span>
+<span class="go">    to the 1000 is 100.</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nextmax</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div>we passed 1 as the val. i.e. the least number in the x (or least
+number which is not even present in the x). So there is no next
+max number to 1. It should return None.</div></blockquote>
+<p>we can find out 3rd most max value by just calling this function two
+times.
+&gt;&gt;&gt; n = nextmax(x)
+&gt;&gt;&gt; nextmax(x, n)
+&gt;&gt;&gt; 10</p>
+<p>10 is the 3rd most number in x.</p>
+</div></blockquote>
+<p>Written By : Arulalan.T</p>
+<p>Date : 27.09.2011</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="numutils.nextmin">
+<tt class="descclassname">numutils.</tt><tt class="descname">nextmin</tt><big>(</big><em>x</em>, <em>val=None</em><big>)</big><a class="reference internal" href="_modules/numutils.html#nextmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numutils.nextmin" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><tt class="xref py py-func docutils literal"><span class="pre">nextmin()</span></tt>: Returns the min value next to the least min value of the</dt>
+<dd>numpy x. If val doesnot passed by user, it returns the
+second lease min value.</dd>
+<dt>Inputs <span class="classifier-delimiter">:</span> <span class="classifier">x, numpy array</span></dt>
+<dd>val, any value. If value passed, then it should return the min
+value of the next to the passed value.</dd>
+</dl>
+<p>Usage :</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[  10,    1],</span>
+<span class="go">       [ 100, 1000]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nextmin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">10</span>
+<span class="go">    we didnt pass any val, so it should return 2nd min value</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nextmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+<span class="go">100</span>
+</pre></div>
+</div>
+<blockquote>
+<div>we passed 11 as the val. So it should return the next min value
+to the 11 is 100.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nextmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span>
+<span class="go">1000</span>
+</pre></div>
+</div>
+<blockquote>
+<div>we passed 101 as the val. So it should return the next min value
+to the 101 is 1000.</div></blockquote>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">nextmin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+<blockquote>
+<div>we passed 1000 as the val. i.e. the most number in the x (or most
+number which is not even present in the x). So there is no next
+min number to 1000. It should return None.</div></blockquote>
+<p>we can find out 3rd least min value by just calling this function two
+times.
+&gt;&gt;&gt; n = nextmin(x)
+&gt;&gt;&gt; nextmin(x, n)
+&gt;&gt;&gt; 100</p>
+<p>100 is the 3rd least number in x.</p>
+</div></blockquote>
+<p>Written By : Arulalan.T</p>
+<p>Date : 27.09.2011</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="numutils.permanent">
+<tt class="descclassname">numutils.</tt><tt class="descname">permanent</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="_modules/numutils.html#permanent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numutils.permanent" title="Permalink to this definition">¶</a></dt>
+<dd><p>permanent: Square Matrix permanent</p>
+<p>It would be numpy data or list data.</p>
+<p>Matrix permanent is just same as determinant of the matrix but change -ve
+sign into +ve sign through out its calculation of determinant.</p>
+<dl class="docutils">
+<dt>eg 1:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">permanent</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">z</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">6.0</span>
+</pre></div>
+</div>
+</dd>
+<dt>eg 2:</dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">permanent</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">z</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">24.0</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 01.08.2012</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="numutils.remove_nxm">
+<tt class="descclassname">numutils.</tt><tt class="descname">remove_nxm</tt><big>(</big><em>data</em>, <em>n</em>, <em>m</em><big>)</big><a class="reference internal" href="_modules/numutils.html#remove_nxm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#numutils.remove_nxm" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove_nxm : Remove n-th row and m-th column from the matrix/numpy data.
+zero is the starting index for the row and column.
+To remove first row &amp; column, we need to pass 0 as args.</p>
+<dl class="docutils">
+<dt>eg:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[[</span> <span class="mi">0</span>  <span class="mi">1</span>  <span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">4</span><span class="p">]</span>
+<span class="go">     [ 5  6  7  8  9]</span>
+<span class="go">     [10 11 12 13 14]</span>
+<span class="go">     [15 16 17 18 19]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">remove_nxm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[[</span> <span class="mi">0</span>  <span class="mi">1</span>  <span class="mi">3</span>  <span class="mi">4</span><span class="p">]</span>
+<span class="go">     [ 5  6  8  9]</span>
+<span class="go">     [15 16 18 19]]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="go">  ..note:: removed 2-nd row and 2-column from the matrix a.</span>
+</pre></div>
+</div>
+<div class="last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">remove_nxm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">c</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[[</span> <span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">],</span>
+<span class="go">     [10, 11, 12, 13],</span>
+<span class="go">     [15, 16, 17, 18]]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="go"> ..note:: removed 0-th row and 4-th column from the matrix a.</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 01.08.2012</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-nonrect_utils">
+<span id="non-rectilinear-utils"></span><h2>Non-rectilinear Utils<a class="headerlink" href="#module-nonrect_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="nonrect_utils.get1LatLonFromNonRectiLinearGrid">
+<tt class="descclassname">nonrect_utils.</tt><tt class="descname">get1LatLonFromNonRectiLinearGrid</tt><big>(</big><em>grid</em>, <em>lat</em>, <em>lon</em>, <em>diff=0.5</em><big>)</big><a class="reference internal" href="_modules/nonrect_utils.html#get1LatLonFromNonRectiLinearGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nonrect_utils.get1LatLonFromNonRectiLinearGrid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt><cite>func</cite> <span class="classifier-delimiter">:</span> <span class="classifier">get1LatLonFromNonRectiLinearGrid</span></dt>
+<dd>It is locating the input lat &amp; lon in the non-rectilinear grid
+data and returning its corresponding first dimension index (i) &amp;
+second dimension index (j) (of the grid which is very close to
+the input lat &amp; lon values).</dd>
+<dt>Inputs :</dt>
+<dd><dl class="first docutils">
+<dt>grid <span class="classifier-delimiter">:</span> <span class="classifier">Its the cdms2 dataset grid value. Use x.getGrid() to pass</span></dt>
+<dd>the dataset grid value, where x is cdms2 dataslab.</dd>
+</dl>
+<p>lat : latitude which you looking for.
+lon : longitude which you looking for.
+diff : By default it takes 0.5. It is the purpose of masking the</p>
+<blockquote class="last">
+<div>outer region other than (lat-diff, lat+diff) and
+(lon-diff, lon+diff).</div></blockquote>
+</dd>
+<dt>Logic :</dt>
+<dd><p class="first">Here we are getting the lat_vertices and lon_vertices data as well as
+lat_slab and lon_slab from the grid.  i.e. Using grid.getBounds(),
+grid.getLatitude() &amp; grid.getLongitude() functions.</p>
+<p>Do the mask operation on the lat_vertices where ever outer than the
+(lat-diff, lat+diff).</p>
+<p>Do the mask operation on the lon_vertices where ever outer than the
+(lon-diff, lon+diff).</p>
+<p>Multiply the resultant masked boolean array of lat &amp; lon gives us the
+near about 10 grids location which are all with in the range of
+(lat-diff, lat+diff) and (lon-diff, lon+diff) both matched together.</p>
+<p>So from this 10 grids locations, using distance b/w two points in the
+curved line equation, we can identify the minimum distance from the
+input lat &amp; lon.</p>
+<p>Finally we can loate the minimum distance grid cell&#8217;s first dimension
+index (i) and its second dimension index (j).</p>
+<p class="last">Here index i belongs to longitude and index j belongs to latitude.</p>
+</dd>
+<dt>Return :</dt>
+<dd>Return the first dimension index (i) &amp; second dimension index (j)
+value where we located the nearest grid cell of the input lat, lon
+passed by the user.</dd>
+<dt>Reference :</dt>
+<dd>function &#8216;getArcDistance()&#8217;</dd>
+</dl>
+<p>Example :</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>eg 1:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s">&quot;zos_Omon_ACCESS1-0_rcp45_r1i1p1.xml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="s">&#39;zos&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">squeeze</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">300</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latidx</span><span class="p">,</span> <span class="n">lonidx</span> <span class="o">=</span> <span class="n">get1LatLonFromNonRectiLinearGrid</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">latidx</span><span class="p">][</span><span class="n">lonidx</span><span class="p">]</span>
+</pre></div>
+</div>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>..note:: Here val is the data value of that lat, lon. Mind that</dt>
+<dd>index (i/lonidx) is first dimension and index (j/latidx)
+is second dimension of the data.
+Though to access the data here, we need pass latidx as
+1st and lonidx as 2nd. Just work out this example, you
+will understand.</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>eg 2:</dt>
+<dd><div class="first highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">latidx</span><span class="p">,</span> <span class="n">lonidx</span> <span class="o">=</span> <span class="n">get1LatLonFromNonRectiLinearGrid</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">getGrid</span><span class="p">(),</span> <span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># extract the time series data points of 10N, 60S position alone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="p">(</span><span class="n">lonidx</span><span class="p">),</span> <span class="n">j</span><span class="o">=</span><span class="p">(</span><span class="n">latidx</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(365,)</span>
+</pre></div>
+</div>
+<blockquote class="last">
+<div>..note:: Mind that i belongs to longitude &amp; j belongs to latitude.</div></blockquote>
+</dd>
+<dt>eg 3:</dt>
+<dd><p class="first"># efficient manner.
+&gt;&gt;&gt; f = cdms.open(&#8220;zos_Omon_ACCESS1-0_rcp45_r1i1p1.xml&#8221;)
+# getting variable access alone, not the whole data.
+&gt;&gt;&gt; x = f[&#8216;zos&#8217;]
+&gt;&gt;&gt; latidx, lonidx = get1LatLonFromNonRectiLinearGrid(x.getGrid(), lat, lon)</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>..note:: Since we can not directly use latitude, longitude values</dt>
+<dd>in the non-rectilinear grid data, we are using 1st dimension
+(j) for latitude and 2nd dimension (i) for longitude as
+corresponding indecies to get the data.</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<p>Written By : Arulalan.T</p>
+<p>Date : 19.09.2012</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="nonrect_utils.getArcDistance">
+<tt class="descclassname">nonrect_utils.</tt><tt class="descname">getArcDistance</tt><big>(</big><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>radius=6371</em><big>)</big><a class="reference internal" href="_modules/nonrect_utils.html#getArcDistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nonrect_utils.getArcDistance" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>func</cite> : get the Arc distance</p>
+<blockquote>
+<div><p>Using equation of distance between two points on arc line.</p>
+<p>We can use this function to find out the distances between
+some list of latitudes &amp; longitudes positions to some other
+single/list of lat, lon position of the earth. For this we need
+to pass the radius of the earth.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Inputs :</dt>
+<dd><p class="first">x1, x2 - single latitude / list of latitudes
+y1, y2 - single longitude/ list of longitudes</p>
+<p>But x1 &amp; y1 should be same shape. Also x2 &amp; y2 should be same shape.</p>
+<dl class="last docutils">
+<dt>radius - radius of the circle. By default it takes the earth&#8217;s radius</dt>
+<dd>in kilometer.</dd>
+</dl>
+</dd>
+</dl>
+<p>Written By : Arulalan.T</p>
+<p>Date : 23.09.2012</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-weatherutils">
+<span id="weather-utils"></span><h2>Weather Utils<a class="headerlink" href="#module-weatherutils" title="Permalink to this headline">¶</a></h2>
+<p>Author : Arulalan.T</p>
+<p>Date: 17.05.2012</p>
+<dl class="function">
+<dt id="weatherutils.getHighs">
+<tt class="descclassname">weatherutils.</tt><tt class="descname">getHighs</tt><big>(</big><em>data</em>, <em>value=1015</em><big>)</big><a class="reference internal" href="_modules/weatherutils.html#getHighs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#weatherutils.getHighs" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>getHighs <span class="classifier-delimiter">:</span> <span class="classifier">get the centred highs values along with its latitude, longitude  </span></dt>
+<dd>of the passed data. Centred highs means the surrounded lat, lon 
+values are should be less than the centre high value.</dd>
+<dt>arguments:</dt>
+<dd><p class="first">data : cdms2 variable with latitude, longitude axis information
+value : the centred highs are greate than or equal to this value.</p>
+<blockquote class="last">
+<div>default val is 1015.</div></blockquote>
+</dd>
+<dt>return <span class="classifier-delimiter">:</span> <span class="classifier">returning the list containing tuples which are containing lat, </span></dt>
+<dd><blockquote class="first">
+<div>lon and centred high values. If there is no centred highs
+less or equal to the passed value arg, then return an empty list.</div></blockquote>
+<dl class="last docutils">
+<dt>eg: [(35.5, 85.5, 1027.11), (37.5, 73.5, 1024.29),</dt>
+<dd>(31.0, 83.0, 1019.28), (40.0, 91.5, 1015.39)]</dd>
+</dl>
+</dd>
+</dl>
+<p>Author : Arulalan.T</p>
+<p>Date : 17.05.2012</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="weatherutils.getLows">
+<tt class="descclassname">weatherutils.</tt><tt class="descname">getLows</tt><big>(</big><em>data</em>, <em>value=1000</em><big>)</big><a class="reference internal" href="_modules/weatherutils.html#getLows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#weatherutils.getLows" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>getLows <span class="classifier-delimiter">:</span> <span class="classifier">get the centred lows values along with its latitude, longitude  </span></dt>
+<dd>of the passed data. Centred lows means the surrounded lat, lon 
+values are should be higher than the centre low value.</dd>
+<dt>arguments:</dt>
+<dd><p class="first">data : cdms2 variable with latitude, longitude axis information
+value : the centred lows are less than or equal to this value.</p>
+<blockquote class="last">
+<div>default val is 1000.</div></blockquote>
+</dd>
+<dt>return <span class="classifier-delimiter">:</span> <span class="classifier">returning the list containing tuples which are containing lat, </span></dt>
+<dd><blockquote class="first">
+<div>lon and centred low values. If there is no centred lows less or
+equal to the passed value arg, then return an empty list.</div></blockquote>
+<dl class="last docutils">
+<dt>eg: [(30.0, 74.5, 993.28003), (27.0, 80.0, 994.07001), </dt>
+<dd>(21.0, 90.0, 998.26001), (34.0, 100.0, 999.53998), 
+(25.0, 95.5, 1000.3)]</dd>
+</dl>
+</dd>
+</dl>
+<p>Author : Arulalan.T</p>
+<p>Date : 17.05.2012</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="weatherutils.is_surrounding_greater">
+<tt class="descclassname">weatherutils.</tt><tt class="descname">is_surrounding_greater</tt><big>(</big><em>data</em>, <em>lat</em>, <em>lon</em><big>)</big><a class="reference internal" href="_modules/weatherutils.html#is_surrounding_greater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#weatherutils.is_surrounding_greater" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>is_surrounding_greater <span class="classifier-delimiter">:</span> <span class="classifier">Find either the surrounded lat, lon position </span></dt>
+<dd><p class="first">values are greater to the centre value on passed lat, lon of the data.</p>
+<p>i.e. check the surrounded lat, lon position values against to the 
+passed lat, lon position value. If all the surrounded position values
+are greater than the center value (passed lat, lon position value)
+then return this center value.</p>
+<p>In any case while checking the surrounded lat, lon position value is 
+lower than the center value, then immediately come out the function
+by returning False.</p>
+<p class="last">If any case while checking the surrounded lat, lon position value is
+equal to the center value, then again check that point&#8217;s (position&#8217;s)
+surrounded lat, lon position value and do comparison. It has some 
+default limit.</p>
+</dd>
+</dl>
+<p>Author : Arulalan.T</p>
+<p>Date : 17.05.2012</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="weatherutils.is_surrounding_less">
+<tt class="descclassname">weatherutils.</tt><tt class="descname">is_surrounding_less</tt><big>(</big><em>data</em>, <em>lat</em>, <em>lon</em><big>)</big><a class="reference internal" href="_modules/weatherutils.html#is_surrounding_less"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#weatherutils.is_surrounding_less" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>is_surrounding_less <span class="classifier-delimiter">:</span> <span class="classifier">Find either the surrounded lat, lon position </span></dt>
+<dd><p class="first">values are lesser to the centre value on passed lat, lon of the data.</p>
+<p>i.e. check the surrounded lat, lon position values against to the 
+passed lat, lon position value. If all the surrounded position values
+are lesser than the center value (passed lat, lon position value)
+then return this center value.</p>
+<p>In any case while checking the surrounded lat, lon position value is 
+higher than the center value, then immediately come out the function
+by returning False.</p>
+<p class="last">If any case while checking the surrounded lat, lon position value is
+equal to the center value, then again check that point&#8217;s (position&#8217;s)
+surrounded lat, lon position value and do comparison. It has some 
+default limit.</p>
+</dd>
+</dl>
+<p>Author : Arulalan.T</p>
+<p>Date : 17.05.2012</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Documentation of <strong>Other Utils</strong> source code</a><ul>
+<li><a class="reference internal" href="#binary2ascii-convertor">binary2ascii convertor</a></li>
+<li><a class="reference internal" href="#numpy-utils">numpy utils</a><ul>
+<li><a class="reference internal" href="#numutils">numutils</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-nonrect_utils">Non-rectilinear Utils</a></li>
+<li><a class="reference internal" href="#module-weatherutils">Weather Utils</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="miso.html"
+                        title="previous chapter">Documentation of <strong>MISO</strong> source code</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/others.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="miso.html" title="Documentation of MISO source code"
+             >previous</a> |</li>
+        <li><a href="index.html">mmDiagnosis 1a documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
