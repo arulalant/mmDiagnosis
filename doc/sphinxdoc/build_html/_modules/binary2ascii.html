@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>binary2ascii &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for binary2ascii</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">cdms2</span><span class="o">,</span> <span class="nn">cdtime</span><span class="o">,</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="binary2ascii"><a class="viewcode-back" href="../others.html#binary2ascii.binary2ascii">[docs]</a><span class="k">def</span> <span class="nf">binary2ascii</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">fpath</span><span class="p">,</span> <span class="n">opath</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dlat</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">dlon</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s">&#39;daily&#39;</span><span class="p">,</span>
+                                    <span class="n">missing_value</span><span class="o">=</span><span class="s">&#39;default&#39;</span><span class="p">,</span> <span class="n">speedup</span><span class="o">=</span><span class="s">&#39;True&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    binary2ascii : Convert the binary file such as nc, ctl, pp into ascii csv</span>
+<span class="sd">                   files. It should create individual files for each years.</span>
+<span class="sd">                   Csv file contains the month, day, lat &amp; lon information</span>
+<span class="sd">                   along with its corresponding data.</span>
+
+<span class="sd">                   It has optimised code to extract data and write into file</span>
+<span class="sd">                   by using numpy.tofile() function. Its just extract the</span>
+<span class="sd">                   particular/each lat grid, extract all the longitude values</span>
+<span class="sd">                   in single dimension array and write into file object at a</span>
+<span class="sd">                   time. So it is more optimised.</span>
+
+<span class="sd">    Inputs :</span>
+<span class="sd">        var - variable name</span>
+
+<span class="sd">        fpath - binary file input absolute path</span>
+
+<span class="sd">        opath - output directory path. Inside this folder, it should create</span>
+<span class="sd">                csv files with variable name along with year. If user didnt</span>
+<span class="sd">                pass any value for this, then it should create variable name</span>
+<span class="sd">                as folder name for the output in the current working</span>
+<span class="sd">                directory path.</span>
+
+<span class="sd">        dlat - need data lat shape in ascii. eg (0, 40)</span>
+<span class="sd">        dlon - need data lon shape in ascii. eg (60, 100)</span>
+
+<span class="sd">        freq - it takes either &#39;daily&#39; or &#39;monthly&#39;.</span>
+<span class="sd">               It is just to fastup the time dimension loop by skipping 365</span>
+<span class="sd">               days in daily and 12 months in monthly to access the another/</span>
+<span class="sd">               next year dataset.</span>
+
+<span class="sd">        missing_value - if missing_value passed by user, then that value</span>
+<span class="sd">                should be set while writing into csv file. By default it takes</span>
+<span class="sd">                &#39;default&#39; value, i.e. it will take fill_value from the binary</span>
+<span class="sd">                file information itself.</span>
+<span class="sd">        speedup - This binary2ascii.py works fine only for all 12 months or </span>
+<span class="sd">                  365 days data. If some months are missing in b/w means, </span>
+<span class="sd">                  it will fail to work. So in that case, you switch off this </span>
+<span class="sd">                  speedup option. </span>
+<span class="sd">        todo - to get the available years, we need to use timeutils.py module.</span>
+<span class="sd">                in that case, the above speedup option no need.</span>
+
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 22.08.2012</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">inf</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+    <span class="n">ftime</span> <span class="o">=</span> <span class="n">inf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">()</span>
+    <span class="n">latitude</span> <span class="o">=</span> <span class="n">inf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+    <span class="n">longitude</span> <span class="o">=</span> <span class="n">inf</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+    <span class="n">lon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">longitude</span><span class="p">)</span>
+
+    <span class="n">preyear</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">premon</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">outf</span> <span class="o">=</span> <span class="bp">None</span>
+    
+    <span class="k">if</span> <span class="n">speedup</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">freq</span> <span class="o">==</span> <span class="s">&#39;daily&#39;</span><span class="p">:</span>
+            <span class="n">ftime</span> <span class="o">=</span> <span class="n">ftime</span><span class="p">[::</span><span class="mi">365</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">freq</span> <span class="o">==</span> <span class="s">&#39;monthly&#39;</span><span class="p">:</span>
+            <span class="n">ftime</span> <span class="o">=</span> <span class="n">ftime</span><span class="p">[::</span><span class="mi">12</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">opath</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&quot;Created Directory called ,&quot;</span><span class="p">,</span> <span class="n">var</span>
+        <span class="c"># end of if not os.path.isdir(var):</span>
+        <span class="k">print</span> <span class="s">&quot;All the output files will be written inside the directory, &quot;</span><span class="p">,</span> <span class="n">var</span>
+        <span class="n">opath</span> <span class="o">=</span> <span class="n">var</span>
+    <span class="c"># end of if opath is None:</span>
+
+    <span class="k">for</span> <span class="n">ytime</span> <span class="ow">in</span> <span class="n">ftime</span><span class="p">:</span>
+        <span class="c"># loop through available years in the time axis</span>
+        <span class="n">year</span> <span class="o">=</span> <span class="n">ytime</span><span class="o">.</span><span class="n">year</span>
+        <span class="k">if</span> <span class="n">preyear</span> <span class="o">==</span> <span class="n">year</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">outf</span> <span class="ow">and</span> <span class="n">preyear</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;The file writing finished for the year &quot;</span><span class="p">,</span> <span class="n">preyear</span>
+                <span class="n">outf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="c"># end of if outf and preyear:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">var</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;.csv&#39;</span>
+            <span class="n">outf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">opath</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">fname</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">preyear</span> <span class="o">=</span> <span class="n">year</span>
+            <span class="k">print</span> <span class="s">&quot;The file has created &quot;</span><span class="p">,</span> <span class="n">fname</span>
+            <span class="k">print</span> <span class="s">&quot;Writing ...&quot;</span>
+
+            <span class="c"># year period</span>
+            <span class="n">startPeriod</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ytime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+            <span class="n">endPeriod</span> <span class="o">=</span> <span class="n">cdtime</span><span class="o">.</span><span class="n">comptime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="n">ytime</span><span class="o">.</span><span class="n">hour</span><span class="p">)</span>
+            <span class="c"># get the data of one/each year &amp; load into memory</span>
+            <span class="k">if</span> <span class="n">dlat</span> <span class="ow">and</span> <span class="n">dlon</span><span class="p">:</span>
+                <span class="c"># extract specified lat, lon for one/each year</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">inf</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">startPeriod</span><span class="p">,</span> <span class="n">endPeriod</span><span class="p">),</span> <span class="n">latitude</span><span class="o">=</span><span class="n">dlat</span><span class="p">,</span>
+                                                              <span class="n">longitude</span><span class="o">=</span><span class="n">dlon</span><span class="p">)</span>
+                <span class="c"># get the lat, lon axis w.r.t user need</span>
+                <span class="n">latitude</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLatitude</span><span class="p">()</span>
+                <span class="n">longitude</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getLongitude</span><span class="p">()</span>
+                <span class="n">lon</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">longitude</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># extract all lat, lon for one/each year</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">inf</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="p">(</span><span class="n">startPeriod</span><span class="p">,</span> <span class="n">endPeriod</span><span class="p">))</span>
+            <span class="n">dtime</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">missing_value</span> <span class="o">!=</span> <span class="s">&#39;default&#39;</span><span class="p">:</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">missing_value</span> <span class="o">=</span> <span class="n">missing_value</span>
+            <span class="c"># end of if missing_value != &#39;default&#39;:</span>
+
+            <span class="c"># make it as filled value and reset its axis informations</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filled</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">cdms2</span><span class="o">.</span><span class="n">createVariable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="c"># set the time, lat, lon axis w.r.t extracted shape of data</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">setAxisList</span><span class="p">([</span><span class="n">dtime</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">])</span>
+        <span class="c"># end of if preyear != year:</span>
+
+        <span class="k">for</span> <span class="n">ctime</span> <span class="ow">in</span> <span class="n">dtime</span><span class="o">.</span><span class="n">asComponentTime</span><span class="p">():</span>
+            <span class="c"># loop thorugh daily time for one/each year. i.e. 365/366</span>
+            <span class="n">year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+            <span class="n">mon</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctime</span><span class="o">.</span><span class="n">month</span><span class="p">)</span>
+            <span class="n">day</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctime</span><span class="o">.</span><span class="n">day</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">premon</span> <span class="o">!=</span> <span class="n">mon</span><span class="p">:</span>
+                <span class="n">lonstr</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">joinfields</span><span class="p">([</span><span class="s">&#39;Year&#39;</span><span class="p">,</span> <span class="s">&#39;Mon&#39;</span><span class="p">,</span> <span class="s">&#39;Day&#39;</span><span class="p">,</span> <span class="s">&#39;Lat/Lon&#39;</span><span class="p">],</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">lonstr</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">lon</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">outf</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="n">premon</span> <span class="o">=</span> <span class="n">mon</span>
+                <span class="k">print</span> <span class="s">&quot;Writing Month, &quot;</span><span class="p">,</span> <span class="n">mon</span>
+            <span class="c"># end of if premon != mon:</span>
+
+            <span class="n">latbegingstr</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">joinfields</span><span class="p">([</span><span class="n">year</span><span class="p">,</span> <span class="n">mon</span><span class="p">,</span> <span class="n">day</span><span class="p">],</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">lat</span> <span class="ow">in</span> <span class="n">latitude</span><span class="p">:</span>
+                <span class="n">latstr</span> <span class="o">=</span> <span class="n">latbegingstr</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+                <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">latstr</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="c"># get the particular lat and all the longitude grid data.</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">ctime</span><span class="p">,</span> <span class="n">latitude</span><span class="o">=</span><span class="n">lat</span><span class="p">))</span>
+                <span class="c"># write the numpy array into fileobject with separation of</span>
+                <span class="c"># comma. It is optimised one.</span>
+                <span class="n">val</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">outf</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+                <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="c"># end of for lat in latitude:</span>
+        <span class="c"># end of for ctime in dtime.asComponentTime():</span>
+        <span class="k">del</span> <span class="n">data</span>
+    <span class="c"># end of for time in ftime:</span>
+    <span class="n">inf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c"># end of def binary2ascii(var, fpath, opath):</span>
+
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">binary2ascii</span><span class="p">(</span><span class="s">&#39;precip&#39;</span><span class="p">,</span> <span class="s">&#39;srb1.xml&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

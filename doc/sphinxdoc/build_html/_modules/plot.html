@@ -1,0 +1,1149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>plot &mdash; mmDiagnosis 1a documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1a',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="mmDiagnosis 1a documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for plot</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> 
+<span class="kn">import</span> <span class="nn">vcs</span>
+
+
+<span class="n">lat5</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">85</span><span class="p">:</span> <span class="s">&#39;85S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">80</span><span class="p">:</span> <span class="s">&#39;80S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">75</span><span class="p">:</span> <span class="s">&#39;75S&#39;</span><span class="p">,</span>
+         <span class="o">-</span><span class="mi">70</span><span class="p">:</span> <span class="s">&#39;70S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">65</span><span class="p">:</span> <span class="s">&#39;65S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">55</span><span class="p">:</span> <span class="s">&#39;55S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">:</span> <span class="s">&#39;50S&#39;</span><span class="p">,</span>
+         <span class="o">-</span><span class="mi">45</span><span class="p">:</span> <span class="s">&#39;45S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">:</span> <span class="s">&#39;40S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">35</span><span class="p">:</span> <span class="s">&#39;35S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">25</span><span class="p">:</span> <span class="s">&#39;25S&#39;</span><span class="p">,</span>
+         <span class="o">-</span><span class="mi">20</span><span class="p">:</span> <span class="s">&#39;20S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">15</span><span class="p">:</span> <span class="s">&#39;15S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">:</span> <span class="s">&#39;10S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">:</span> <span class="s">&#39;5S&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;EQ&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s">&#39;5N&#39;</span><span class="p">,</span>
+          <span class="mi">10</span><span class="p">:</span> <span class="s">&#39;10N&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="s">&#39;15N&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">:</span> <span class="s">&#39;20N&#39;</span><span class="p">,</span> <span class="mi">25</span><span class="p">:</span> <span class="s">&#39;25N&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30N&#39;</span><span class="p">,</span>
+          <span class="mi">35</span><span class="p">:</span> <span class="s">&#39;35N&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">:</span> <span class="s">&#39;40N&#39;</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span> <span class="s">&#39;45N&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">:</span> <span class="s">&#39;50N&#39;</span><span class="p">,</span> <span class="mi">55</span><span class="p">:</span> <span class="s">&#39;55N&#39;</span><span class="p">,</span>
+          <span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60N&#39;</span><span class="p">,</span> <span class="mi">65</span><span class="p">:</span> <span class="s">&#39;65N&#39;</span><span class="p">,</span> <span class="mi">70</span><span class="p">:</span> <span class="s">&#39;70N&#39;</span><span class="p">,</span> <span class="mi">75</span><span class="p">:</span> <span class="s">&#39;75N&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">:</span> <span class="s">&#39;80N&#39;</span><span class="p">,</span>
+          <span class="mi">85</span><span class="p">:</span> <span class="s">&#39;85N&#39;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90N&#39;</span><span class="p">}</span>
+
+<span class="n">lon5</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;0E&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s">&#39;5E&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s">&#39;10E&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">:</span> <span class="s">&#39;15E&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">:</span> <span class="s">&#39;20E&#39;</span><span class="p">,</span>
+        <span class="mi">25</span><span class="p">:</span> <span class="s">&#39;25E&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30E&#39;</span><span class="p">,</span> <span class="mi">35</span><span class="p">:</span> <span class="s">&#39;35E&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">:</span> <span class="s">&#39;40E&#39;</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span> <span class="s">&#39;45E&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">:</span> <span class="s">&#39;50E&#39;</span><span class="p">,</span>
+        <span class="mi">55</span><span class="p">:</span> <span class="s">&#39;55E&#39;</span><span class="p">,</span> <span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60E&#39;</span><span class="p">,</span> <span class="mi">65</span><span class="p">:</span> <span class="s">&#39;65E&#39;</span><span class="p">,</span> <span class="mi">70</span><span class="p">:</span> <span class="s">&#39;70E&#39;</span><span class="p">,</span> <span class="mi">75</span><span class="p">:</span> <span class="s">&#39;75E&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">:</span> <span class="s">&#39;80E&#39;</span><span class="p">,</span>
+        <span class="mi">85</span><span class="p">:</span> <span class="s">&#39;85E&#39;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90E&#39;</span><span class="p">,</span> <span class="mi">95</span><span class="p">:</span> <span class="s">&#39;95E&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="s">&#39;100E&#39;</span><span class="p">,</span> <span class="mi">105</span><span class="p">:</span> <span class="s">&#39;105E&#39;</span><span class="p">,</span>
+        <span class="mi">110</span><span class="p">:</span> <span class="s">&#39;110E&#39;</span><span class="p">,</span> <span class="mi">115</span><span class="p">:</span> <span class="s">&#39;115E&#39;</span><span class="p">,</span> <span class="mi">120</span><span class="p">:</span> <span class="s">&#39;120E&#39;</span><span class="p">,</span> <span class="mi">125</span><span class="p">:</span> <span class="s">&#39;125E&#39;</span><span class="p">,</span> <span class="mi">130</span><span class="p">:</span> <span class="s">&#39;130E&#39;</span><span class="p">,</span>
+        <span class="mi">135</span><span class="p">:</span> <span class="s">&#39;135E&#39;</span><span class="p">,</span> <span class="mi">140</span><span class="p">:</span> <span class="s">&#39;140E&#39;</span><span class="p">,</span> <span class="mi">145</span><span class="p">:</span> <span class="s">&#39;145E&#39;</span><span class="p">,</span> <span class="mi">150</span><span class="p">:</span> <span class="s">&#39;150E&#39;</span><span class="p">,</span> <span class="mi">155</span><span class="p">:</span> <span class="s">&#39;155E&#39;</span><span class="p">,</span>
+        <span class="mi">160</span><span class="p">:</span> <span class="s">&#39;160E&#39;</span><span class="p">,</span> <span class="mi">165</span><span class="p">:</span> <span class="s">&#39;165E&#39;</span><span class="p">,</span> <span class="mi">170</span><span class="p">:</span> <span class="s">&#39;170E&#39;</span><span class="p">,</span> <span class="mi">175</span><span class="p">:</span> <span class="s">&#39;175E&#39;</span><span class="p">,</span>
+        <span class="mi">180</span><span class="p">:</span> <span class="s">&#39;180E&#39;</span><span class="p">,</span> <span class="mi">185</span><span class="p">:</span> <span class="s">&#39;185E&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">:</span> <span class="s">&#39;190E&#39;</span><span class="p">,</span> <span class="mi">195</span><span class="p">:</span> <span class="s">&#39;195E&#39;</span><span class="p">,</span> <span class="mi">200</span><span class="p">:</span> <span class="s">&#39;200E&#39;</span><span class="p">,</span>
+        <span class="mi">205</span><span class="p">:</span> <span class="s">&#39;205E&#39;</span><span class="p">,</span> <span class="mi">210</span><span class="p">:</span> <span class="s">&#39;210E&#39;</span><span class="p">,</span> <span class="mi">215</span><span class="p">:</span> <span class="s">&#39;215E&#39;</span><span class="p">,</span> <span class="mi">220</span><span class="p">:</span> <span class="s">&#39;220E&#39;</span><span class="p">,</span> <span class="mi">225</span><span class="p">:</span> <span class="s">&#39;225E&#39;</span><span class="p">,</span>
+        <span class="mi">230</span><span class="p">:</span> <span class="s">&#39;230E&#39;</span><span class="p">,</span> <span class="mi">235</span><span class="p">:</span> <span class="s">&#39;235E&#39;</span><span class="p">,</span> <span class="mi">240</span><span class="p">:</span> <span class="s">&#39;240E&#39;</span><span class="p">,</span> <span class="mi">245</span><span class="p">:</span> <span class="s">&#39;245E&#39;</span><span class="p">,</span> <span class="mi">250</span><span class="p">:</span> <span class="s">&#39;250E&#39;</span><span class="p">,</span>
+        <span class="mi">255</span><span class="p">:</span> <span class="s">&#39;255E&#39;</span><span class="p">,</span> <span class="mi">260</span><span class="p">:</span> <span class="s">&#39;260E&#39;</span><span class="p">,</span> <span class="mi">265</span><span class="p">:</span> <span class="s">&#39;265E&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">:</span> <span class="s">&#39;270E&#39;</span><span class="p">,</span> <span class="mi">275</span><span class="p">:</span> <span class="s">&#39;275E&#39;</span><span class="p">,</span>
+        <span class="mi">280</span><span class="p">:</span> <span class="s">&#39;280E&#39;</span><span class="p">,</span> <span class="mi">285</span><span class="p">:</span> <span class="s">&#39;285E&#39;</span><span class="p">,</span> <span class="mi">290</span><span class="p">:</span> <span class="s">&#39;290E&#39;</span><span class="p">,</span> <span class="mi">295</span><span class="p">:</span> <span class="s">&#39;295E&#39;</span><span class="p">,</span> <span class="mi">300</span><span class="p">:</span> <span class="s">&#39;300E&#39;</span><span class="p">,</span>
+        <span class="mi">305</span><span class="p">:</span> <span class="s">&#39;305E&#39;</span><span class="p">,</span> <span class="mi">310</span><span class="p">:</span> <span class="s">&#39;310E&#39;</span><span class="p">,</span> <span class="mi">315</span><span class="p">:</span> <span class="s">&#39;315E&#39;</span><span class="p">,</span> <span class="mi">320</span><span class="p">:</span> <span class="s">&#39;320E&#39;</span><span class="p">,</span> <span class="mi">325</span><span class="p">:</span> <span class="s">&#39;325E&#39;</span><span class="p">,</span>
+        <span class="mi">330</span><span class="p">:</span> <span class="s">&#39;330E&#39;</span><span class="p">,</span> <span class="mi">335</span><span class="p">:</span> <span class="s">&#39;335E&#39;</span><span class="p">,</span> <span class="mi">340</span><span class="p">:</span> <span class="s">&#39;340E&#39;</span><span class="p">,</span> <span class="mi">345</span><span class="p">:</span> <span class="s">&#39;345E&#39;</span><span class="p">,</span> <span class="mi">350</span><span class="p">:</span> <span class="s">&#39;350E&#39;</span><span class="p">,</span>
+        <span class="mi">355</span><span class="p">:</span> <span class="s">&#39;355E&#39;</span><span class="p">}</span>
+
+<span class="n">lat10</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">80</span><span class="p">:</span> <span class="s">&#39;80S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">70</span><span class="p">:</span> <span class="s">&#39;70S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">:</span> <span class="s">&#39;50S&#39;</span><span class="p">,</span>
+         <span class="o">-</span><span class="mi">40</span><span class="p">:</span> <span class="s">&#39;40S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">:</span> <span class="s">&#39;20S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">:</span> <span class="s">&#39;10S&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;EQ&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s">&#39;10N&#39;</span><span class="p">,</span>
+         <span class="mi">20</span><span class="p">:</span> <span class="s">&#39;20N&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30N&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">:</span> <span class="s">&#39;40N&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">:</span> <span class="s">&#39;50N&#39;</span><span class="p">,</span> <span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60N&#39;</span><span class="p">,</span> <span class="mi">70</span><span class="p">:</span> <span class="s">&#39;70N&#39;</span><span class="p">,</span>
+         <span class="mi">80</span><span class="p">:</span> <span class="s">&#39;80N&#39;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90N&#39;</span><span class="p">}</span>
+
+<span class="n">lon10</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;0E&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s">&#39;10E&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">:</span> <span class="s">&#39;20E&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30E&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">:</span> <span class="s">&#39;40E&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">:</span> <span class="s">&#39;50E&#39;</span><span class="p">,</span>
+        <span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60E&#39;</span><span class="p">,</span> <span class="mi">70</span><span class="p">:</span> <span class="s">&#39;70E&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">:</span> <span class="s">&#39;80E&#39;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90E&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span> <span class="s">&#39;100E&#39;</span><span class="p">,</span> <span class="mi">110</span><span class="p">:</span> <span class="s">&#39;110E&#39;</span><span class="p">,</span>
+        <span class="mi">120</span><span class="p">:</span> <span class="s">&#39;120E&#39;</span><span class="p">,</span> <span class="mi">130</span><span class="p">:</span> <span class="s">&#39;130E&#39;</span><span class="p">,</span> <span class="mi">140</span><span class="p">:</span> <span class="s">&#39;140E&#39;</span><span class="p">,</span> <span class="mi">150</span><span class="p">:</span> <span class="s">&#39;150E&#39;</span><span class="p">,</span> <span class="mi">160</span><span class="p">:</span> <span class="s">&#39;160E&#39;</span><span class="p">,</span>
+        <span class="mi">170</span><span class="p">:</span> <span class="s">&#39;170E&#39;</span><span class="p">,</span> <span class="mi">180</span><span class="p">:</span> <span class="s">&#39;180E&#39;</span><span class="p">,</span> <span class="mi">190</span><span class="p">:</span> <span class="s">&#39;190E&#39;</span><span class="p">,</span> <span class="mi">200</span><span class="p">:</span> <span class="s">&#39;200E&#39;</span><span class="p">,</span>
+        <span class="mi">210</span><span class="p">:</span> <span class="s">&#39;210E&#39;</span><span class="p">,</span> <span class="mi">220</span><span class="p">:</span> <span class="s">&#39;220E&#39;</span><span class="p">,</span> <span class="mi">230</span><span class="p">:</span> <span class="s">&#39;230E&#39;</span><span class="p">,</span> <span class="mi">240</span><span class="p">:</span> <span class="s">&#39;240E&#39;</span><span class="p">,</span> <span class="mi">250</span><span class="p">:</span> <span class="s">&#39;250E&#39;</span><span class="p">,</span>
+        <span class="mi">260</span><span class="p">:</span> <span class="s">&#39;260E&#39;</span><span class="p">,</span> <span class="mi">270</span><span class="p">:</span> <span class="s">&#39;270E&#39;</span><span class="p">,</span> <span class="mi">280</span><span class="p">:</span> <span class="s">&#39;280E&#39;</span><span class="p">,</span> <span class="mi">290</span><span class="p">:</span> <span class="s">&#39;290E&#39;</span><span class="p">,</span> <span class="mi">300</span><span class="p">:</span> <span class="s">&#39;300E&#39;</span><span class="p">,</span>
+        <span class="mi">310</span><span class="p">:</span> <span class="s">&#39;310E&#39;</span><span class="p">,</span> <span class="mi">320</span><span class="p">:</span> <span class="s">&#39;320E&#39;</span><span class="p">,</span> <span class="mi">330</span><span class="p">:</span> <span class="s">&#39;330E&#39;</span><span class="p">,</span> <span class="mi">340</span><span class="p">:</span> <span class="s">&#39;340E&#39;</span><span class="p">,</span> <span class="mi">350</span><span class="p">:</span> <span class="s">&#39;350E&#39;</span><span class="p">,</span>
+        <span class="mi">359</span><span class="p">:</span> <span class="s">&#39;359E&#39;</span><span class="p">}</span>
+
+<span class="n">lon60</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;0E&#39;</span><span class="p">,</span> <span class="mi">60</span><span class="p">:</span> <span class="s">&#39;60E&#39;</span><span class="p">,</span> <span class="mi">120</span><span class="p">:</span> <span class="s">&#39;120E&#39;</span><span class="p">,</span> <span class="mi">180</span><span class="p">:</span> <span class="s">&#39;180E&#39;</span><span class="p">,</span> <span class="mi">240</span><span class="p">:</span> <span class="s">&#39;240E&#39;</span><span class="p">,</span>
+         <span class="mi">300</span><span class="p">:</span> <span class="s">&#39;300E&#39;</span><span class="p">,</span> <span class="mi">359</span><span class="p">:</span> <span class="s">&#39;359E&#39;</span><span class="p">}</span>
+
+<span class="n">lat60</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90S&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30S&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;EQ&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">:</span> <span class="s">&#39;30N&#39;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s">&#39;90N&#39;</span><span class="p">}</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="bp">None</span>
+
+
+<span class="k">def</span> <span class="nf">getLatLonLabel</span><span class="p">(</span><span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">latlabel</span> <span class="o">==</span> <span class="s">&#39;lat5&#39;</span><span class="p">:</span>
+        <span class="c"># setting latitude as 5 degree interval</span>
+        <span class="n">latlabel</span> <span class="o">=</span> <span class="n">lat5</span>
+    <span class="k">elif</span> <span class="n">latlabel</span> <span class="o">==</span> <span class="s">&#39;lat10&#39;</span><span class="p">:</span>
+        <span class="c"># setting latitude as 10 degree interval</span>
+        <span class="n">latlabel</span> <span class="o">=</span> <span class="n">lat10</span>
+    <span class="k">elif</span> <span class="n">latlabel</span> <span class="o">==</span> <span class="s">&#39;lat60&#39;</span><span class="p">:</span>
+        <span class="c"># setting latitude as 10 degree interval</span>
+        <span class="n">latlabel</span> <span class="o">=</span> <span class="n">lat60</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">lonlabel</span> <span class="o">==</span> <span class="s">&#39;lon5&#39;</span><span class="p">:</span>
+        <span class="c"># setting longitude as 5 degree interval</span>
+        <span class="n">lonlabel</span> <span class="o">=</span> <span class="n">lon5</span>
+    <span class="k">elif</span> <span class="n">lonlabel</span> <span class="o">==</span> <span class="s">&#39;lon10&#39;</span><span class="p">:</span>
+        <span class="c"># setting longitude as 10 degree interval</span>
+        <span class="n">lonlabel</span> <span class="o">=</span> <span class="n">lon10</span>
+    <span class="k">elif</span> <span class="n">lonlabel</span> <span class="o">==</span> <span class="s">&#39;lon60&#39;</span><span class="p">:</span>
+        <span class="c"># setting longitude as 10 degree interval</span>
+        <span class="n">lonlabel</span> <span class="o">=</span> <span class="n">lon60</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span>
+<span class="c"># end of getLatLonLabel(latlabel=&#39;lat5&#39;, lonlabel=&#39;lat5&#39;):</span>
+
+<span class="k">def</span> <span class="nf">checkLatLonLabel</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">):</span>
+
+    <span class="c"># resetting lat,lon values back to the vctemp once the vctemp&#39;s lat,lon</span>
+    <span class="c"># differs from the arg lat,lon</span>
+    <span class="n">lenlat</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">yticlabels1</span><span class="p">)</span>
+    <span class="n">lenlon</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">xticlabels1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lenlat</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat5</span><span class="p">)</span> <span class="ow">and</span> <span class="n">latlabel</span> <span class="o">==</span> <span class="s">&#39;lat5&#39;</span><span class="p">:</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">lat5</span>
+    <span class="k">elif</span> <span class="n">lenlat</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat10</span><span class="p">)</span> <span class="ow">and</span> <span class="n">latlabel</span> <span class="o">==</span> <span class="s">&#39;lat10&#39;</span><span class="p">:</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">lat10</span>
+    <span class="k">elif</span> <span class="n">lenlat</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lat60</span><span class="p">)</span> <span class="ow">and</span> <span class="n">latlabel</span> <span class="o">==</span> <span class="s">&#39;lat60&#39;</span><span class="p">:</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">lat60</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">if</span> <span class="n">lenlon</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon5</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lonlabel</span> <span class="o">==</span> <span class="s">&#39;lon5&#39;</span><span class="p">:</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">lon5</span>
+    <span class="k">elif</span> <span class="n">lenlon</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon10</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lonlabel</span> <span class="o">==</span> <span class="s">&#39;lon10&#39;</span><span class="p">:</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">lon10</span>
+    <span class="k">elif</span> <span class="n">lenlon</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lon60</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lonlabel</span> <span class="o">==</span> <span class="s">&#39;lon60&#39;</span><span class="p">:</span>
+        <span class="n">template</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">lon60</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">template</span>
+<span class="c"># end of checkLatLonLabel():</span>
+
+<span class="k">def</span> <span class="nf">genTemplate</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmove</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymove</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        
+        
+<span class="c">#        x.portrait()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;genTemplate&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;template&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;genTemplate&#39; template object from temporary memory of vcs</span>
+        <span class="c"># template</span>
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">gettemplate</span><span class="p">(</span><span class="s">&#39;genTemplate&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># creating &#39;genTemplate&#39; object</span>
+        <span class="n">tt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtexttable</span><span class="p">(</span><span class="s">&#39;new&#39;</span><span class="p">,</span> <span class="s">&#39;std&#39;</span><span class="p">)</span>
+        <span class="n">tt</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tt</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">to</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtextorientation</span><span class="p">(</span><span class="s">&#39;new&#39;</span><span class="p">,</span> <span class="s">&#39;centerup&#39;</span><span class="p">)</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">17</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">(</span><span class="s">&#39;new&#39;</span><span class="p">,</span> <span class="s">&#39;thick&#39;</span><span class="p">)</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;solid&#39;</span><span class="p">]</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="c"># create copy of ASD template</span>
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtemplate</span><span class="p">(</span><span class="s">&#39;genTemplate&#39;</span><span class="p">,</span> <span class="s">&#39;ASD&#39;</span><span class="p">)</span>
+
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.50</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.88</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">to</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>    <span class="c"># off min value</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c"># off mean value</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>    <span class="c"># off max value</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">dataname</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># off the variable id</span>
+
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend_type</span> <span class="o">=</span> <span class="s">&#39;VCS&#39;</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">y1</span> <span class="o">=</span> <span class="mf">0.06</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">y2</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+
+<span class="c">#        gentemp.legend.x1 = 0.9</span>
+<span class="c">#        gentemp.legend.y1 = 0.06</span>
+<span class="c">#        gentemp.legend.x2 = 0.1</span>
+<span class="c">#        gentemp.legend.y2 = 0.1</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span>
+        <span class="c">#gentemp.legend.textorientation = to</span>
+
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">xname</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># off the longitude string in x axis</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">yname</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># off the latitude string in y axis</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># off the units value</span>
+
+        <span class="k">if</span> <span class="n">xscale</span><span class="p">:</span>
+            <span class="n">gentemp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">xscale</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">yscale</span><span class="p">:</span>
+            <span class="n">gentemp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">yscale</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xmove</span><span class="p">:</span>
+            <span class="n">gentemp</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">xmove</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ymove</span><span class="p">:</span>
+            <span class="n">gentemp</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">ymove</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">)</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">scalefont</span><span class="p">(</span><span class="mf">2.4</span><span class="p">)</span>
+
+        <span class="c"># saving the &#39;genTemplate&#39; into temporary python memory</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;template&#39;</span><span class="p">,</span> <span class="s">&#39;genTemplate&#39;</span><span class="p">)</span>
+
+    <span class="c"># return the genTemplate object</span>
+    <span class="k">return</span> <span class="n">gentemp</span>
+<span class="c"># end of def genTemplate():</span>
+
+<span class="k">def</span> <span class="nf">genVector</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c"># converting reference point into float</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">&#39;genVector&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;vector&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;vctemp&#39; template object from temporary memory</span>
+        <span class="c"># of vcs template</span>
+        <span class="n">vctemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">getvector</span><span class="p">(</span><span class="s">&#39;genVector&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># get the lat,lon label according to the passed string</span>
+        <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span> <span class="o">=</span> <span class="n">getLatLonLabel</span><span class="p">(</span><span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+        <span class="c"># create copy of new vector template to vctemp template</span>
+        <span class="n">vctemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createvector</span><span class="p">(</span><span class="s">&#39;genVector&#39;</span><span class="p">)</span>
+        <span class="c"># set vector properties</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="s">&#39;linear&#39;</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">alignment</span> <span class="o">=</span> <span class="s">&#39;head&#39;</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">lonlabel</span>       <span class="c"># set bottom longitude values</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">xticlabels2</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>             <span class="c"># set top longitude values</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">latlabel</span>       <span class="c"># set left latitude values</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">yticlabels2</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>             <span class="c"># set right latitude values</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>           <span class="c"># scaling the vector&#39;s scaling length</span>
+        <span class="c">#vctemp.linecolor = 16         # 16 to 255</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="n">reference</span>   <span class="c"># 20.0 for 2deg intervals</span>
+        <span class="c"># save this &#39;vctemp&#39; vector template object into temporary vcs</span>
+        <span class="c"># template memory</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;vector&#39;</span><span class="p">,</span> <span class="s">&#39;genVector&#39;</span><span class="p">)</span>
+    <span class="c"># end of if &#39;vctemp&#39; in x.listelements(&#39;vector&#39;):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">vctemp</span><span class="o">.</span><span class="n">scale</span> <span class="o">!=</span> <span class="n">scale</span> <span class="ow">or</span> <span class="n">vctemp</span><span class="o">.</span><span class="n">reference</span> <span class="o">!=</span> <span class="n">reference</span><span class="p">):</span>
+        <span class="c"># setting vector scale, reference if user passed</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="n">vctemp</span><span class="o">.</span><span class="n">reference</span> <span class="o">=</span> <span class="n">reference</span>
+    <span class="c"># checking the lat,lon label and reset if needed</span>
+    <span class="n">vctemp</span> <span class="o">=</span> <span class="n">checkLatLonLabel</span><span class="p">(</span><span class="n">vctemp</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="c"># return the genVector object</span>
+    <span class="k">return</span> <span class="n">vctemp</span>
+<span class="c"># end of def genVector():</span>
+
+<span class="k">def</span> <span class="nf">genIsoLine</span><span class="p">(</span><span class="n">levels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;genIsoLine&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;isoline&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;genIsoLine&#39; template object from temporary memory of vcs</span>
+        <span class="c"># isoline template</span>
+        <span class="n">isolinetemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">getisoline</span><span class="p">(</span><span class="s">&#39;genIsoLine&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># get the lat,lon label according to the passed string</span>
+        <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span> <span class="o">=</span> <span class="n">getLatLonLabel</span><span class="p">(</span><span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+
+        <span class="n">isolinetemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createisoline</span><span class="p">(</span><span class="s">&#39;genIsoLine&#39;</span><span class="p">,</span> <span class="s">&#39;ASD&#39;</span><span class="p">)</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;solid&#39;</span><span class="p">]</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">linewidths</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">lonlabel</span>   <span class="c"># set bottom longitude values</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">xticlabels2</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>         <span class="c"># set top longitude values</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">latlabel</span>   <span class="c"># set left latitude values</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">yticlabels2</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>             <span class="c"># set right latitude values</span>
+
+        <span class="k">if</span> <span class="n">levels</span><span class="p">:</span>
+            <span class="c"># setting isoline levels if user passed</span>
+            <span class="n">isolinetemp</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
+        <span class="k">if</span> <span class="n">colorlist</span><span class="p">:</span>
+            <span class="c"># setting isoline colors if user passed</span>
+            <span class="n">isolinetemp</span><span class="o">.</span><span class="n">linecolors</span> <span class="o">=</span> <span class="n">colorlist</span>
+        <span class="c"># saving the &#39;genIsoLine&#39; into temporary python memory</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;isoline&#39;</span><span class="p">,</span> <span class="s">&#39;genIsoLine&#39;</span><span class="p">)</span>
+    <span class="c"># make isotypelevels for checking purpose, i.e. check the already created</span>
+    <span class="c"># template levels and user passed levels are same or not</span>
+    <span class="n">isotypelevels</span> <span class="o">=</span> <span class="p">[[</span><span class="n">lev</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">isolinetemp</span><span class="o">.</span><span class="n">levels</span> <span class="o">!=</span> <span class="n">isotypelevels</span> <span class="ow">or</span> <span class="n">isolinetemp</span><span class="o">.</span><span class="n">linecolors</span> <span class="o">!=</span> <span class="n">colorlist</span><span class="p">):</span>
+        <span class="c"># setting isoline levels, colorlist if user passed</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
+        <span class="n">isolinetemp</span><span class="o">.</span><span class="n">linecolors</span> <span class="o">=</span> <span class="n">colorlist</span>
+    <span class="c"># checking the lat,lon label and reset if needed</span>
+    <span class="n">isolinetemp</span> <span class="o">=</span> <span class="n">checkLatLonLabel</span><span class="p">(</span><span class="n">isolinetemp</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="c"># return the genIsoLine object</span>
+    <span class="k">return</span> <span class="n">isolinetemp</span>
+<span class="c"># end of def genIsoLine(levels=None, colorlist=None):</span>
+
+<span class="k">def</span> <span class="nf">genIsoFill</span><span class="p">(</span><span class="n">levels</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">colorlist</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;genIsoFill&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;isofill&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;genIsoFill&#39; template object from temporary memory of vcs</span>
+        <span class="c"># isoline template</span>
+        <span class="n">isofilltemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">getisofill</span><span class="p">(</span><span class="s">&#39;genIsoFill&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># get the lat,lon label according to the passed string</span>
+        <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span> <span class="o">=</span> <span class="n">getLatLonLabel</span><span class="p">(</span><span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+
+        <span class="n">isofilltemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createisofill</span><span class="p">(</span><span class="s">&#39;genIsoFill&#39;</span><span class="p">,</span> <span class="s">&#39;quick&#39;</span><span class="p">)</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;solid&#39;</span><span class="p">]</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">linewidths</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">lonlabel</span>   <span class="c"># set bottom longitude values</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">xticlabels2</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>         <span class="c"># set top longitude values</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">latlabel</span>   <span class="c"># set left latitude values</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">yticlabels2</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>         <span class="c"># set right latitude values</span>
+        <span class="k">if</span> <span class="n">levels</span><span class="p">:</span>
+            <span class="c"># setting isofill levels if user passed</span>
+            <span class="n">isofilltemp</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
+            <span class="c"># enable the extensions of legend</span>
+            <span class="n">isofilltemp</span><span class="o">.</span><span class="n">ext_1</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>         <span class="c"># setting ext in legend after</span>
+            <span class="n">isofilltemp</span><span class="o">.</span><span class="n">ext_2</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span>         <span class="c"># setting levels only</span>
+        <span class="k">if</span> <span class="n">colorlist</span><span class="p">:</span>
+            <span class="c"># setting isofill colors if user passed</span>
+            <span class="n">isofilltemp</span><span class="o">.</span><span class="n">fillareacolors</span> <span class="o">=</span> <span class="n">colorlist</span>
+
+        <span class="c"># saving the &#39;genIsoFill&#39; into temporary python memory</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;isofill&#39;</span><span class="p">,</span> <span class="s">&#39;genIsoFill&#39;</span><span class="p">)</span>
+    <span class="c"># make isotypelevels for checking purpose, i.e. check the already created</span>
+    <span class="c"># template levels and user passed levels are same or not</span>
+    <span class="n">isotypelevels</span> <span class="o">=</span> <span class="p">[[</span><span class="n">lev</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">lev</span> <span class="ow">in</span> <span class="n">levels</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">isofilltemp</span><span class="o">.</span><span class="n">levels</span> <span class="o">!=</span> <span class="n">isotypelevels</span> <span class="ow">or</span> <span class="n">isofilltemp</span><span class="o">.</span><span class="n">fillareacolors</span> <span class="o">!=</span> <span class="n">colorlist</span><span class="p">):</span>
+        <span class="c"># setting isofill levels, colorlist if user passed</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">levels</span> <span class="o">=</span> <span class="n">levels</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">fillareacolors</span> <span class="o">=</span> <span class="n">colorlist</span>
+        <span class="c"># enable the extensions of legend</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">ext_1</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span> <span class="c"># setting ext in legend after setting levels only</span>
+        <span class="n">isofilltemp</span><span class="o">.</span><span class="n">ext_2</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span> <span class="c"># if levels changed means again need to set ext</span>
+    <span class="c"># checking the lat,lon label and reset if needed</span>
+    <span class="n">isofilltemp</span> <span class="o">=</span> <span class="n">checkLatLonLabel</span><span class="p">(</span><span class="n">isofilltemp</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="c"># return the genIsoFill object</span>
+    <span class="k">return</span> <span class="n">isofilltemp</span>
+<span class="c"># end of def genIsoFill(levels=None, colorlist=None):</span>
+
+<div class="viewcode-block" id="vectorPlot"><a class="viewcode-back" href="../diagnosisutils.html#plot.vectorPlot">[docs]</a><span class="k">def</span> <span class="nf">vectorPlot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">svg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">,</span>
+                                                         <span class="n">style</span><span class="o">=</span><span class="s">&#39;portrait&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :func:`vectorPlot`: Plotting the vector with some default preferences.</span>
+
+<span class="sd">    Input : u - u variable</span>
+<span class="sd">            v - v variable</span>
+<span class="sd">            name - name to plot on the top of the vcs</span>
+<span class="sd">            path - path to save as the image file.</span>
+<span class="sd">            reference - vector reference. Default it takes 20.0 (i.e 2 degree)</span>
+<span class="sd">            scale - scaling of the arrow mark in vector plot</span>
+<span class="sd">            interval - slicing the data to reduce the density (noise)</span>
+<span class="sd">                       in the vector plot, with respect to the interval.</span>
+<span class="sd">                       Default it takes 1. (i.e. doesnot affect the u &amp; v)</span>
+<span class="sd">            svg - to save image as svg</span>
+<span class="sd">            png - to save image as png</span>
+
+<span class="sd">    Condition : u must be &#39;u variable&#39; and v must be &#39;v variable&#39;.</span>
+<span class="sd">                name must pass to set the name on the vector vcs</span>
+<span class="sd">                path is not passed means, it takes current workig directory</span>
+<span class="sd">                reference must be float.</span>
+<span class="sd">                interval not be 0.</span>
+
+<span class="sd">    Usage : using this function, user can plot the vector.</span>
+
+<span class="sd">            user can control the reference point of the vector, and scale</span>
+<span class="sd">            length of the arrow marks in plot.</span>
+
+<span class="sd">            Also can control the u and v data shape by interval.</span>
+
+<span class="sd">            filename should be generated from the &#39;name&#39; passed by the user,</span>
+<span class="sd">            just replacing the space into underscore &#39;_&#39;.</span>
+
+<span class="sd">            if svg and png passed 1, the image will be saved with these</span>
+<span class="sd">            extensions in the filename.</span>
+
+<span class="sd">    Written By : Arulalan.T</span>
+
+<span class="sd">    Date : 26.07.2011</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+    <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;portrait&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">portrait</span><span class="p">()</span>
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">genTemplate</span><span class="p">(</span><span class="n">xscale</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.075</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;landscape&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">landscape</span><span class="p">()</span>
+        
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">genTemplate</span><span class="p">(</span><span class="n">xscale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span> <span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;style must be either portrait or landscape&quot;</span><span class="p">)</span>
+    <span class="c"># slicing the data to reduce the density (noise) in the vector plot</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="p">[::</span><span class="n">interval</span><span class="p">,</span> <span class="p">::</span><span class="n">interval</span><span class="p">]</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[::</span><span class="n">interval</span><span class="p">,</span> <span class="p">::</span><span class="n">interval</span><span class="p">]</span>
+    <span class="n">windSpeed</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span>
+<span class="c">#    gentemp = genTemplate(xscale = 0, yscale = 0, xmove = 0.02, ymove = -0.075)   </span>
+    <span class="n">genvector</span> <span class="o">=</span> <span class="n">genVector</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="n">ws_lev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+    <span class="n">ws_clr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">240</span><span class="p">,</span> <span class="mi">245</span><span class="p">,</span> <span class="mi">249</span><span class="p">,</span> <span class="mi">242</span><span class="p">]</span>
+    <span class="n">isofilltemp</span> <span class="o">=</span> <span class="n">genIsoFill</span><span class="p">(</span><span class="n">ws_lev</span><span class="p">,</span> <span class="n">ws_clr</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="c"># plotting vector in background</span>
+
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">windSpeed</span><span class="p">,</span> <span class="n">isofilltemp</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">bg</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">genvector</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="c"># get the current workig directory</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;The passed path doesnot exists to store the </span><span class="se">\</span>
+<span class="s">                            vector plots&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+    <span class="k">if</span> <span class="n">svg</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">svg</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.svg&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.svg&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">png</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">svg</span> <span class="ow">or</span> <span class="n">png</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Can not set both svg, png options are zero/None.</span><span class="se">\</span>
+<span class="s">                            Enable any one to store the vectorPlot&quot;</span><span class="p">)</span>
+    <span class="c"># clear the vcs object</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="c"># end of def vectorPlot(...):</span>
+</div>
+<span class="k">def</span> <span class="nf">isoLinePlot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">svg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;portrait&#39;</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+    <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;portrait&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">portrait</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;landscape&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">landscape</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;style must be either portrait or landscape&quot;</span><span class="p">)</span>
+
+    <span class="n">gentemp</span> <span class="o">=</span> <span class="n">genTemplate</span><span class="p">(</span><span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.075</span><span class="p">)</span>
+
+    <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># off the legend</span>
+    <span class="n">isolinetemp</span> <span class="o">=</span> <span class="n">genIsoLine</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">isolinetemp</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="c"># get the current workig directory</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;The passed path doesnot exists to store the </span><span class="se">\</span>
+<span class="s">                            vector plots&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+    <span class="k">if</span> <span class="n">svg</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">svg</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.svg&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.svg&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">png</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">svg</span> <span class="ow">or</span> <span class="n">png</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Can not set both svg, png options are zero/None.</span><span class="se">\</span>
+<span class="s">                            Enable any one to store the isoLinePlot&quot;</span><span class="p">)</span>
+    <span class="c"># clear the vcs object</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="c"># end of def isoLinePlot(...):</span>
+
+<span class="k">def</span> <span class="nf">isoFillPlot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">svg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;portrait&#39;</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+    <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;portrait&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">portrait</span><span class="p">()</span>
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">genTemplate</span><span class="p">(</span><span class="n">xscale</span> <span class="o">=</span> <span class="mf">0.98</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">,</span>
+                          <span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.075</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;landscape&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">landscape</span><span class="p">()</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">y1</span> <span class="o">=</span> <span class="mf">0.06</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">y2</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="n">gentemp</span> <span class="o">=</span> <span class="n">genTemplate</span><span class="p">(</span><span class="n">xscale</span> <span class="o">=</span> <span class="mf">0.98</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+                          <span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.075</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;style must be either portrait or landscape&quot;</span><span class="p">)</span>
+        
+    
+    <span class="c">#gentemp.legend.priority = 1 # on the legend</span>
+    <span class="n">isofilltemp</span> <span class="o">=</span> <span class="n">genIsoFill</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">isofilltemp</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">continents</span> <span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="c"># get the current workig directory</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;The passed path doesnot exists to store the </span><span class="se">\</span>
+<span class="s">                            vector plots&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+    <span class="k">if</span> <span class="n">svg</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">svg</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.svg&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.svg&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">png</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">svg</span> <span class="ow">or</span> <span class="n">png</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Can not set both svg, png options are zero/None.</span><span class="se">\</span>
+<span class="s">                            Enable any one to store the isoFillPlot&quot;</span><span class="p">)</span>
+    <span class="c"># clear the vcs object</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="c"># end of def isoFillPlot(...):</span>
+
+<span class="k">def</span> <span class="nf">isoFillLinePlot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">svg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">latlabel</span><span class="o">=</span><span class="s">&#39;lat5&#39;</span><span class="p">,</span> <span class="n">lonlabel</span><span class="o">=</span><span class="s">&#39;lon5&#39;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s">&#39;portrait&#39;</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+    <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;portrait&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">portrait</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;landscape&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">landscape</span><span class="p">()</span>
+        
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;style must be either portrait or landscape&quot;</span><span class="p">)</span>
+    <span class="n">gentemp</span> <span class="o">=</span> <span class="n">genTemplate</span><span class="p">(</span><span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.075</span><span class="p">)</span>
+
+    <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span> <span class="c"># on the legend</span>
+   
+    <span class="n">isofilltemp</span> <span class="o">=</span> <span class="n">genIsoFill</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="n">isolinetemp</span> <span class="o">=</span> <span class="n">genIsoLine</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">colorlist</span><span class="p">,</span> <span class="n">latlabel</span><span class="p">,</span> <span class="n">lonlabel</span><span class="p">)</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">isofilltemp</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">gentemp</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># off the legend</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">isolinetemp</span><span class="p">,</span> <span class="n">gentemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="c"># get the current workig directory</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;The passed path doesnot exists to store the </span><span class="se">\</span>
+<span class="s">                            vector plots&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+    <span class="k">if</span> <span class="n">svg</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">svg</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.svg&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.svg&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">png</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">svg</span> <span class="ow">or</span> <span class="n">png</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Can not set both svg, png options are zero/None.</span><span class="se">\</span>
+<span class="s">                            Enable any one to store the isoFillLinePlot&quot;</span><span class="p">)</span>
+    <span class="c"># clear the vcs object</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="c"># end of def isoFillPlot(...):</span>
+
+<span class="k">def</span> <span class="nf">tyTemplate</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmove</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymove</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scalefont</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>        
+<span class="c">#        x.portrait()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+
+    <span class="k">if</span> <span class="s">&#39;tyTemplate&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;template&#39;</span><span class="p">):</span>
+        <span class="c"># get the &#39;tyTemplate&#39; template object from temporary memory of vcs</span>
+        <span class="c"># template</span>
+        <span class="n">tytemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">gettemplate</span><span class="p">(</span><span class="s">&#39;tyTemplate&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># creating &#39;tyTemplate&#39; object with customized properties</span>
+        <span class="c"># create the text table </span>
+        <span class="n">tt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtexttable</span><span class="p">(</span><span class="s">&#39;tytt&#39;</span><span class="p">,</span> <span class="s">&#39;std&#39;</span><span class="p">)</span>
+        <span class="n">tt</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tt</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tt</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="s">&#39;black&#39;</span>
+        <span class="c"># create text orientation for long strings</span>
+        <span class="n">to</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtextorientation</span><span class="p">(</span><span class="s">&#39;tyto&#39;</span><span class="p">,</span> <span class="s">&#39;centerup&#39;</span><span class="p">)</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">to</span><span class="o">.</span><span class="n">halign</span> <span class="o">=</span> <span class="s">&#39;center&#39;</span>
+        <span class="c"># create the text orientation for x axis standard deviation labels </span>
+        <span class="n">xlto</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtextorientation</span><span class="p">(</span><span class="s">&#39;tyxlto&#39;</span><span class="p">,</span> <span class="s">&#39;centerup&#39;</span><span class="p">)</span>
+        <span class="n">xlto</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">xlto</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">xlto</span><span class="o">.</span><span class="n">halign</span> <span class="o">=</span> <span class="s">&#39;center&#39;</span>
+        <span class="c"># create the text orientation for y axis standard deviation labels </span>
+        <span class="n">ylto</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtextorientation</span><span class="p">(</span><span class="s">&#39;tyylto&#39;</span><span class="p">,</span> <span class="s">&#39;centerup&#39;</span><span class="p">)</span>
+        <span class="n">ylto</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">ylto</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ylto</span><span class="o">.</span><span class="n">halign</span> <span class="o">=</span> <span class="s">&#39;right&#39;</span>  
+        
+        <span class="c"># create copy of deftaylor template</span>
+        <span class="n">tytemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtemplate</span><span class="p">(</span><span class="s">&#39;tyTemplate&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s">&quot;deftaylor&quot;</span><span class="p">)</span>
+        
+        <span class="c">#Sets the correlation major line</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;solid&#39;</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">241</span><span class="p">]</span> <span class="c"># black</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ytic2</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="n">tytemp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">x1</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ytic2</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+        
+        <span class="c">#Sets standard dev major line</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;solid&#39;</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">241</span><span class="p">]</span> <span class="c"># black</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xtic2</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xtic2</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>  
+        
+        <span class="k">if</span> <span class="n">minor</span><span class="p">:</span>
+            <span class="c">#Sets the correlation minor line</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;dot&#39;</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">252</span><span class="p">]</span> <span class="c"># grey</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">ymintic2</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="n">tytemp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">x1</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">ymintic2</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+            
+            <span class="c">#Sets the std minor line</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;dot&#39;</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">252</span><span class="p">]</span> <span class="c"># grey</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">xmintic2</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">xmintic2</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>              
+
+        <span class="c">#Sets the outer lines (x,y standard deviation &amp; correlation) properties</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;solid&#39;</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">241</span><span class="p">]</span> <span class="c"># black</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">line1</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">line3</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">line4</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+        
+        <span class="c">#Sets the reference line properties. i.e truth(obs) standard deviation</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;solid&#39;</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">242</span><span class="p">]</span> <span class="c"># red</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">line2</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">l</span>
+
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.50</span>
+        <span class="c">#tytemp.title.y = 0</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">to</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>    <span class="c"># off min value</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c"># off mean value</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>    <span class="c"># off max value</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">dataname</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c"># off the variable id</span>
+
+        <span class="c"># Set the xname (Standard Deviation) text font, size</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xname</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xname</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">to</span>
+        <span class="c"># Set the yname (Correlation) text font, size</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">yname</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span>        
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">yname</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">to</span>
+        
+        <span class="c">#Sets the xlabels (numbers) text font, size</span>
+        <span class="c"># i.e x axis standard deviation</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xlabel1</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span> 
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xlabel1</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">xlto</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xlabel2</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span> 
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xlabel2</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">xlto</span>
+        <span class="c"># Sets the ylabels (numbers) text font, size.</span>
+        <span class="c"># i.e y axis standard deviation &amp; circle correlation axis labels</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ylabel1</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span> 
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ylabel1</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">ylto</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ylabel2</span><span class="o">.</span><span class="n">texttable</span> <span class="o">=</span> <span class="n">tt</span> 
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ylabel2</span><span class="o">.</span><span class="n">textorientation</span> <span class="o">=</span> <span class="n">ylto</span>
+        
+
+        <span class="k">if</span> <span class="n">xscale</span><span class="p">:</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">xscale</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">yscale</span><span class="p">:</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">yscale</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="s">&#39;y&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xmove</span><span class="p">:</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">xmove</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ymove</span><span class="p">:</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">ymove</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scalefont</span><span class="p">:</span>
+            <span class="n">tytemp</span><span class="o">.</span><span class="n">scalefont</span><span class="p">(</span><span class="n">scalefont</span><span class="p">)</span>
+        <span class="c">#tytemp.moveto(0.0,0.01) </span>
+        <span class="c"># saving the &#39;tyTemplate&#39; into temporary python memory</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;template&#39;</span><span class="p">,</span> <span class="s">&#39;tyTemplate&#39;</span><span class="p">)</span>
+
+    <span class="c"># return the tytemp object</span>
+    <span class="k">return</span> <span class="n">tytemp</span>
+<span class="c"># end of def tyTemplate():</span>
+
+<span class="k">def</span> <span class="nf">genTaylor</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">symbols</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">maxvalue</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">quadrans</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+
+
+    <span class="k">if</span> <span class="s">&#39;genTaylor&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">listelements</span><span class="p">(</span><span class="s">&#39;taylordiagram&#39;</span><span class="p">):</span>
+        <span class="n">tytemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">gettaylordiagram</span><span class="p">(</span><span class="s">&#39;genTaylor&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tytemp</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtaylordiagram</span><span class="p">(</span><span class="s">&#39;genTaylor&#39;</span><span class="p">)</span>
+        <span class="c"># setting the color to the rms error/deviaton isolines.        </span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">skillColor</span> <span class="o">=</span> <span class="s">&#39;green&#39;</span>
+    <span class="c"># set taylordiagram properties</span>
+    
+    <span class="c"># setting the truth dotted reference std value </span>
+    <span class="n">tytemp</span><span class="o">.</span><span class="n">referencevalue</span> <span class="o">=</span> <span class="n">reference</span>
+    <span class="k">if</span> <span class="n">colors</span><span class="p">:</span>
+        <span class="c"># setting the colors</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">Marker</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">colors</span>
+    <span class="k">if</span> <span class="n">symbols</span><span class="p">:</span>
+        <span class="c"># setting the symbols</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">Marker</span><span class="o">.</span><span class="n">symbol</span><span class="o">=</span> <span class="n">symbols</span>
+    <span class="k">if</span> <span class="n">maxvalue</span><span class="p">:</span>
+        <span class="c"># set the max value in std        </span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="n">maxvalue</span>
+    <span class="c"># set the quadrans</span>
+    <span class="n">tytemp</span><span class="o">.</span><span class="n">quadrans</span> <span class="o">=</span> <span class="n">quadrans</span>
+    
+    <span class="k">if</span> <span class="bp">False</span><span class="p">:</span>
+        <span class="c"># this block should do, change the x-axis std labels as </span>
+        <span class="c"># alternative to the y-axis labels. </span>
+        <span class="c"># But in future, we are going to remove this block, since </span>
+        <span class="c"># we are going to keep both x-y axis std labels are same.</span>
+        
+        <span class="c"># make the skip value either 1, or 2, or 3 or so on ., </span>
+        <span class="n">skip</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">maxvalue</span> <span class="o">&lt;=</span><span class="mi">10</span> <span class="k">else</span> <span class="p">(</span><span class="n">maxvalue</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span> 
+        <span class="c"># generate &amp; set the x-axis standard deviation labels</span>
+        <span class="n">mjrstd1</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">mklabels</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">maxvalue</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">skip</span><span class="p">))</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">xticlabels1</span> <span class="o">=</span> <span class="n">mjrstd1</span>
+        <span class="c"># generate &amp; set the y-axis standard deviation labels</span>
+        <span class="n">mjrstd2</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">mklabels</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxvalue</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">skip</span><span class="p">))</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">yticlabels1</span> <span class="o">=</span> <span class="n">mjrstd2</span>
+   
+    <span class="c"># return the genTaylor object</span>
+    <span class="k">return</span> <span class="n">tytemp</span>
+<span class="c"># end of def genTaylor():</span>
+
+<span class="k">def</span> <span class="nf">_plotMarker</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">mcolor</span><span class="p">,</span> <span class="n">msize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">plotbg</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    x : vcs init object </span>
+<span class="sd">    plot the marker in x, with passed arguemts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mk</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createmarker</span><span class="p">()</span>
+    <span class="n">mk</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">mx</span><span class="p">]</span> 
+    <span class="n">mk</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">my</span><span class="p">]</span>
+    <span class="n">mk</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="n">mcolor</span><span class="p">]</span>
+    <span class="n">mk</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="p">[</span><span class="n">msize</span> <span class="k">if</span> <span class="n">msize</span> <span class="k">else</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="n">mk</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="p">[</span><span class="n">mtype</span><span class="p">]</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mk</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="n">plotbg</span><span class="p">)</span>
+    <span class="k">return</span> 
+        
+<div class="viewcode-block" id="reference_std_dev"><a class="viewcode-back" href="../diagnosisutils.html#plot.reference_std_dev">[docs]</a><span class="k">class</span> <span class="nc">reference_std_dev</span> <span class="p">(</span><span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements the type: standard deviation of a reference variable.</span>
+<span class="sd">    It is just a float value with one method that will be used in the computation of</span>
+<span class="sd">    a test variable RMS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># &lt; Function compute_RMS_function&gt;=                                       </span>
+
+<div class="viewcode-block" id="reference_std_dev.compute_RMS_function"><a class="viewcode-back" href="../diagnosisutils.html#plot.reference_std_dev.compute_RMS_function">[docs]</a>    <span class="k">def</span> <span class="nf">compute_RMS_function</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">R</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function compute_RMS_function</span>
+<span class="sd">        -----------------------------</span>
+
+<span class="sd">        Compute and return the centered-pattern RMS of a test variable</span>
+<span class="sd">        from its standard-deviation and correlation.</span>
+
+<span class="sd">        Input:</span>
+<span class="sd">            self:   reference-variable standard deviation</span>
+<span class="sd">            s:      test variable standard deviation</span>
+<span class="sd">            R:      test-variable correlation with reference variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">RMS_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">*</span><span class="bp">self</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">s</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">*</span><span class="n">s</span><span class="o">*</span><span class="n">R</span>
+        <span class="c"># Compute square root</span>
+        <span class="k">return</span> <span class="n">RMS_2</span><span class="o">**</span> <span class="mf">0.5</span>
+
+</div></div>
+<span class="k">def</span> <span class="nf">tylorPlot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">reference</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="p">[],</span> <span class="n">symbols</span><span class="o">=</span><span class="p">[],</span> 
+                <span class="n">maxvalue</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">legendstrings</span><span class="o">=</span><span class="p">[],</span> <span class="n">lcolors</span><span class="o">=</span><span class="p">[],</span> <span class="n">lsymbols</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">markersize</span><span class="o">=</span><span class="p">[],</span> <span class="n">svg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">png</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
+                <span class="n">style</span><span class="o">=</span><span class="s">&#39;landscape&#39;</span><span class="p">,</span> <span class="n">plotbg</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">legendpos</span><span class="o">=</span><span class="s">&#39;topright&#39;</span><span class="p">,</span> <span class="n">rms</span><span class="o">=</span><span class="s">&#39;yes&#39;</span><span class="p">):</span>
+
+
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vcs</span><span class="o">.</span><span class="n">Canvas</span><span class="o">.</span><span class="n">Canvas</span><span class="p">)):</span>
+        <span class="c"># initializing vcs</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="c"># auto update vcs</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">print</span> <span class="s">&quot;one time initializing of vcs obj x&quot;</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;portrait&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">portrait</span><span class="p">()</span>
+        <span class="c"># generate the template for tylor (customized)</span>
+        <span class="n">tytemp</span> <span class="o">=</span> <span class="n">tyTemplate</span><span class="p">(</span><span class="n">xscale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xmove</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">style</span> <span class="o">==</span> <span class="s">&#39;landscape&#39;</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">landscape</span><span class="p">()</span>
+        <span class="c"># generate the template for tylor (customized)    </span>
+        <span class="n">tytemp</span> <span class="o">=</span> <span class="n">tyTemplate</span><span class="p">(</span><span class="n">xscale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xmove</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ymove</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">scalefont</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">)</span> <span class="c">#ymove = -0.2, </span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;style must be either portrait or landscape&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">legendstrings</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;pass legendstrings arg &quot;</span><span class="p">)</span>
+    
+    <span class="c"># find out either correlations have -ve value. If yes, then make the </span>
+    <span class="c"># quadrans has 2 else 1.</span>
+    <span class="n">correlations</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mincorr</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">correlations</span><span class="p">)</span> 
+    
+    <span class="k">if</span> <span class="n">mincorr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">quadrans</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">legendpos</span> <span class="o">=</span> <span class="s">&#39;bottomcenter&#39;</span>
+        <span class="c"># swtich off the left most labels, tic, mintics of std.</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ylabel1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ytic1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ymintic1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">quadrans</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">legendpos</span> <span class="o">=</span> <span class="s">&#39;topright&#39;</span>
+        <span class="c"># swtich on the left most labels, tic, mintics of std.</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ylabel1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ytic1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tytemp</span><span class="o">.</span><span class="n">ymintic1</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c"># generate/get the taylor template</span>
+    <span class="n">gentylor</span> <span class="o">=</span> <span class="n">genTaylor</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">maxvalue</span><span class="p">,</span> <span class="n">quadrans</span><span class="p">)</span>    
+    <span class="c"># plot the data with taylot template with values.</span>
+    <span class="c"># Here we just passing the defaultSkillFunction method as skill argument,</span>
+    <span class="c"># to plot the rms error isolines.    </span>
+    
+    <span class="k">if</span> <span class="n">rms</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;yes&#39;</span><span class="p">,</span> <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">True</span><span class="p">]:</span>
+        <span class="c"># Determine Centered-pattern RMS as skill score function</span>
+        <span class="c"># Make a specific data-type off reference std dev value</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">reference_std_dev</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
+
+        <span class="c"># Compute max_RMS: RMS for point at top left diagram corner</span>
+        <span class="c"># where std_dev = scale and correlation = 0.</span>
+        <span class="n">max_RMS</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">compute_RMS_function</span> <span class="p">(</span><span class="n">maxvalue</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+
+        <span class="c"># Determine the displayed levels for the skill score</span>
+        <span class="n">RMS_levels</span> <span class="o">=</span> <span class="n">vcs</span><span class="o">.</span><span class="n">mkscale</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">max_RMS</span><span class="p">)</span>
+        <span class="n">gentylor</span><span class="o">.</span><span class="n">skillValues</span> <span class="o">=</span> <span class="n">RMS_levels</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="c"># do not include the leading value wich is 0.</span>
+
+        <span class="c"># Plot the diagram with Centered-pattern RMS as skill score</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">plot</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">gentylor</span><span class="p">,</span> <span class="n">tytemp</span><span class="p">,</span> <span class="n">skill</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">compute_RMS_function</span><span class="p">,</span>
+                 <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>  <span class="n">bg</span> <span class="o">=</span> <span class="n">plotbg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># Plot the diagram</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">plot</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">gentylor</span><span class="p">,</span> <span class="n">tytemp</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>  <span class="n">bg</span> <span class="o">=</span> <span class="n">plotbg</span><span class="p">)</span>
+   
+    <span class="c">##</span>
+    <span class="c"># Additional (legend) plots</span>
+    <span class="c">##</span>
+    
+    <span class="c"># over write the colors &amp; symbols if user passed legend marker symbols </span>
+    <span class="c"># and/or legend marker colors.</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">lcolors</span> <span class="k">if</span> <span class="n">lcolors</span> <span class="k">else</span> <span class="n">colors</span>
+    <span class="n">symbols</span> <span class="o">=</span> <span class="n">lsymbols</span> <span class="k">if</span> <span class="n">lsymbols</span> <span class="k">else</span> <span class="n">symbols</span>
+    
+    <span class="n">colors_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+    <span class="n">symbols_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">)</span> 
+    
+    <span class="c"># create the text template to add the legend strings   </span>
+    <span class="n">strcount</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">legendstrings</span><span class="p">)</span>
+    <span class="n">xgap</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ygap</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">if</span> <span class="n">legendpos</span> <span class="o">==</span> <span class="s">&#39;topright&#39;</span><span class="p">:</span>
+        <span class="n">strX</span> <span class="o">=</span> <span class="mf">0.8</span> 
+        <span class="n">strY</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">ygap</span> <span class="o">=</span> <span class="mf">0.03</span>        
+        <span class="c"># generate the Strings X axis positions.</span>
+        <span class="n">sX</span> <span class="o">=</span> <span class="p">[</span><span class="n">strX</span><span class="p">]</span> <span class="o">*</span> <span class="n">strcount</span>
+        <span class="c"># generate the Strings Y axis positions.</span>
+        <span class="n">sY</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">strY</span><span class="p">,</span> <span class="n">strY</span><span class="o">-</span><span class="p">(</span><span class="n">ygap</span> <span class="o">*</span> <span class="n">strcount</span><span class="p">),</span> <span class="o">-</span><span class="n">ygap</span><span class="p">))</span>
+        <span class="c">#create the markers template to add the legend marker</span>
+        <span class="n">mX</span> <span class="o">=</span> <span class="p">[</span><span class="n">strX</span> <span class="o">-</span> <span class="mf">0.02</span><span class="p">]</span> <span class="o">*</span> <span class="n">strcount</span>        
+        <span class="n">mY</span> <span class="o">=</span> <span class="n">sY</span> 
+        <span class="c"># create the legend (rectangle) box at top right corner</span>
+        <span class="n">lx1</span> <span class="o">=</span> <span class="mf">0.75</span> 
+        <span class="n">lx2</span> <span class="o">=</span> <span class="mf">0.9</span> 
+        <span class="n">ly1</span> <span class="o">=</span> <span class="mf">0.83</span>
+        <span class="c"># increase the legend height dynamically w.r.t no of strings in the legend </span>
+        <span class="n">ly2</span> <span class="o">=</span> <span class="n">ly1</span> <span class="o">-</span> <span class="p">(</span><span class="n">ygap</span> <span class="o">*</span> <span class="n">strcount</span><span class="p">)</span> <span class="o">-</span> <span class="n">ygap</span>
+        
+    <span class="k">elif</span> <span class="n">legendpos</span> <span class="o">==</span> <span class="s">&#39;bottomcenter&#39;</span><span class="p">:</span>
+        <span class="n">strX</span> <span class="o">=</span> <span class="mf">0.3</span> 
+        <span class="n">strY</span> <span class="o">=</span> <span class="mf">0.08</span>
+        <span class="n">xgap</span> <span class="o">=</span> <span class="mf">0.1</span>        
+        
+        <span class="k">if</span> <span class="n">strcount</span> <span class="o">&lt;=</span><span class="mi">6</span><span class="p">:</span>
+            <span class="c"># generate the Strings X axis positions.</span>
+            <span class="n">sX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">strX</span><span class="p">,</span> <span class="n">strX</span><span class="o">+</span><span class="p">(</span><span class="n">xgap</span> <span class="o">*</span> <span class="n">strcount</span><span class="p">),</span> <span class="n">xgap</span><span class="p">))</span>
+            <span class="c"># generate the Strings Y axis positions.            </span>
+            <span class="n">sY</span> <span class="o">=</span> <span class="p">[</span><span class="n">strY</span><span class="p">]</span> <span class="o">*</span> <span class="n">strcount</span>
+            <span class="c">#create the markers template to add the legend marker</span>
+            <span class="n">mX</span> <span class="o">=</span> <span class="p">[</span><span class="n">strX</span> <span class="o">-</span> <span class="mf">0.02</span><span class="p">]</span> <span class="o">*</span> <span class="n">strcount</span>
+            <span class="n">mY</span> <span class="o">=</span> <span class="n">sY</span>
+            <span class="c"># create the legend (rectangle) box at bottom center </span>
+            <span class="n">ly1</span> <span class="o">=</span> <span class="mf">0.11</span>
+            <span class="n">ly2</span> <span class="o">=</span> <span class="mf">0.05</span> 
+            <span class="n">lx1</span> <span class="o">=</span> <span class="mf">0.25</span>
+            <span class="c"># increase the legend width dynamically w.r.t no of strings in the legend </span>
+            <span class="n">lx2</span> <span class="o">=</span> <span class="n">lx1</span> <span class="o">+</span> <span class="p">(</span><span class="n">xgap</span> <span class="o">*</span> <span class="n">strcount</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">xgap</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="n">strcount</span> <span class="o">&lt;=</span><span class="mi">12</span><span class="p">:</span>
+            <span class="c"># generate the Strings X axis positions. </span>
+            <span class="c"># take only the first 6 x pos </span>
+            <span class="n">sX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">strX</span><span class="p">,</span> <span class="n">strX</span><span class="o">+</span><span class="p">(</span><span class="n">xgap</span> <span class="o">*</span> <span class="mi">6</span><span class="p">),</span> <span class="n">xgap</span><span class="p">))[:</span><span class="mi">6</span><span class="p">]</span>            
+            <span class="c"># repeate the from the 6 x pos </span>
+            <span class="n">sX</span> <span class="o">+=</span> <span class="n">sX</span><span class="p">[:</span> <span class="n">strcount</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span>            
+            <span class="c"># generate the Strings Y axis positions.</span>
+            <span class="n">sY</span> <span class="o">=</span> <span class="p">[</span><span class="n">strY</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="p">[</span><span class="n">strY</span> <span class="o">-</span> <span class="mf">0.03</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">strcount</span> <span class="o">-</span> <span class="mi">6</span><span class="p">)</span>    
+            <span class="c">#create the markers template to add the legend marker</span>
+            <span class="n">mX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sX</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.02</span><span class="p">)</span>            
+            <span class="n">mY</span> <span class="o">=</span> <span class="n">sY</span>
+            <span class="c"># create the legend (rectangle) box at bottom center </span>
+            <span class="n">ly1</span> <span class="o">=</span> <span class="mf">0.11</span>
+            <span class="n">ly2</span> <span class="o">=</span> <span class="mf">0.03</span> 
+            <span class="n">lx1</span> <span class="o">=</span> <span class="mf">0.25</span>
+            <span class="c"># increase the legend width dynamically w.r.t 6 strings in the legend </span>
+            <span class="c"># i.e. 6 strings printed in first line, the remaning string will </span>
+            <span class="c"># be in the second line of the legend</span>
+            <span class="n">lx2</span> <span class="o">=</span> <span class="n">lx1</span> <span class="o">+</span> <span class="p">(</span><span class="n">xgap</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">xgap</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+            
+        <span class="k">elif</span> <span class="n">strcount</span> <span class="o">&lt;=</span><span class="mi">16</span><span class="p">:</span>
+            <span class="c"># generate the Strings X axis positions. </span>
+            <span class="c"># take only the first 8 x pos </span>
+            <span class="n">strX</span> <span class="o">=</span> <span class="n">strX</span> <span class="o">-</span> <span class="mf">0.07</span>
+            <span class="n">sX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">strX</span><span class="p">,</span> <span class="n">strX</span><span class="o">+</span><span class="p">(</span><span class="n">xgap</span> <span class="o">*</span> <span class="mi">8</span><span class="p">),</span> <span class="n">xgap</span><span class="p">))[:</span><span class="mi">8</span><span class="p">]</span>            
+            <span class="c"># repeate the from the 8 x pos </span>
+            <span class="n">sX</span> <span class="o">+=</span> <span class="n">sX</span><span class="p">[:</span> <span class="n">strcount</span><span class="o">-</span><span class="mi">8</span><span class="p">]</span>            
+            <span class="c"># generate the Strings Y axis positions.</span>
+            <span class="n">sY</span> <span class="o">=</span> <span class="p">[</span><span class="n">strY</span><span class="p">]</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">+</span> <span class="p">[</span><span class="n">strY</span> <span class="o">-</span> <span class="mf">0.03</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">strcount</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span>    
+            <span class="c">#create the markers template to add the legend marker</span>
+            <span class="n">mX</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sX</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.02</span><span class="p">)</span>            
+            <span class="n">mY</span> <span class="o">=</span> <span class="n">sY</span>
+            <span class="c"># create the legend (rectangle) box at bottom center </span>
+            <span class="n">ly1</span> <span class="o">=</span> <span class="mf">0.11</span>
+            <span class="n">ly2</span> <span class="o">=</span> <span class="mf">0.03</span> 
+            <span class="n">lx1</span> <span class="o">=</span> <span class="mf">0.18</span>
+            <span class="c"># increase the legend width dynamically w.r.t 8 strings in the legend </span>
+            <span class="c"># i.e. 8 strings printed in first line, the remaning string will </span>
+            <span class="c"># be in the second line of the legend</span>
+            <span class="n">lx2</span> <span class="o">=</span> <span class="n">lx1</span> <span class="o">+</span> <span class="p">(</span><span class="n">xgap</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">xgap</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+            
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createtext</span><span class="p">()</span>
+    <span class="n">txt</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">sX</span>
+    <span class="n">txt</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">sY</span>
+    <span class="n">txt</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="mi">241</span>
+    <span class="n">txt</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="n">legendstrings</span>
+    <span class="n">txt</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">25</span>
+    <span class="n">txt</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c"># plotting the strings </span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="n">plotbg</span><span class="p">)</span>
+    
+   
+    <span class="c"># default marker size. common for all the markers.</span>
+    <span class="n">defmarkersize</span> <span class="o">=</span> <span class="mi">5</span>
+         
+    <span class="c"># plots the multiple markers with different attibutes inside legend box.</span>
+    <span class="k">if</span> <span class="n">colors_count</span> <span class="o">&gt;</span> <span class="n">symbols_count</span><span class="p">:</span>
+        <span class="c"># plot same color, different types of symbols </span>
+        <span class="k">for</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">colors</span><span class="p">:</span>  
+            <span class="n">msize</span> <span class="o">=</span> <span class="n">markersize</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">markersize</span> <span class="k">else</span> <span class="n">defmarkersize</span>
+            <span class="n">mx</span> <span class="o">=</span> <span class="n">mX</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">my</span> <span class="o">=</span> <span class="n">mY</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">_plotMarker</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">symbols</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">msize</span><span class="p">))</span>   
+    <span class="k">elif</span> <span class="n">colors_count</span> <span class="o">&lt;</span> <span class="n">symbols_count</span><span class="p">:</span>
+        <span class="c"># plot different colors, same type of symbol</span>
+        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="n">symbols</span><span class="p">:</span>            
+            <span class="n">msize</span> <span class="o">=</span> <span class="n">markersize</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">markersize</span> <span class="k">else</span> <span class="n">defmarkersize</span>
+            <span class="n">mx</span> <span class="o">=</span> <span class="n">mX</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">my</span> <span class="o">=</span> <span class="n">mY</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">_plotMarker</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">colors</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">round</span><span class="p">(</span><span class="n">msize</span><span class="p">))</span>            
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c"># colors_count == symbols_count:</span>
+        <span class="c"># plot different colors &amp; different types of symbols </span>
+        <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">colors</span><span class="p">,</span> <span class="n">symbols</span><span class="p">):</span>            
+            <span class="n">msize</span> <span class="o">=</span> <span class="n">markersize</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="n">markersize</span> <span class="k">else</span> <span class="n">defmarkersize</span> 
+            <span class="n">mx</span> <span class="o">=</span> <span class="n">mX</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">my</span> <span class="o">=</span> <span class="n">mY</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>                         
+            <span class="n">_plotMarker</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mx</span><span class="p">,</span> <span class="n">my</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">msize</span><span class="p">))</span>            
+    
+    
+    <span class="n">ln</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">createline</span><span class="p">()</span>
+    <span class="n">ln</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">lx1</span><span class="p">,</span> <span class="n">lx2</span><span class="p">,</span> <span class="n">lx2</span><span class="p">,</span> <span class="n">lx1</span><span class="p">,</span> <span class="n">lx1</span><span class="p">]</span>       <span class="c"># x line positions</span>
+    <span class="n">ln</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="n">ly1</span><span class="p">,</span> <span class="n">ly1</span><span class="p">,</span> <span class="n">ly2</span><span class="p">,</span> <span class="n">ly2</span><span class="p">,</span> <span class="n">ly1</span><span class="p">]</span>       <span class="c"># y line positions</span>
+    <span class="n">ln</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">3</span>                      
+    <span class="n">ln</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="mi">241</span> 
+    <span class="n">ln</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;solid&#39;</span> 
+    <span class="c"># plot the legend                        </span>
+    <span class="n">x</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ln</span><span class="p">,</span> <span class="n">bg</span> <span class="o">=</span> <span class="n">plotbg</span><span class="p">)</span>
+    
+    <span class="c">###</span>
+    <span class="c">## End of plotting</span>
+    <span class="c">###</span>
+
+    <span class="c"># save the plot </span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="c"># get the current workig directory</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;The passed path doesnot exists to store the </span><span class="se">\</span>
+<span class="s">                            vector plots&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">+=</span> <span class="s">&#39;/&#39;</span>
+    <span class="k">if</span> <span class="n">svg</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">svg</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.svg&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.svg&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">png</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s">&#39;.png&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;plotted and saved the </span><span class="si">%s%s</span><span class="s">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">svg</span> <span class="ow">or</span> <span class="n">png</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s">&quot;Can not set both svg, png options are zero/None.</span><span class="se">\</span>
+<span class="s">                            Enable any one to store the vectorPlot&quot;</span><span class="p">)</span>
+    <span class="c"># clear the vcs object</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="c"># </span>
+    
+<span class="c"># end of def tylorPlot(...):</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">mmDiagnosis 1a documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, Arulalan.T, Dr.Krishna AchutaRao, Dileepkumar.R.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
