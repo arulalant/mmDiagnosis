@@ -1324,7 +1324,48 @@ class TimeUtility():
         # setting time axis properties ends
         return time
     # end of def _generateTimeAxis(self,days,startdate):
+    
+    def getContinuousChunksTimeAxis(self, timeAxis, days=1):
+        """
+        :func:`getContinuousChunksTimeAxis`: get continous time chunks as tuples in a list.
+        If days has passed, then it will return tuples length whose are greater or equal to days.
 
+        Written By : Arulalan.T
+
+        Date : 22.06.2017
+        """
+        if not (isinstance(timeAxis, cdms2.axis.TransientAxis) or 
+                isinstance(timeAxis, cdms2.axis.FileAxis) or
+                isinstance(timeAxis, cdms2.axis.Axis)):
+            raise _TimeUtilityTypeError("Passed timeAxis is not the type of \
+                                cdms2.axis.Axis or cdms2.axis.TransientAxis")
+
+        timeAxisIndecies = timeAxis[:]
+        chunklist = []
+        count = 1
+        tlen = len(timeAxis) - 1
+        while (count <= tlen):
+            chunk = []
+            flag = True
+            while (flag):
+                previous = timeAxisIndecies[count - 1]
+                current = timeAxisIndecies[count]
+                next_ = current if count == tlen else timeAxisIndecies[count + 1]
+                if count == 1 and (current - previous == 1): chunk.append(previous)
+                if (next_ - current == 1):
+                    chunk.append(current)
+                elif (current - previous == 1):
+                    chunk.append(current)
+                    flag = False
+                else:
+                    flag = False
+                count += 1
+            # end of while (flag):
+            if len(chunk) >= days: chunklist.append(chunk)
+        # end of while (count < len(timeAxis
+        return chunklist
+    # end of def getContinuousChunksTimeAxis(self, timeAxis):
+    
     def _correctTimeAxis(self, timeAxis):
         """
         :func:`_correctTimeAxis`: some of time axis may not have its bounds.
