@@ -37,8 +37,11 @@ def updateCdmlFile(ufilepath, inputxml, outputxml=None):
 
     if not directory in ufilepath:
         sys.exit()
-
-    filepath = ufilepath.split(directory)[-1]
+  
+    if directory:
+        filepath = ufilepath.split(directory)[-1]
+    else:
+        filepath = ufilepath
 
     cdms_filemap_entry = root_attributes.get('cdms_filemap')
     # get the fist close braket index
