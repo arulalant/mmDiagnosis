@@ -16,7 +16,7 @@ def updateCdmlFile(ufilepath, inputxml, outputxml=None):
     Written By : Arulalan.T
 
     Date : 09.10.2013
-
+    Update : 17.03.2018
     """
 
     tree = ET.parse(inputxml)
@@ -113,10 +113,3 @@ if __name__ == '__main__':
     infile = sys.argv[2]
     updateCdmlFile(ufilepath, infile)
 # end of if __name__ == '__main__':
-
-
-
-
-
-
-
