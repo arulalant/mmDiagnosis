@@ -22,8 +22,6 @@ def updateCdmlFile(ufilepath, inputxml, outputxml=None):
     tree = ET.parse(inputxml)
     root = tree.getroot()
 
-    ufilepath = os.path.relpath(ufilepath)
-
     f = cdms2.open(ufilepath)
     fvariables = f.listvariables()
 
@@ -34,15 +32,8 @@ def updateCdmlFile(ufilepath, inputxml, outputxml=None):
 
     root_attributes = root.attrib
     directory = root_attributes.get('directory', "")
-
-    if not directory in ufilepath:
-        sys.exit()
-  
-    if directory:
-        filepath = ufilepath.split(directory)[-1]
-    else:
-        filepath = ufilepath
-
+    os.chdir(directory)
+    filepath = os.path.relpath(ufilepath)
     cdms_filemap_entry = root_attributes.get('cdms_filemap')
     # get the fist close braket index
     close_brak_idx = cdms_filemap_entry.find("]")
@@ -68,21 +59,23 @@ def updateCdmlFile(ufilepath, inputxml, outputxml=None):
 
     for axis in root.findall("./axis[@id='time']"):
         units = axis.get('units', '')
-        # get the time index of the update/new datafile
-        newTimeIdx = int(ftime[0].torel(units).value)
+        # get the time length of the update/new datafile
         length = int(axis.get('length', 0))
-        newlength = str(length + 1)
+        newlength = str(length + len(ftime))
         # update the axis length
         axis.attrib['length'] = newlength
 
         partition = axis.get('partition')
-        partition_extend = [str(newTimeIdx), str(newTimeIdx + 1)]
+        partition_idx = int(partition[:-1].split()[-1])
+        partition_extend = [str(partition_idx), str(partition_idx + len(ftime))]
         partition = partition[:-1] + ' ' + ' '.join(partition_extend) + ']'
         # update the partition
         axis.attrib['partition'] = partition
 
         tindex = axis.text.strip()
-        tindex = tindex[:-1] + '  ' + str(newTimeIdx) + '.' + ']'
+        # get the time index of the update/new datafile
+        newTimeIndecies = [str(int(ftidx.torel(units).value)) for ftidx in ftime]
+        tindex = tindex[:-1] + '  ' + ' '.join(newTimeIndecies) + '.' + ']'
         # update the text (actual time index)
         axis.text = tindex
     # end of for axis in root.findall(...):
